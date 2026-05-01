@@ -1,0 +1,45 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.code {
+  font-family: var(--font-display);
+  font-size: 8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  opacity: 0.2;
+  line-height: 1;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+  color: var(--color-text);
+}
+
+.sub {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.back {
+  margin-top: var(--space-md);
+  color: var(--color-accent);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  transition: opacity var(--transition-fast);
+}
+
+.back:hover {
+  opacity: 0.7;
+}
