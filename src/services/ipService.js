@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const BASE_URL = 'https://ipapi.co'
+// const BASE_URL = 'http://0.0.0.0:9000/api/v1.0/scanoracle/get/ip/info'
 
 /**
  * Look up IP/domain geolocation data.
@@ -17,6 +18,7 @@ export async function lookupIP(target = '') {
   })
 
   const data = response.data
+  console.log(data)
 
   if (data.error) {
     throw new Error(data.reason || 'Invalid IP or domain.')
