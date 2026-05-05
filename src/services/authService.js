@@ -9,22 +9,38 @@ export const getToken        = ()  => localStorage.getItem(TOKEN_KEY)
 export const clearToken      = ()  => localStorage.removeItem(TOKEN_KEY)
 export const isAuthenticated = ()  => Boolean(getToken())
 
-// ── Temp credentials (sessionStorage — auto-cleared on tab close) ─────────────
+// ── Temp credentials (sessionStorage) ────────────────────────────────────────
 export const storeTempCredentials = (email, password) =>
   sessionStorage.setItem('gr_tmp', JSON.stringify({ email, password }))
-
 export function getTempCredentials() {
   try { return JSON.parse(sessionStorage.getItem('gr_tmp')) ?? null }
   catch { return null }
 }
 export const clearTempCredentials = () => sessionStorage.removeItem('gr_tmp')
 
-// ── Error helper ──────────────────────────────────────────────────────────────
+// ── Error helper — handles both string and object `detail` ────────────────────
 function buildError(data, fallback = 'Request failed.') {
-  const detail     = data?.detail ?? {}
-  const err        = new Error(detail.message || detail.error || data?.message || fallback)
-  err.errorField   = detail.error   ?? data?.message ?? null
-  err.messageField = detail.message ?? null
+  const detail = data?.detail
+  let message, errorField, messageField
+
+  if (typeof detail === 'string') {
+    // e.g. {"detail": "invalid email or password!"}
+    message      = detail
+    errorField   = detail
+    messageField = null
+  } else if (detail && typeof detail === 'object') {
+    message      = detail.message || detail.error || fallback
+    errorField   = detail.error   ?? null
+    messageField = detail.message ?? null
+  } else {
+    message      = data?.message || fallback
+    errorField   = data?.message ?? null
+    messageField = null
+  }
+
+  const err        = new Error(message)
+  err.errorField   = errorField
+  err.messageField = messageField
   return err
 }
 
@@ -37,15 +53,14 @@ export async function signupUser({ email, password }) {
   })
   const data        = await res.json()
   const detail      = data?.detail ?? {}
-  const error       = detail.error   ?? null
-  const message     = detail.message ?? null
+  const error       = typeof detail === 'object' ? detail.error   : null
+  const message     = typeof detail === 'object' ? detail.message : null
   const alreadyExists = error === 'Kindly login!'
   if (!res.ok && !alreadyExists) throw buildError(data, 'Signup failed.')
   return { ok: true, alreadyExists, error, message }
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────────
-// Backend expects { username: <email>, password }
 export async function loginUser({ email, password }) {
   const res  = await fetch(`${BASE_URL}/login/`, {
     method: 'POST',
@@ -60,11 +75,22 @@ export async function loginUser({ email, password }) {
 }
 
 // ── Google SSO ────────────────────────────────────────────────────────────────
-// Redirects browser to backend OAuth — backend handles Google and calls back.
-// On callback success the backend returns { access_token, ... }
-// The callback page reads the token from URL search params and saves it.
 export function initiateGoogleSSO() {
   window.location.href = 'http://127.0.0.1:9000/api/v1.0/auth/google/'
+}
+
+// ── Refresh token (call every 85 minutes while tab is active) ─────────────────
+export async function refreshToken() {
+  const token = getToken()
+  if (!token) return null
+  const res  = await fetch(`${BASE_URL}/refresh_token`, {
+    method: 'GET',
+    headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
+  })
+  const data = await res.json()
+  if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Session refresh failed.')
+  if (data.token) saveToken(data.token)
+  return data.token
 }
 
 // ── Request verification ──────────────────────────────────────────────────────
@@ -76,19 +102,13 @@ export async function requestVerification({ email }) {
   })
   const data = await res.json()
   if (!res.ok) throw buildError(data, 'Verification request failed.')
-  return {
-    ok: true,
-    message:         data.message,
-    verificationUrl: data.verification_url,
-    qrCode:          data.qr_code,
-  }
+  return { ok: true, message: data.message, verificationUrl: data.verification_url, qrCode: data.qr_code }
 }
 
 // ── Verify account ────────────────────────────────────────────────────────────
 export async function verifyAccount(verificationUrl) {
   const res  = await fetch(verificationUrl, {
-    method: 'GET',
-    headers: { 'accept': 'application/json' },
+    method: 'GET', headers: { 'accept': 'application/json' },
   })
   const data = await res.json()
   if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Verification failed.')
@@ -124,8 +144,7 @@ export async function updateUsername(token, username) {
   const res  = await fetch(`${USER_URL}/update/profile/`, {
     method: 'POST',
     headers: {
-      'accept': 'application/json',
-      'Content-Type': 'application/json',
+      'accept': 'application/json', 'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({ username }),
@@ -140,14 +159,9 @@ export async function updateUsername(token, username) {
 export async function updateProfilePhoto(token, file) {
   const form = new FormData()
   form.append('file', file)
-
   const res  = await fetch(`${USER_URL}/update/profile_photo`, {
     method: 'POST',
-    headers: {
-      'accept': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      // Do NOT set Content-Type — browser sets it with the correct boundary
-    },
+    headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
     body: form,
   })
   const data = await res.json()
