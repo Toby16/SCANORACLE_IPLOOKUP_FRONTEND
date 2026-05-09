@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import {
-  signupUser, loginUser, storeTempCredentials, initiateGoogleSSO,
-} from '../services/authService.js'
+import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { signupUser, loginUser, storeTempCredentials, saveToken } from '../services/authService.js'
+import { useGoogleSSO } from '../hooks/useGoogleSSO.js'
 import GhostLogo from '../components/GhostLogo.jsx'
+import ForgotPassword from './ForgotPassword.jsx'
 import styles from './Auth.module.css'
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
@@ -11,7 +11,7 @@ let _tid = 0
 function useToast() {
   const [toasts, setToasts] = useState([])
   const remove = useCallback((id) => setToasts(p => p.filter(t => t.id !== id)), [])
-  const push = useCallback((message, type = 'info', ms = 5000) => {
+  const push   = useCallback((message, type = 'info', ms = 5500) => {
     const id = ++_tid
     setToasts(p => [...p, { id, message, type }])
     if (ms) setTimeout(() => remove(id), ms)
@@ -24,9 +24,7 @@ function ToastStack({ toasts, remove }) {
     <div className={styles.toastStack}>
       {toasts.map(t => (
         <div key={t.id} className={`${styles.toast} ${styles[`toast_${t.type}`]}`}>
-          <span className={styles.toastIcon}>
-            {t.type === 'error' ? '✕' : t.type === 'success' ? '✓' : 'ℹ'}
-          </span>
+          <span className={styles.toastIcon}>{t.type === 'error' ? '✕' : t.type === 'success' ? '✓' : 'ℹ'}</span>
           <span className={styles.toastMsg}>{t.message}</span>
           <button className={styles.toastClose} onClick={() => remove(t.id)}>×</button>
         </div>
@@ -35,7 +33,6 @@ function ToastStack({ toasts, remove }) {
   )
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const isEmail  = (v) => EMAIL_RE.test(v.trim())
 
@@ -76,7 +73,6 @@ const IconLock = () => (
   </svg>
 )
 
-// ── Field ─────────────────────────────────────────────────────────────────────
 function Field({ id, label, type = 'text', value, onChange, placeholder, autoComplete, disabled, hint }) {
   const [show, setShow] = useState(false)
   const isPw = type === 'password'
@@ -104,22 +100,48 @@ function Field({ id, label, type = 'text', value, onChange, placeholder, autoCom
 
 // ── Auth Page ─────────────────────────────────────────────────────────────────
 export default function Auth() {
-  const navigate             = useNavigate()
+  const navigate              = useNavigate()
+  const location              = useLocation()
   const { toasts, push, remove } = useToast()
 
-  const [tab,      setTab]      = useState('login')
-  const [identity, setIdentity] = useState('')   // login: email or username
-  const [email,    setEmail]    = useState('')   // signup: email
-  const [password, setPassword] = useState('')
-  const [loading,  setLoading]  = useState(false)
-  const [action,   setAction]   = useState(null)
+  const [tab,        setTab]        = useState('login')
+  const [identity,   setIdentity]   = useState('')
+  const [email,      setEmail]      = useState('')
+  const [password,   setPassword]   = useState('')
+  const [loading,    setLoading]    = useState(false)
+  const [action,     setAction]     = useState(null)
+  const [showForgot, setShowForgot] = useState(false)
+  const [ssoLoading, setSsoLoading] = useState(false)
+
+  useEffect(() => {
+    if (location.state?.sessionExpired) {
+      push('Your session has expired. Please sign in again.', 'info', 7000)
+      window.history.replaceState({}, '')
+    }
+  }, []) // eslint-disable-line
+
+  // ── Google SSO popup ───────────────────────────────────────────────────────
+  const { openPopup } = useGoogleSSO(
+    useCallback((token) => {
+      setSsoLoading(false)
+      saveToken(token)
+      push('Google sign-in successful! Welcome.', 'success')
+      setTimeout(() => navigate('/', { replace: true }), 700)
+    }, [navigate, push]),
+
+    useCallback((errMsg) => {
+      setSsoLoading(false)
+      if (errMsg !== 'Sign-in was cancelled.') push(errMsg, 'error')
+    }, [push])
+  )
+
+  const handleGoogleSSO = () => { setSsoLoading(true); openPopup() }
 
   const pushDouble = (e, m, type = 'error') => {
     if (e) push(e, type)
     if (m && m !== e) setTimeout(() => push(m, type), 350)
   }
 
-  // ── Login ──────────────────────────────────────────────────────────────────
   const handleLogin = async () => {
     if (!identity.trim()) { push('Please enter your email or username.', 'error'); return }
     if (!password.trim()) { push('Please enter your password.', 'error'); return }
@@ -127,13 +149,12 @@ export default function Auth() {
     try {
       await loginUser({ email: identity.trim(), password })
       push('Welcome back!', 'success')
-      setTimeout(() => navigate('/dashboard', { replace: true }), 700)
+      setTimeout(() => navigate('/', { replace: true }), 700)
     } catch (err) {
-      pushDouble(err.errorField, err.messageField, 'error')
+      pushDouble(err.errorField, err.messageField || err.message, 'error')
     } finally { setLoading(false); setAction(null) }
   }
 
-  // ── Signup ─────────────────────────────────────────────────────────────────
   const handleSignup = async () => {
     if (!email.trim()) { push('Please enter your email address.', 'error'); return }
     if (!isEmail(email)) {
@@ -154,15 +175,18 @@ export default function Auth() {
         setTimeout(() => navigate('/verify', { state: { email: email.trim() } }), 1100)
       }
     } catch (err) {
-      pushDouble(err.errorField, err.messageField, 'error')
+      pushDouble(err.errorField, err.messageField || err.message, 'error')
     } finally { setLoading(false); setAction(null) }
   }
 
   const switchTab = (t) => { setTab(t); setIdentity(''); setEmail(''); setPassword('') }
 
+  const isDisabled = loading || ssoLoading
+
   return (
     <div className={styles.page}>
       <ToastStack toasts={toasts} remove={remove} />
+      {showForgot && <ForgotPassword onClose={() => setShowForgot(false)} />}
       <div className={styles.glowBg} aria-hidden="true" />
 
       <div className={styles.wrapper}>
@@ -181,35 +205,67 @@ export default function Auth() {
 
         {/* Right form card */}
         <main className={styles.card}>
-          <div className={styles.cardLogoMobile}><GhostLogo size={44} showText showSub={false} /></div>
+          <div className={styles.cardLogoMobile}>
+            <GhostLogo size={44} showText showSub={false} />
+          </div>
 
-          {/* Tabs */}
           <div className={styles.tabs} role="tablist">
-            <button role="tab" aria-selected={tab === 'login'}
+            <button
+              role="tab" aria-selected={tab === 'login'}
               className={`${styles.tab} ${tab === 'login' ? styles.tabActive : ''}`}
-              onClick={() => switchTab('login')} type="button">Sign in</button>
-            <button role="tab" aria-selected={tab === 'signup'}
+              onClick={() => switchTab('login')} type="button"
+            >Sign in</button>
+            <button
+              role="tab" aria-selected={tab === 'signup'}
               className={`${styles.tab} ${tab === 'signup' ? styles.tabActive : ''}`}
-              onClick={() => switchTab('signup')} type="button">Create account</button>
+              onClick={() => switchTab('signup')} type="button"
+            >Create account</button>
           </div>
 
           <p className={styles.cardSubtitle}>
-            {tab === 'login' ? 'Welcome back. Sign in to continue.' : 'Join Ghostroute. One account for every app.'}
+            {tab === 'login'
+              ? 'Welcome back. Sign in to continue.'
+              : 'Join Ghostroute. One account for every app.'}
           </p>
 
           {/* Social buttons */}
           <div className={styles.socialRow}>
-            <button type="button" className={`${styles.socialBtn} ${styles.socialGoogle}`}
-              onClick={initiateGoogleSSO}>
-              <IconGoogle /> <span>Google</span>
+            {/* Google — live SSO */}
+            <button
+              type="button"
+              className={`${styles.socialBtn} ${styles.socialGoogle} ${ssoLoading ? styles.socialLoading : ''}`}
+              onClick={handleGoogleSSO}
+              disabled={isDisabled}
+              title="Sign in with Google"
+            >
+              {ssoLoading ? <span className={styles.socialSpinner} /> : <IconGoogle />}
+              <span>{ssoLoading ? 'Opening…' : 'Google'}</span>
             </button>
-            <button type="button" className={styles.socialBtn}>
+
+            {/* Facebook — coming soon, permanently inert */}
+            <div
+              className={`${styles.socialBtn} ${styles.socialInert}`}
+              aria-disabled="true"
+              title="Facebook sign-in coming soon"
+            >
               <IconFacebook /> <span>Facebook</span>
-            </button>
-            <button type="button" className={styles.socialBtn}>
+            </div>
+
+            {/* Twitter — coming soon, permanently inert */}
+            <div
+              className={`${styles.socialBtn} ${styles.socialInert}`}
+              aria-disabled="true"
+              title="Twitter sign-in coming soon"
+            >
               <IconTwitter /> <span>Twitter</span>
-            </button>
+            </div>
           </div>
+
+          {ssoLoading && (
+            <p className={styles.popupHint}>
+              A sign-in window should have opened. If you don't see it, check your popup blocker.
+            </p>
+          )}
 
           <div className={styles.divider}><span>or continue with email</span></div>
 
@@ -217,33 +273,48 @@ export default function Auth() {
           <div className={styles.fields}>
             {tab === 'login' ? (
               <>
-                <Field id="login-id" label="Email address or Username"
+                <Field
+                  id="login-id" label="Email address or Username"
                   value={identity} onChange={e => setIdentity(e.target.value)}
                   placeholder="ghostroute.security@gmail.com"
-                  autoComplete="username" disabled={loading} />
-                <Field id="login-pw" label="Password" type="password"
+                  autoComplete="username" disabled={isDisabled}
+                />
+                <Field
+                  id="login-pw" label="Password" type="password"
                   value={password} onChange={e => setPassword(e.target.value)}
-                  placeholder="password" autoComplete="current-password" disabled={loading} />
+                  placeholder="password" autoComplete="current-password" disabled={isDisabled}
+                />
                 <div className={styles.forgotRow}>
-                  <a href="#" className={styles.forgotLink}>Forgot password?</a>
+                  <button
+                    type="button" className={styles.forgotLink}
+                    onClick={() => setShowForgot(true)} disabled={isDisabled}
+                  >
+                    Forgot password?
+                  </button>
                 </div>
               </>
             ) : (
               <>
-                <Field id="signup-email" label="Email address" type="email"
+                <Field
+                  id="signup-email" label="Email address" type="email"
                   value={email} onChange={e => setEmail(e.target.value)}
                   placeholder="ghostroute.security@gmail.com"
-                  autoComplete="email" disabled={loading}
-                  hint="Your username is auto-generated from this email." />
-                <Field id="signup-pw" label="Password" type="password"
+                  autoComplete="email" disabled={isDisabled}
+                  hint="Your username is auto-generated from this email."
+                />
+                <Field
+                  id="signup-pw" label="Password" type="password"
                   value={password} onChange={e => setPassword(e.target.value)}
-                  placeholder="password" autoComplete="new-password" disabled={loading} />
+                  placeholder="password" autoComplete="new-password" disabled={isDisabled}
+                />
               </>
             )}
           </div>
 
-          <button type="button" className={styles.submitBtn} disabled={loading}
-            onClick={tab === 'login' ? handleLogin : handleSignup}>
+          <button
+            type="button" className={styles.submitBtn} disabled={isDisabled}
+            onClick={tab === 'login' ? handleLogin : handleSignup}
+          >
             {loading && action
               ? <><span className={styles.btnSpinner} />{action === 'login' ? 'Signing in…' : 'Creating account…'}</>
               : <><IconLock /> {tab === 'login' ? 'Sign in' : 'Create account'}</>
@@ -252,8 +323,10 @@ export default function Auth() {
 
           <p className={styles.cardFooter}>
             {tab === 'login' ? 'New to Ghostroute? ' : 'Already have an account? '}
-            <button type="button" className={styles.switchLink}
-              onClick={() => switchTab(tab === 'login' ? 'signup' : 'login')}>
+            <button
+              type="button" className={styles.switchLink}
+              onClick={() => switchTab(tab === 'login' ? 'signup' : 'login')}
+            >
               {tab === 'login' ? 'Create an account' : 'Sign in'}
             </button>
           </p>

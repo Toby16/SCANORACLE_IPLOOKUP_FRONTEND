@@ -9,7 +9,36 @@ export const getToken        = ()  => localStorage.getItem(TOKEN_KEY)
 export const clearToken      = ()  => localStorage.removeItem(TOKEN_KEY)
 export const isAuthenticated = ()  => Boolean(getToken())
 
-// ── Temp credentials (sessionStorage) ────────────────────────────────────────
+// ── Token expiry signals ──────────────────────────────────────────────────────
+// These are the exact strings the backend sends when a JWT is invalid/expired.
+const EXPIRED_SIGNALS = [
+  'kindly input new token',
+  'invalid token',
+  'token has expired',
+  'could not validate credentials',
+  'not authenticated',
+]
+
+/**
+ * Returns true if the error message matches a known token-expiry pattern.
+ * Case-insensitive.
+ */
+export function isTokenExpiredError(err) {
+  if (!err?.message) return false
+  const msg = err.message.toLowerCase()
+  return EXPIRED_SIGNALS.some(s => msg.includes(s))
+}
+
+/**
+ * Clears the stored token and fires a browser custom event so any mounted
+ * component can react (e.g. redirect to /auth) without needing React context.
+ */
+export function signalTokenExpired() {
+  clearToken()
+  window.dispatchEvent(new CustomEvent('ghostroute:token-expired'))
+}
+
+// ── Temp credentials ──────────────────────────────────────────────────────────
 export const storeTempCredentials = (email, password) =>
   sessionStorage.setItem('gr_tmp', JSON.stringify({ email, password }))
 export function getTempCredentials() {
@@ -24,23 +53,29 @@ function buildError(data, fallback = 'Request failed.') {
   let message, errorField, messageField
 
   if (typeof detail === 'string') {
-    // e.g. {"detail": "invalid email or password!"}
-    message      = detail
-    errorField   = detail
-    messageField = null
+    message = detail; errorField = detail; messageField = null
   } else if (detail && typeof detail === 'object') {
     message      = detail.message || detail.error || fallback
     errorField   = detail.error   ?? null
     messageField = detail.message ?? null
   } else {
-    message      = data?.message || fallback
-    errorField   = data?.message ?? null
-    messageField = null
+    message = data?.message || fallback
+    errorField = data?.message ?? null; messageField = null
   }
 
-  const err        = new Error(message)
-  err.errorField   = errorField
-  err.messageField = messageField
+  const err = new Error(message)
+  err.errorField = errorField; err.messageField = messageField
+  return err
+}
+
+/**
+ * Wraps buildError: if the resulting error is a token-expiry signal,
+ * automatically clears the token and fires the expiry event so the
+ * UI can redirect without the caller needing to know about it.
+ */
+function buildAndCheckError(data, fallback) {
+  const err = buildError(data, fallback)
+  if (isTokenExpiredError(err)) signalTokenExpired()
   return err
 }
 
@@ -56,7 +91,7 @@ export async function signupUser({ email, password }) {
   const error       = typeof detail === 'object' ? detail.error   : null
   const message     = typeof detail === 'object' ? detail.message : null
   const alreadyExists = error === 'Kindly login!'
-  if (!res.ok && !alreadyExists) throw buildError(data, 'Signup failed.')
+  if (!res.ok && !alreadyExists) throw buildAndCheckError(data, 'Signup failed.')
   return { ok: true, alreadyExists, error, message }
 }
 
@@ -68,7 +103,7 @@ export async function loginUser({ email, password }) {
     body: JSON.stringify({ username: email, password }),
   })
   const data  = await res.json()
-  if (!res.ok) throw buildError(data, 'Login failed.')
+  if (!res.ok) throw buildAndCheckError(data, 'Login failed.')
   const token = data.token ?? data.access_token ?? data.data?.token ?? null
   if (token) saveToken(token)
   return { ok: true, token, data }
@@ -79,7 +114,7 @@ export function initiateGoogleSSO() {
   window.location.href = 'http://127.0.0.1:9000/api/v1.0/auth/google/'
 }
 
-// ── Refresh token (call every 85 minutes while tab is active) ─────────────────
+// ── Refresh token ─────────────────────────────────────────────────────────────
 export async function refreshToken() {
   const token = getToken()
   if (!token) return null
@@ -88,30 +123,36 @@ export async function refreshToken() {
     headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
   })
   const data = await res.json()
-  if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Session refresh failed.')
+  if (!res.ok || data.statusCode !== 200) throw buildAndCheckError(data, 'Session refresh failed.')
   if (data.token) saveToken(data.token)
   return data.token
 }
 
 // ── Request verification ──────────────────────────────────────────────────────
 export async function requestVerification({ email }) {
-  const res  = await fetch(`${BASE_URL}/verification/request`, {
+  const res  = await fetch(`${BASE_URL}/verification/request/`, {
     method: 'POST',
     headers: { 'accept': 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: email }),
   })
   const data = await res.json()
-  if (!res.ok) throw buildError(data, 'Verification request failed.')
-  return { ok: true, message: data.message, verificationUrl: data.verification_url, qrCode: data.qr_code }
+  if (!res.ok) throw buildAndCheckError(data, 'Verification request failed.')
+  return {
+    ok: true,
+    message:         data.message,
+    verificationUrl: data.verification_url,
+    qrCode:          data.qr_code,
+  }
 }
 
 // ── Verify account ────────────────────────────────────────────────────────────
 export async function verifyAccount(verificationUrl) {
   const res  = await fetch(verificationUrl, {
-    method: 'GET', headers: { 'accept': 'application/json' },
+    method: 'GET',
+    headers: { 'accept': 'application/json' },
   })
   const data = await res.json()
-  if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Verification failed.')
+  if (!res.ok || data.statusCode !== 200) throw buildAndCheckError(data, 'Verification failed.')
   if (data.token) saveToken(data.token)
   return { ok: true, message: data.message, token: data.token }
 }
@@ -123,7 +164,7 @@ export async function activateAccount(token) {
     headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
   })
   const data = await res.json()
-  if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Activation failed.')
+  if (!res.ok || data.statusCode !== 200) throw buildAndCheckError(data, 'Activation failed.')
   return { ok: true, message: data.message, userId: data.user_id }
 }
 
@@ -134,7 +175,7 @@ export async function getUserProfile(token) {
     headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
   })
   const data = await res.json()
-  if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Failed to load profile.')
+  if (!res.ok || data.statusCode !== 200) throw buildAndCheckError(data, 'Failed to load profile.')
   if (data.token) saveToken(data.token)
   return { ok: true, user: data.data, token: data.token }
 }
@@ -150,7 +191,7 @@ export async function updateUsername(token, username) {
     body: JSON.stringify({ username }),
   })
   const data = await res.json()
-  if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Failed to update username.')
+  if (!res.ok || data.statusCode !== 200) throw buildAndCheckError(data, 'Failed to update username.')
   if (data.token) saveToken(data.token)
   return { ok: true, username: data.username, token: data.token }
 }
@@ -165,7 +206,23 @@ export async function updateProfilePhoto(token, file) {
     body: form,
   })
   const data = await res.json()
-  if (!res.ok || data.statusCode !== 200) throw buildError(data, 'Failed to update photo.')
+  if (!res.ok || data.statusCode !== 200) throw buildAndCheckError(data, 'Failed to update photo.')
   if (data.token) saveToken(data.token)
   return { ok: true, photoUrl: data.profile_photo, token: data.token }
+}
+
+// ── Forgot password ───────────────────────────────────────────────────────────
+export async function forgotPassword(verificationToken, newPassword) {
+  const res  = await fetch(`${USER_URL}/forgot/password/`, {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json', 'Content-Type': 'application/json',
+      'Authorization': `Bearer ${verificationToken}`,
+    },
+    body: JSON.stringify({ new_password: newPassword }),
+  })
+  const data = await res.json()
+  if (!res.ok || data.statusCode !== 200) throw buildAndCheckError(data, 'Failed to update password.')
+  if (data.token) saveToken(data.token)
+  return { ok: true, message: data.message, userId: data.user_id, token: data.token }
 }

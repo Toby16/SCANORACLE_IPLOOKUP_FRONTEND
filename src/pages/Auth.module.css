@@ -413,3 +413,16 @@
   .tabs { margin: 0 -18px; padding: 0 18px; }
   .cardFooter { margin: 0 -18px; padding-left: 18px; padding-right: 18px; }
 }
+
+.socialBtnDisabled {
+  opacity: 0.38;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.socialInert {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  user-select: none;
+}

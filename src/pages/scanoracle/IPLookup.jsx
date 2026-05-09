@@ -7,11 +7,13 @@ import GhostLogo from '../../components/GhostLogo.jsx'
 import { clearToken } from '../../services/authService.js'
 import { useTokenRefresh } from '../../hooks/useTokenRefresh.js'
 import styles from './IPLookup.module.css'
+import { useAuthGuard } from '../../hooks/useAuthGuard.js'
 
 function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
 
 export default function IPLookup() {
   usePageTitle('SCANORACLE — IP Lookup | Ghostroute')
+  useAuthGuard()
   useTokenRefresh()
 
   const navigate = useNavigate()

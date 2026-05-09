@@ -4,14 +4,12 @@ import {
   getUserProfile, updateUsername, updateProfilePhoto,
   getToken, clearToken,
 } from '../services/authService.js'
+import { useAuthGuard } from '../hooks/useAuthGuard.js'
 import { useTokenRefresh } from '../hooks/useTokenRefresh.js'
 import GhostLogo from '../components/GhostLogo.jsx'
 import styles from './Dashboard.module.css'
 
-// ── usePageTitle ──────────────────────────────────────────────────────────────
-function usePageTitle(title) {
-  useEffect(() => { document.title = title }, [title])
-}
+function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 let _tid = 0
@@ -40,106 +38,179 @@ function ToastStack({ toasts, remove }) {
   )
 }
 
-// ── Animated particle background ──────────────────────────────────────────────
+// ── Particle background ───────────────────────────────────────────────────────
 function ParticleBg() {
   const canvasRef = useRef(null)
-
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     let raf
-
-    const resize = () => {
-      canvas.width  = window.innerWidth
-      canvas.height = window.innerHeight
-    }
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
     resize()
     window.addEventListener('resize', resize)
-
-    // Create nodes
     const COUNT = 55
     const nodes = Array.from({ length: COUNT }, () => ({
-      x:   Math.random() * canvas.width,
-      y:   Math.random() * canvas.height,
-      vx:  (Math.random() - 0.5) * 0.35,
-      vy:  (Math.random() - 0.5) * 0.35,
-      r:   Math.random() * 1.5 + 0.5,
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+      r: Math.random() * 1.5 + 0.5,
     }))
-
     const LINK_DIST = 140
-    const NODE_COL  = 'rgba(167,139,250,'   // purple
-    const LINK_COL  = 'rgba(124,58,237,'
-
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      // Move
       nodes.forEach(n => {
         n.x += n.vx; n.y += n.vy
-        if (n.x < 0) n.x = canvas.width
-        if (n.x > canvas.width)  n.x = 0
-        if (n.y < 0) n.y = canvas.height
-        if (n.y > canvas.height) n.y = 0
+        if (n.x < 0) n.x = canvas.width;  if (n.x > canvas.width)  n.x = 0
+        if (n.y < 0) n.y = canvas.height; if (n.y > canvas.height) n.y = 0
       })
-
-      // Links
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const dx   = nodes[i].x - nodes[j].x
-          const dy   = nodes[i].y - nodes[j].y
-          const dist = Math.sqrt(dx * dx + dy * dy)
+          const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y
+          const dist = Math.sqrt(dx*dx + dy*dy)
           if (dist < LINK_DIST) {
-            const alpha = (1 - dist / LINK_DIST) * 0.18
             ctx.beginPath()
-            ctx.strokeStyle = LINK_COL + alpha + ')'
-            ctx.lineWidth   = 0.8
-            ctx.moveTo(nodes[i].x, nodes[i].y)
-            ctx.lineTo(nodes[j].x, nodes[j].y)
+            ctx.strokeStyle = `rgba(124,58,237,${(1 - dist/LINK_DIST) * 0.18})`
+            ctx.lineWidth = 0.8
+            ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y)
             ctx.stroke()
           }
         }
       }
-
-      // Nodes
       nodes.forEach(n => {
-        ctx.beginPath()
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
-        ctx.fillStyle = NODE_COL + '0.45)'
-        ctx.fill()
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
+        ctx.fillStyle = 'rgba(167,139,250,0.45)'; ctx.fill()
       })
-
       raf = requestAnimationFrame(draw)
     }
     draw()
-
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
-    }
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize) }
   }, [])
-
   return <canvas ref={canvasRef} className={styles.particleCanvas} aria-hidden="true" />
 }
 
+// ── Mini apps data ────────────────────────────────────────────────────────────
+const APPS = [
+  {
+    name: 'SCANORACLE — IP Lookup',
+    desc: 'Geolocate any IP address or domain with full intelligence.',
+    color: 'blue', live: true,
+    route: '/scanoracle/iplookup',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0zm7-3.25v1.5H10v1H8.5V10H7V7.25H5.5v-1H7V4.75h1.5z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'SCANORACLE — Email Scanner',
+    desc: 'Validate, score and investigate any email address.',
+    color: 'purple', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M1.75 2A1.75 1.75 0 000 3.75v.736c.043.343.196.672.444.912l5.25 4.675a2.75 2.75 0 003.612 0l5.25-4.675c.248-.24.4-.57.444-.912V3.75A1.75 1.75 0 0013.25 2H1.75zM0 6.954V11.5c0 .966.784 1.75 1.75 1.75h11.5A1.75 1.75 0 0015 11.5V6.954l-4.823 4.29a4.25 4.25 0 01-5.354 0L0 6.954z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'SCANORACLE — Phone Lookup',
+    desc: 'Look up carrier, location and validity of any phone number.',
+    color: 'teal', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M1.062 4.28C1.62 7.86 4.14 10.88 7.563 12.398l.774.372a1.75 1.75 0 002.174-.69l.544-.9a.25.25 0 01.334-.093l2.437 1.37a.25.25 0 01.111.321l-.723 1.712a.25.25 0 01-.2.152C4.46 15.32.336 10.14.012 4.46A.25.25 0 01.26 4.2l1.849-.19a.25.25 0 01.27.204l.246 1.23a.25.25 0 01-.124.27l-.9.543a.25.25 0 00-.093.334l.554.69z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'SCANORACLE — User-Agent Lookup',
+    desc: 'Parse and fingerprint any browser or device user-agent string.',
+    color: 'green', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M10.5 5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm.061 3.073a4 4 0 10-5.123 0 6.004 6.004 0 00-3.431 5.142.75.75 0 001.498.07 4.5 4.5 0 018.99 0 .75.75 0 101.498-.07 6.005 6.005 0 00-3.432-5.142z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'SCANORACLE — MAC Lookup',
+    desc: 'Identify device vendors from any MAC address.',
+    color: 'blue', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M4 2a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V3a1 1 0 00-1-1H4zm2 3h4a.5.5 0 010 1H6a.5.5 0 010-1zm0 2h4a.5.5 0 010 1H6a.5.5 0 010-1zm0 2h2a.5.5 0 010 1H6a.5.5 0 010-1z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Ghostroute VPN',
+    desc: 'Private, fast, encrypted browsing powered by Ghostroute.',
+    color: 'purple', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M8 0a8 8 0 100 16A8 8 0 008 0zM4.5 7.5a.5.5 0 000 1h5.793l-2.147 2.146a.5.5 0 00.708.708l3-3a.5.5 0 000-.708l-3-3a.5.5 0 10-.708.708L10.293 7.5H4.5z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Pixel Pirate',
+    desc: 'Download media from anywhere on the web instantly.',
+    color: 'coral', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M2.75 14A1.75 1.75 0 011 12.25v-2.5a.75.75 0 011.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25v-2.5a.75.75 0 011.5 0v2.5A1.75 1.75 0 0113.25 14H2.75zM7.25 7.689V2a.75.75 0 011.5 0v5.689l1.97-1.97a.75.75 0 111.06 1.06l-3.25 3.25a.75.75 0 01-1.06 0L4.22 6.78a.75.75 0 011.06-1.06l1.97 1.97z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Speed Metrics',
+    desc: 'Real-time internet speed and network quality diagnostics.',
+    color: 'amber', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M8 0a8 8 0 110 16A8 8 0 018 0zm.5 4.75a.75.75 0 00-1.5 0v3.5c0 .414.336.75.75.75h3.25a.75.75 0 000-1.5H8.5v-2.75z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Mechanic Finder',
+    desc: 'Find vetted mechanics near you, instantly.',
+    color: 'teal', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M8.082.8a7.25 7.25 0 015.634 11.849l1.818 1.817a.75.75 0 01-1.06 1.061l-1.817-1.817A7.25 7.25 0 118.082.8zM2.333 8.082a5.75 5.75 0 1011.5 0 5.75 5.75 0 00-11.5 0z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Device & Browser Detect',
+    desc: 'Instantly identify any mobile device or browser from your session.',
+    color: 'green', live: false,
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
+        <path d="M3.75 0A1.75 1.75 0 002 1.75v12.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 14.25V1.75A1.75 1.75 0 0012.25 0h-8.5zM3.5 1.75a.25.25 0 01.25-.25h8.5a.25.25 0 01.25.25v12.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25V1.75zM8 13a1 1 0 100-2 1 1 0 000 2z"/>
+      </svg>
+    ),
+  },
+]
+
 // ── App Card ──────────────────────────────────────────────────────────────────
-function AppCard({ name, desc, color, icon, onClick, disabled, tag }) {
+function AppCard({ app, onClick }) {
   return (
     <div
-      className={`${styles.appCard} ${disabled ? styles.appDisabled : ''}`}
-      onClick={disabled ? undefined : onClick}
-      role={disabled ? undefined : 'button'}
-      tabIndex={disabled ? undefined : 0}
-      onKeyDown={e => !disabled && e.key === 'Enter' && onClick?.()}
+      className={`${styles.appCard} ${!app.live ? styles.appSoon : ''}`}
+      onClick={app.live ? onClick : undefined}
+      role={app.live ? 'button' : undefined}
+      tabIndex={app.live ? 0 : undefined}
+      onKeyDown={e => app.live && e.key === 'Enter' && onClick?.()}
     >
-      <div className={styles.appIconWrap} data-color={color}>{icon}</div>
+      <div className={styles.appIconWrap} data-color={app.color}>{app.icon}</div>
       <div className={styles.appText}>
-        <p className={styles.appName}>{name}</p>
-        <p className={styles.appDesc}>{desc}</p>
+        <p className={styles.appName}>{app.name}</p>
+        <p className={styles.appDesc}>{app.desc}</p>
       </div>
-      {disabled
-        ? <span className={styles.appBadge}>{tag || 'Soon'}</span>
-        : <span className={styles.appArrow}>→</span>
+      {app.live
+        ? <span className={styles.appArrow}>→</span>
+        : <span className={styles.appBadge}>Soon</span>
       }
     </div>
   )
@@ -148,6 +219,7 @@ function AppCard({ name, desc, color, icon, onClick, disabled, tag }) {
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 export default function Dashboard() {
   usePageTitle('Ghostroute — Dashboard')
+  useAuthGuard()
   useTokenRefresh()
 
   const navigate             = useNavigate()
@@ -156,7 +228,6 @@ export default function Dashboard() {
 
   const [user,           setUser]           = useState(null)
   const [loading,        setLoading]        = useState(true)
-  const [error,          setError]          = useState(null)
   const [editingName,    setEditingName]    = useState(false)
   const [newUsername,    setNewUsername]    = useState('')
   const [savingName,     setSavingName]     = useState(false)
@@ -165,11 +236,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     const token = getToken()
-    if (!token) { navigate('/auth', { replace: true }); return }
+    if (!token) return
     getUserProfile(token)
       .then(r  => { setUser(r.user); setLoading(false) })
-      .catch(e => { setError(e.message); setLoading(false) })
-  }, [navigate])
+      .catch(() => setLoading(false))
+  }, [])
 
   const handleSaveUsername = async () => {
     if (!newUsername.trim()) { push('Username cannot be empty.', 'error'); return }
@@ -209,16 +280,7 @@ export default function Dashboard() {
     </div>
   )
 
-  if (error) return (
-    <div className={styles.centerPage}>
-      <div className={styles.errBox}>
-        <p className={styles.errText}>{error}</p>
-        <button className={styles.backBtn} onClick={() => navigate('/auth')}>Back to sign in</button>
-      </div>
-    </div>
-  )
-
-  const photo = photoPreview || user?.photo_url
+  const photo   = photoPreview || user?.photo_url
   const initial = (user?.username ?? '?')[0].toUpperCase()
 
   return (
@@ -226,11 +288,9 @@ export default function Dashboard() {
       <ToastStack toasts={toasts} remove={remove} />
       <ParticleBg />
 
-      {/* ── Top Nav ── */}
+      {/* Nav */}
       <nav className={styles.nav}>
         <GhostLogo size={34} showText showSub={false} />
-
-        {/* Balances — top right of nav */}
         <div className={styles.navBalances}>
           <div className={styles.balance}>
             <span className={styles.balanceCurrency}>₦</span>
@@ -244,16 +304,12 @@ export default function Dashboard() {
             <span className={styles.balanceLbl}>USD</span>
           </div>
         </div>
-
         <button className={styles.logoutBtn} onClick={handleLogout}>Sign out</button>
       </nav>
 
-      {/* ── Main layout ── */}
       <div className={styles.layout}>
-
-        {/* ── Left sidebar ── */}
+        {/* Sidebar */}
         <aside className={styles.sidebar}>
-          {/* Avatar */}
           <div className={styles.avatarSection}>
             <div
               className={styles.avatarRing}
@@ -277,16 +333,13 @@ export default function Dashboard() {
               className={styles.hiddenInput} onChange={handlePhotoChange} />
           </div>
 
-          {/* Username */}
           <div className={styles.sideProfile}>
             {editingName ? (
               <div className={styles.editBlock}>
                 <input
-                  className={styles.editInput}
-                  value={newUsername}
+                  className={styles.editInput} value={newUsername}
                   onChange={e => setNewUsername(e.target.value)}
-                  autoFocus disabled={savingName}
-                  placeholder="new username"
+                  autoFocus disabled={savingName} placeholder="new username"
                   onKeyDown={e => {
                     if (e.key === 'Enter')  handleSaveUsername()
                     if (e.key === 'Escape') setEditingName(false)
@@ -303,8 +356,7 @@ export default function Dashboard() {
               <div className={styles.usernameRow}>
                 <span className={styles.sideUsername}>@{user?.username}</span>
                 <button className={styles.editPencil}
-                  onClick={() => { setNewUsername(user?.username ?? ''); setEditingName(true) }}
-                  title="Edit username">
+                  onClick={() => { setNewUsername(user?.username ?? ''); setEditingName(true) }}>
                   <svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11">
                     <path d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61zm.176 4.823L9.75 4.81l-6.286 6.287a.253.253 0 00-.064.108l-.558 1.953 1.953-.558a.253.253 0 00.108-.064l6.286-6.286zm1.238-3.763a.25.25 0 00-.354 0L10.811 3.65l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086z"/>
                   </svg>
@@ -315,7 +367,6 @@ export default function Dashboard() {
             <span className={styles.activePill}>● Active</span>
           </div>
 
-          {/* Sidebar nav */}
           <nav className={styles.sideNav}>
             <p className={styles.sideNavTitle}>Navigation</p>
             <button className={`${styles.sideNavItem} ${styles.sideNavActive}`}>
@@ -333,60 +384,27 @@ export default function Dashboard() {
           </nav>
         </aside>
 
-        {/* ── Main content ── */}
+        {/* Main */}
         <main className={styles.main}>
-          {/* Welcome strip */}
           <div className={styles.welcomeStrip}>
             <div>
-              <h1 className={styles.welcomeTitle}>Welcome back{user?.username ? `, ${user.username.split(/\d/)[0]}` : ''}.</h1>
+              <h1 className={styles.welcomeTitle}>
+                Welcome back{user?.username ? `, ${user.username.replace(/\d+$/, '')}` : ''}.
+              </h1>
               <p className={styles.welcomeSub}>Here's what's available in your Ghostroute account.</p>
             </div>
           </div>
 
-          {/* Mini Apps grid */}
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Mini Apps</h2>
             <div className={styles.appsGrid}>
-              <AppCard
-                name="SCANORACLE — IP Lookup"
-                desc="Geolocate any IP address or domain with full intelligence."
-                color="blue"
-                icon={
-                  <svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20">
-                    <path d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0zm7-3.25v1.5H10v1H8.5V10H7V7.25H5.5v-1H7V4.75h1.5z"/>
-                  </svg>
-                }
-                onClick={() => navigate('/scanoracle/iplookup')}
-              />
-              <AppCard name="MAC Lookup" desc="Vendor lookup from MAC address." color="purple" disabled tag="Soon"
-                icon={<svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.75 11.25h-1.5v-4.5h1.5v4.5zm0-6h-1.5v-1.5h1.5v1.5z"/></svg>}
-              />
-              <AppCard name="User-Agent Lookup" desc="Parse and identify any user-agent string." color="green" disabled tag="Soon"
-                icon={<svg viewBox="0 0 16 16" fill="currentColor" width="20" height="20"><path d="M10.5 5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm.061 3.073a4 4 0 10-5.123 0 6.004 6.004 0 00-3.431 5.142.75.75 0 001.498.07 4.5 4.5 0 018.99 0 .75.75 0 101.498-.07 6.005 6.005 0 00-3.432-5.142z"/></svg>}
-              />
-            </div>
-          </section>
-
-          {/* Account info */}
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Account</h2>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoCard}>
-                <p className={styles.infoLabel}>Email</p>
-                <p className={styles.infoVal}>{user?.email}</p>
-              </div>
-              <div className={styles.infoCard}>
-                <p className={styles.infoLabel}>Username</p>
-                <p className={styles.infoVal}>@{user?.username}</p>
-              </div>
-              <div className={styles.infoCard}>
-                <p className={styles.infoLabel}>Account Status</p>
-                <p className={`${styles.infoVal} ${styles.infoActive}`}>● Active &amp; Verified</p>
-              </div>
-              <div className={styles.infoCard}>
-                <p className={styles.infoLabel}>Platform</p>
-                <p className={styles.infoVal}>Ghostroute Security</p>
-              </div>
+              {APPS.map(app => (
+                <AppCard
+                  key={app.name}
+                  app={app}
+                  onClick={app.live ? () => navigate(app.route) : undefined}
+                />
+              ))}
             </div>
           </section>
         </main>
