@@ -195,7 +195,7 @@ export default function Auth() {
           <GhostLogo size={56} showText showSub />
           <p className={styles.brandDesc}>One account. Every app.<br />Secured by Ghostroute.</p>
           <ul className={styles.brandFeatures}>
-            {['📡 Omega Lookup Intelligence', "🏆 Ipinfo's Top-Rated Competitor World-Wide", 'Multi-app Access', 'End-to-end Encryption 🔐', "💳 Get Started From Just ₦120", "Trusted World-Wide ⭐⭐⭐⭐⭐"].map(f => (
+            {['📡 Omega Lookup Intelligence', "🏆 Ipinfo's Top-Rated Competitor World-Wide", 'Multi-app Access 🚀', 'End-to-end Encryption 🔐', "💳 Get Started From Just ₦120", "Trusted World-Wide ⭐⭐⭐⭐⭐"].map(f => (
               <li key={f} className={styles.brandFeature}>
                 <span className={styles.featureDot} />{f}
               </li>
