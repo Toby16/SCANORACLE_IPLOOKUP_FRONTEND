@@ -1,294 +1,164 @@
-import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { requestVerification, verifyAccount, forgotPassword, saveToken } from '../services/authService.js'
-import styles from './ForgotPassword.module.css'
+import { useState, useEffect } from "react";
+import styles from "./ForgotPassword.module.css";
 
-/**
- * ForgotPassword — 3-step modal overlay
- *
- * Step 1 — Enter username or email → request verification
- * Step 2 — Show QR code + "Done" button → hit verification URL to get token
- * Step 3 — Enter new password → POST /user/forgot/password/ with token → redirect to dashboard
- *
- * Props:
- *   onClose — called when the user dismisses the modal
- */
+const SUPPORT_EMAIL = "ghostroute.icu@gmail.com";
+const EMAIL_SUBJECT = "Forgot Password";
+const EMAIL_BODY = `i forgot my password\nnew password: [your new password, or leave blank for a secure one]`;
+
 export default function ForgotPassword({ onClose }) {
-  const navigate = useNavigate()
+  const [copied, setCopied] = useState(null); // "email" | "template" | null
+  const [visible, setVisible] = useState(false);
 
-  const [step,       setStep]       = useState(1)         // 1 | 2 | 3
-  const [identity,   setIdentity]   = useState('')         // email or username
-  const [verifyUrl,  setVerifyUrl]  = useState(null)       // full verification URL
-  const [qrCode,     setQrCode]     = useState(null)       // base64 QR
-  const [resetToken, setResetToken] = useState(null)       // token from verification
-  const [newPass,    setNewPass]    = useState('')
-  const [showPass,   setShowPass]   = useState(false)
-  const [loading,    setLoading]    = useState(false)
-  const [error,      setError]      = useState(null)
-  const [successMsg, setSuccessMsg] = useState(null)
+  // Animate in
+  useEffect(() => {
+    requestAnimationFrame(() => setVisible(true));
+    const handleKey = (e) => e.key === "Escape" && handleClose();
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
-  // ── Step 1: Request verification ──────────────────────────────────────────
-  const handleRequest = useCallback(async () => {
-    if (!identity.trim()) { setError('Please enter your username or email address.'); return }
-    setError(null); setLoading(true)
-    try {
-      const result = await requestVerification({ email: identity.trim() })
-      setVerifyUrl(result.verificationUrl)
-      setQrCode(result.qrCode)
-      setStep(2)
-    } catch (err) {
-      setError(err.message || 'Could not send verification. Try again.')
-    } finally { setLoading(false) }
-  }, [identity])
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(onClose, 220);
+  };
 
-  // ── Step 2: Verify identity (hit the verification URL) ────────────────────
-  const handleVerify = useCallback(async () => {
-    if (!verifyUrl) return
-    setError(null); setLoading(true)
-    try {
-      const result = await verifyAccount(verifyUrl)
-      // Save the verification token temporarily — we don't use it as a session yet
-      setResetToken(result.token)
-      setStep(3)
-    } catch (err) {
-      setError(err.message || 'Verification failed. Please try again.')
-    } finally { setLoading(false) }
-  }, [verifyUrl])
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) handleClose();
+  };
 
-  // ── Step 3: Set new password ──────────────────────────────────────────────
-  const handleReset = useCallback(async () => {
-    if (!newPass.trim())        { setError('Please enter a new password.'); return }
-    if (newPass.trim().length < 8) { setError('Password must be at least 8 characters.'); return }
-    if (!resetToken)            { setError('Verification token missing. Please start over.'); return }
+  const copyToClipboard = (text, key) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(key);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  };
 
-    setError(null); setLoading(true)
-    try {
-      const result = await forgotPassword(resetToken, newPass.trim())
-      // Backend returns a login token — user is now authenticated
-      if (result.token) saveToken(result.token)
-      setSuccessMsg(result.message || 'Password updated successfully!')
-      setTimeout(() => {
-        onClose?.()
-        navigate('/', { replace: true })
-      }, 1400)
-    } catch (err) {
-      setError(err.message || 'Failed to update password. Please try again.')
-    } finally { setLoading(false) }
-  }, [newPass, resetToken, navigate, onClose])
-
-  // ── Step indicator ────────────────────────────────────────────────────────
-  const stepLabels = ['Identify', 'Verify', 'Reset']
+  const mailtoHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(EMAIL_SUBJECT)}&body=${encodeURIComponent(EMAIL_BODY)}`;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className={styles.backdrop} onClick={onClose} aria-hidden="true" />
-
-      {/* Modal */}
-      <div className={styles.modal} role="dialog" aria-modal="true" aria-label="Forgot password">
+    <div
+      className={`${styles.backdrop} ${visible ? styles.backdropVisible : ""}`}
+      onClick={handleBackdropClick}
+    >
+      <div className={`${styles.modal} ${visible ? styles.modalVisible : ""}`}>
         {/* Header */}
         <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <h2 className={styles.title}>Reset Password</h2>
-            <p className={styles.subtitle}>
-              {step === 1 && 'Enter your username or email to begin.'}
-              {step === 2 && 'Scan the QR code or open the link to verify your identity.'}
-              {step === 3 && 'Choose a new password for your account.'}
-            </p>
+          <div className={styles.iconWrap}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
           </div>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">×</button>
+          <div>
+            <h2 className={styles.title}>Forgot Password?</h2>
+            <p className={styles.subtitle}>Contact our support team to reset your password</p>
+          </div>
+          <button className={styles.closeBtn} onClick={handleClose} aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        {/* Step indicator */}
-        <div className={styles.steps}>
-          {stepLabels.map((label, i) => (
-            <div key={label} className={styles.stepItem}>
-              <div className={`${styles.stepDot}
-                ${i + 1 < step  ? styles.stepDone   : ''}
-                ${i + 1 === step ? styles.stepActive : ''}
-              `}>
-                {i + 1 < step ? '✓' : i + 1}
-              </div>
-              <span className={`${styles.stepLabel} ${i + 1 === step ? styles.stepLabelActive : ''}`}>
-                {label}
-              </span>
-              {i < stepLabels.length - 1 && (
-                <div className={`${styles.stepLine} ${i + 1 < step ? styles.stepLineDone : ''}`} />
-              )}
-            </div>
-          ))}
-        </div>
+        {/* Divider */}
+        <div className={styles.divider} />
 
-        {/* Body */}
+        {/* Instructions */}
         <div className={styles.body}>
+          <p className={styles.intro}>
+            Send an email to our support team using the template below. We'll handle the rest.
+          </p>
 
-          {/* Error / success banners */}
-          {error && (
-            <div className={styles.banner} data-type="error" role="alert">
-              <span>✕</span> {error}
-            </div>
-          )}
-          {successMsg && (
-            <div className={styles.banner} data-type="success" role="status">
-              <span>✓</span> {successMsg}
-            </div>
-          )}
-
-          {/* ── Step 1 ── */}
-          {step === 1 && (
-            <div className={styles.stepBody}>
-              <div className={styles.field}>
-                <label htmlFor="fp-identity" className={styles.fieldLabel}>
-                  Username or email address
-                </label>
-                <input
-                  id="fp-identity"
-                  type="text"
-                  className={styles.input}
-                  value={identity}
-                  onChange={e => setIdentity(e.target.value)}
-                  placeholder="ghostroute.security@gmail.com"
-                  autoComplete="username"
-                  disabled={loading}
-                  spellCheck={false}
-                  onKeyDown={e => e.key === 'Enter' && handleRequest()}
-                />
-              </div>
-
+          {/* Email address row */}
+          <div className={styles.fieldGroup}>
+            <span className={styles.fieldLabel}>Send to</span>
+            <div className={styles.copyRow}>
+              <span className={styles.fieldValue}>{SUPPORT_EMAIL}</span>
               <button
-                type="button"
-                className={styles.primaryBtn}
-                disabled={loading}
-                onClick={handleRequest}
+                className={styles.copyBtn}
+                onClick={() => copyToClipboard(SUPPORT_EMAIL, "email")}
               >
-                {loading
-                  ? <><span className={styles.btnSpinner} /> Sending…</>
-                  : 'Proceed →'
-                }
+                {copied === "email" ? (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    Copy
+                  </>
+                )}
               </button>
             </div>
-          )}
+          </div>
 
-          {/* ── Step 2 ── */}
-          {step === 2 && (
-            <div className={styles.stepBody}>
-              <p className={styles.hint}>
-                Scan this QR code on any device, or open the verification link below.
-                Once you've verified your identity, click <strong>Done</strong>.
-              </p>
+          {/* Subject row */}
+          <div className={styles.fieldGroup}>
+            <span className={styles.fieldLabel}>Subject</span>
+            <div className={styles.copyRow}>
+              <span className={styles.fieldValue}>{EMAIL_SUBJECT}</span>
+            </div>
+          </div>
 
-              {qrCode && (
-                <div className={styles.qrSection}>
-                  <div className={styles.qrFrame}>
-                    <img src={qrCode} alt="Verification QR code" className={styles.qrImg} />
-                  </div>
-                  <p className={styles.qrCaption}>Scan to verify on another device</p>
-                </div>
-              )}
-
-              {verifyUrl && (
-                <a
-                  href={verifyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.linkBtn}
-                >
-                  <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12">
-                    <path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"/>
-                  </svg>
-                  Open verification link
-                </a>
-              )}
-
+          {/* Message template */}
+          <div className={styles.fieldGroup}>
+            <div className={styles.templateHeader}>
+              <span className={styles.fieldLabel}>Message template</span>
               <button
-                type="button"
-                className={styles.primaryBtn}
-                disabled={loading}
-                onClick={handleVerify}
+                className={styles.copyBtn}
+                onClick={() => copyToClipboard(EMAIL_BODY, "template")}
               >
-                {loading
-                  ? <><span className={styles.btnSpinner} /> Verifying…</>
-                  : 'Done — I\'ve verified my identity'
-                }
-              </button>
-
-              <button type="button" className={styles.ghostBtn} onClick={() => setStep(1)}>
-                ← Back
-              </button>
-            </div>
-          )}
-
-          {/* ── Step 3 ── */}
-          {step === 3 && !successMsg && (
-            <div className={styles.stepBody}>
-              <p className={styles.hint}>
-                Identity confirmed. Choose a strong new password for your account.
-              </p>
-
-              <div className={styles.field}>
-                <label htmlFor="fp-newpass" className={styles.fieldLabel}>
-                  New password
-                </label>
-                <div className={styles.passWrap}>
-                  <input
-                    id="fp-newpass"
-                    type={showPass ? 'text' : 'password'}
-                    className={styles.input}
-                    value={newPass}
-                    onChange={e => setNewPass(e.target.value)}
-                    placeholder="Min. 8 characters"
-                    autoComplete="new-password"
-                    disabled={loading}
-                    onKeyDown={e => e.key === 'Enter' && handleReset()}
-                  />
-                  <button
-                    type="button"
-                    className={styles.eyeBtn}
-                    onClick={() => setShowPass(s => !s)}
-                    tabIndex={-1}
-                  >
-                    {showPass ? (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="14" height="14">
-                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
-                        <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
-                        <line x1="1" y1="1" x2="23" y2="23"/>
-                      </svg>
-                    ) : (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="14" height="14">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                      </svg>
-                    )}
-                  </button>
-                </div>
-                <p className={styles.fieldHint}>At least 8 characters.</p>
-              </div>
-
-              <button
-                type="button"
-                className={styles.primaryBtn}
-                disabled={loading}
-                onClick={handleReset}
-              >
-                {loading
-                  ? <><span className={styles.btnSpinner} /> Updating password…</>
-                  : 'Update password'
-                }
+                {copied === "template" ? (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    Copy
+                  </>
+                )}
               </button>
             </div>
-          )}
-
-          {/* ── Success (step 3 done) ── */}
-          {successMsg && (
-            <div className={styles.successState}>
-              <div className={styles.successIcon}>✓</div>
-              <p className={styles.successTitle}>Password updated!</p>
-              <p className={styles.successSub}>Signing you in to your dashboard…</p>
-              <div className={styles.spinner} />
+            <div className={styles.template}>
+              <p>i forgot my password</p>
+              <p>new password: <span className={styles.placeholder}>[your new password, or leave blank]</span></p>
             </div>
-          )}
+          </div>
+
+          {/* Info callouts */}
+          <div className={styles.callouts}>
+            <div className={styles.callout}>
+              <span className={styles.calloutIcon}>📭</span>
+              <p><strong>Left blank?</strong> We'll generate a highly secure password and send it to your registered email.</p>
+            </div>
+            <div className={styles.callout}>
+              <span className={styles.calloutIcon}>✅</span>
+              <p><strong>New password provided?</strong> We'll confirm once your password has been updated.</p>
+            </div>
+          </div>
+
+          {/* Important note */}
+          <p className={styles.note}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Send from the email address associated with your Ghostroute account.
+          </p>
+        </div>
+
+        {/* Footer CTA */}
+        <div className={styles.footer}>
+          <button className={styles.cancelBtn} onClick={handleClose}>Cancel</button>
+          <a className={styles.mailtoBtn} href={mailtoHref}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+            Open Email Client
+          </a>
         </div>
       </div>
-    </>
-  )
+    </div>
+  );
 }
