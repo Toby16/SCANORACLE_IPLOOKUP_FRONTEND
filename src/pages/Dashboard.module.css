@@ -364,3 +364,72 @@
 }
 .depositBtn:hover  { opacity: 0.88; transform: translateY(-1px); }
 .depositBtn:active { transform: translateY(0); }
+
+
+/* ── Donate banner (append to Dashboard.module.css) ─────── */
+.donateBanner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, #12082a 0%, #0e0e1a 55%, #130a24 100%);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.donateBannerGlow {
+  position: absolute;
+  top: -30px; right: 60px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.donateBannerLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+.donateBannerIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.donateBannerTitle {
+  margin: 0 0 4px;
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: #ddd0ff;
+  letter-spacing: -0.01em;
+}
+.donateBannerSub {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #5a4a78;
+  line-height: 1.55;
+}
+.donateBannerBtn {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #6d28d9, #9333ea);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.38);
+  transition: opacity 0.15s, transform 0.12s;
+}
+.donateBannerBtn:hover  { opacity: 0.88; transform: translateY(-1px); }
+.donateBannerBtn:active { transform: translateY(0); }
+
+@media (max-width: 600px) {
+  .donateBanner { flex-direction: column; align-items: flex-start; }
+  .donateBannerBtn { width: 100%; text-align: center; }
+}

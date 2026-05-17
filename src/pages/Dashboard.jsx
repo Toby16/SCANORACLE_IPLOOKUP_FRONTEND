@@ -8,6 +8,7 @@ import { useAuthGuard } from '../hooks/useAuthGuard.js'
 import { useTokenRefresh } from '../hooks/useTokenRefresh.js'
 import GhostLogo from '../components/GhostLogo.jsx'
 import DepositModal from './DepositModal.jsx'          // ← ADD 1
+import DonateModal  from './DonateModal.jsx'
 import styles from './Dashboard.module.css'
 
 function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
@@ -235,6 +236,7 @@ export default function Dashboard() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [photoPreview,   setPhotoPreview]   = useState(null)
   const [showDeposit,    setShowDeposit]    = useState(false)  // ← ADD 2
+  const [showDonate,     setShowDonate]     = useState(false)
 
   useEffect(() => {
     const token = getToken()
@@ -296,13 +298,14 @@ export default function Dashboard() {
       <ToastStack toasts={toasts} remove={remove} />
       <ParticleBg />
 
-      {/* ← ADD 4: render modal */}
+      {/* ← ADD 4: render modals */}
       {showDeposit && (
         <DepositModal
           onClose={() => setShowDeposit(false)}
           onBalanceUpdate={handleBalanceUpdate}
         />
       )}
+      {showDonate && <DonateModal onClose={() => setShowDonate(false)} />}
 
       {/* Nav */}
       <nav className={styles.nav}>
@@ -418,7 +421,23 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <section className={styles.section}>
+          <div className={styles.donateBanner}>
+            <div className={styles.donateBannerGlow} aria-hidden="true" />
+            <div className={styles.donateBannerLeft}>
+              <span className={styles.donateBannerIcon}>💜</span>
+              <div>
+                <p className={styles.donateBannerTitle}>Building a better Nigeria, one tool at a time.</p>
+                <p className={styles.donateBannerSub}>
+                  Support orphaned children in Lagos &amp; help us bring world-class security tools to everyone — for free.
+                </p>
+              </div>
+            </div>
+            <button className={styles.donateBannerBtn} onClick={() => setShowDonate(true)}>
+              Make an Impact →
+            </button>
+          </div>
+
+                    <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Mini Apps</h2>
             <div className={styles.appsGrid}>
               {APPS.map(app => (

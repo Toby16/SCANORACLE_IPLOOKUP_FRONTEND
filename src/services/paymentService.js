@@ -33,8 +33,17 @@ export async function depositStart(payment_id, redirectUrl) {
   return json.data
 }
 
-/** Step 3 — verify payment, returns { message, naira_balance, dollar_balance } on success */
+/** Step 3 — verify deposit, returns { message, naira_balance, dollar_balance } on success */
 export async function depositVerify(payment_id, paystack_reference) {
   const json = await request(`${BASE}/verify`, { payment_id, paystack_reference })
+  return json.data
+}
+
+/** Step 3 (donations) — verify donation, returns { message, naira_amount, dollar_amount } */
+export async function donationsVerify(payment_id, paystack_reference) {
+  const json = await request(
+    'https://security.appcardy.com/api/v1.0/payment/payment/donations/verify',
+    { payment_id, paystack_reference }
+  )
   return json.data
 }
