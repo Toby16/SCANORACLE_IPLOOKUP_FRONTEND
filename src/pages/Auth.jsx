@@ -1,3 +1,4 @@
+// src/pages/Auth.jsx
 import { useState, useCallback, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { signupUser, loginUser, storeTempCredentials, saveToken } from '../services/authService.js'
@@ -155,6 +156,7 @@ export default function Auth() {
     } finally { setLoading(false); setAction(null) }
   }
 
+  // ── Signup — stores userId (generated username) for verification step ──────
   const handleSignup = async () => {
     if (!email.trim()) { push('Please enter your email address.', 'error'); return }
     if (!isEmail(email)) {
@@ -170,9 +172,15 @@ export default function Auth() {
         pushDouble(result.error, result.message, 'info')
         setTimeout(() => setTab('login'), 800)
       } else {
-        storeTempCredentials(email.trim(), password)
+        // Store email + password + generated username (user_id) for the verify page
+        storeTempCredentials(email.trim(), password, result.userId)
         push(result.message || 'Account created! Proceeding to verification…', 'success')
-        setTimeout(() => navigate('/verify', { state: { email: email.trim() } }), 1100)
+        setTimeout(() => navigate('/verify', {
+          state: {
+            email:    email.trim(),
+            username: result.userId,   // e.g. "sarahgreenwood0172817"
+          },
+        }), 1100)
       }
     } catch (err) {
       pushDouble(err.errorField, err.messageField || err.message, 'error')
@@ -230,7 +238,6 @@ export default function Auth() {
 
           {/* Social buttons */}
           <div className={styles.socialRow}>
-            {/* Google — live SSO */}
             <button
               type="button"
               className={`${styles.socialBtn} ${styles.socialGoogle} ${ssoLoading ? styles.socialLoading : ''}`}
@@ -242,7 +249,6 @@ export default function Auth() {
               <span>{ssoLoading ? 'Opening…' : 'Google'}</span>
             </button>
 
-            {/* Facebook — coming soon, permanently inert */}
             <div
               className={`${styles.socialBtn} ${styles.socialInert}`}
               aria-disabled="true"
@@ -251,7 +257,6 @@ export default function Auth() {
               <IconFacebook /> <span>Facebook</span>
             </div>
 
-            {/* Twitter — coming soon, permanently inert */}
             <div
               className={`${styles.socialBtn} ${styles.socialInert}`}
               aria-disabled="true"
@@ -269,7 +274,6 @@ export default function Auth() {
 
           <div className={styles.divider}><span>or continue with email</span></div>
 
-          {/* Fields */}
           <div className={styles.fields}>
             {tab === 'login' ? (
               <>

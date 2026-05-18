@@ -1,3 +1,4 @@
+// src/services/authService.js
 // ── Ghostroute Auth + User Service ───────────────────────────────────────────
 const BASE_URL  = 'https://security.appcardy.com/api/v1.0/auth'
 const USER_URL  = 'https://security.appcardy.com/api/v1.0/user'
@@ -10,8 +11,10 @@ export const clearToken      = ()  => localStorage.removeItem(TOKEN_KEY)
 export const isAuthenticated = ()  => Boolean(getToken())
 
 // ── Temp credentials ──────────────────────────────────────────────────────────
-export const storeTempCredentials = (email, password) =>
-  sessionStorage.setItem('gr_tmp', JSON.stringify({ email, password }))
+// username = user_id returned by /signup (e.g. "sarahgreenwood0172817")
+export const storeTempCredentials = (email, password, username = null) =>
+  sessionStorage.setItem('gr_tmp', JSON.stringify({ email, password, username }))
+
 export function getTempCredentials() {
   try { return JSON.parse(sessionStorage.getItem('gr_tmp')) ?? null }
   catch { return null }
@@ -66,8 +69,9 @@ export function signalTokenExpired() {
 }
 
 // ── Sign up ───────────────────────────────────────────────────────────────────
+// Success: { statusCode: 201, message, user_id, token }
 export async function signupUser({ email, password }) {
-  const res    = await fetch(`${BASE_URL}/signup/`, {
+  const res = await fetch(`${BASE_URL}/signup/`, {
     method: 'POST',
     headers: { 'accept': 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, username: null, password }),
@@ -78,7 +82,14 @@ export async function signupUser({ email, password }) {
   const message     = typeof detail === 'object' ? detail.message : null
   const alreadyExists = error === 'Kindly login!'
   if (!res.ok && !alreadyExists) throw buildAndCheckError(data, 'Signup failed.')
-  return { ok: true, alreadyExists, error, message }
+  return {
+    ok:           true,
+    alreadyExists,
+    error,
+    message:      data.message || message,
+    userId:       data.user_id  ?? null,   // generated username, e.g. "sarahgreenwood0172817"
+    token:        data.token    ?? null,
+  }
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────────
@@ -95,7 +106,7 @@ export async function loginUser({ email, password }) {
   return { ok: true, token, data }
 }
 
-// ── Google SSO — opens popup to live backend ──────────────────────────────────
+// ── Google SSO ────────────────────────────────────────────────────────────────
 export function initiateGoogleSSO() {
   window.location.href = 'https://security.appcardy.com/api/v1.0/auth/google/'
 }
@@ -115,23 +126,24 @@ export async function refreshToken() {
 }
 
 // ── Request verification ──────────────────────────────────────────────────────
-export async function requestVerification({ email }) {
+// Pass username = user_id from signup OR the email address (API accepts both)
+export async function requestVerification({ username }) {
   const res  = await fetch(`${BASE_URL}/verification/request/`, {
     method: 'POST',
     headers: { 'accept': 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: email }),
+    body: JSON.stringify({ username }),
   })
   const data = await res.json()
   if (!res.ok) throw buildAndCheckError(data, 'Verification request failed.')
   return {
-    ok: true,
+    ok:              true,
     message:         data.message,
     verificationUrl: data.verification_url,
     qrCode:          data.qr_code,
   }
 }
 
-// ── Verify account ────────────────────────────────────────────────────────────
+// ── Verify account (GET the verification_url) ─────────────────────────────────
 export async function verifyAccount(verificationUrl) {
   const res  = await fetch(verificationUrl, {
     method: 'GET',
@@ -213,9 +225,7 @@ export async function forgotPassword(verificationToken, newPassword) {
   return { ok: true, message: data.message, userId: data.user_id, token: data.token }
 }
 
-
-// ── Append these two functions to your existing authService.js ───────────────
-
+// ── Change password ───────────────────────────────────────────────────────────
 export async function changePassword(token, current_password, new_password) {
   const res = await fetch('https://security.appcardy.com/api/v1.0/user/change/password', {
     method: 'POST',
@@ -230,9 +240,10 @@ export async function changePassword(token, current_password, new_password) {
   if (!res.ok || (json.statusCode && json.statusCode !== 200)) {
     throw new Error(json?.detail?.message || json?.message || 'Failed to change password.')
   }
-  return json // contains { token } — caller saves it
+  return json
 }
 
+// ── Delete account ────────────────────────────────────────────────────────────
 export async function deleteAccount(token) {
   const res = await fetch('https://security.appcardy.com/api/v1.0/user/delete/profile/', {
     method: 'DELETE',

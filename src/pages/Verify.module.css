@@ -1,3 +1,4 @@
+/* src/pages/Verify.module.css */
 /* ── Verify Page ─────────────────────────────────────────────────────────── */
 .page {
   min-height: 100vh;
@@ -24,21 +25,6 @@
   from { opacity:0; transform:translateY(16px); }
   to   { opacity:1; transform:translateY(0);    }
 }
-
-/* ── Logo ── */
-.logo {
-  display: flex; align-items: center; gap: 12px;
-}
-.logoSvg   { width: 42px; height: 42px; }
-.logoWords { display: flex; flex-direction: column; gap: 2px; }
-.logoName  { font-size: 17px; font-weight: 700; color: #e6edf3; letter-spacing:0.02em; }
-.logoAccent { color: #a78bfa; }
-.logoSub   { font-size: 9px; color: #484f58; letter-spacing:0.2em; text-transform:uppercase; }
-
-.ringA { animation: rotA 14s linear infinite; transform-origin: 28px 28px; }
-.ringB { animation: rotB 9s linear infinite reverse; transform-origin: 28px 28px; }
-@keyframes rotA { to { transform: rotate(360deg);  } }
-@keyframes rotB { to { transform: rotate(-360deg); } }
 
 /* ── Steps ── */
 .steps {
@@ -177,7 +163,38 @@
   font-size: 11px; color: #484f58; text-align: center;
 }
 
-/* Progress box (during multi-step) */
+/* ── Verify me button ── */
+.verifyMeBtn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(124,58,237,0.35);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 600; color: #a78bfa;
+  font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 42px;
+  transition: background 150ms, border-color 150ms, color 150ms, box-shadow 150ms;
+  letter-spacing: 0.02em;
+}
+.verifyMeBtn:hover:not(:disabled) {
+  background: rgba(124,58,237,0.08);
+  border-color: rgba(124,58,237,0.6);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+.verifyMeBtn:active:not(:disabled) { transform: scale(0.985); }
+.verifyMeBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Verified state — green */
+.verifyMeBtnDone {
+  background: rgba(35,134,54,0.08) !important;
+  border-color: rgba(35,134,54,0.4) !important;
+  color: #3fb950 !important;
+  cursor: default !important;
+  opacity: 1 !important;
+}
+
+/* Progress box (during Done multi-step) */
 .progressBox {
   display: flex; align-items: center; gap: 10px;
   background: rgba(124,58,237,0.06);
