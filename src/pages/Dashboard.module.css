@@ -366,9 +366,21 @@
 @media (max-width: 768px) {
 
   /* Nav: hide balances, keep logo + sign out tight */
-  .nav { padding: 10px 16px; gap: 12px; }
-  .navBalances { display: none; }
-  .logoutBtn { margin-left: auto; }
+  /* Nav: show balances on mobile in a second row */
+.nav {
+  padding: 10px 16px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.navBalances {
+  display: flex;
+  order: 3;
+  width: 100%;
+  justify-content: space-between;
+  padding: 6px 10px;
+  gap: 8px;
+}
+.logoutBtn { margin-left: auto; }
 
   /* Layout: single column */
   .layout { grid-template-columns: 1fr; }
