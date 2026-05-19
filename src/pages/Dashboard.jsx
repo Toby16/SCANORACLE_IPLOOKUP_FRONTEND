@@ -242,6 +242,8 @@ export default function Dashboard() {
   const [showDeleteAcc, setShowDeleteAcc] = useState(false)
   const [showDeposit, setShowDeposit] = useState(false)
   const [showDonate, setShowDonate] = useState(false)
+  // Mobile profile drawer
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const token = getToken()
@@ -250,6 +252,16 @@ export default function Dashboard() {
       .then(r => { setUser(r.user); setLoading(false) })
       .catch(() => setLoading(false))
   }, [])
+
+  // Close drawer when clicking outside sidebar on mobile
+  useEffect(() => {
+    if (!sidebarOpen) return
+    const handler = (e) => {
+      if (!e.target.closest('[data-sidebar]')) setSidebarOpen(false)
+    }
+    document.addEventListener('click', handler)
+    return () => document.removeEventListener('click', handler)
+  }, [sidebarOpen])
 
   const handleSaveUsername = async () => {
     if (!newUsername.trim()) { push('Username cannot be empty.', 'error'); return }
@@ -351,55 +363,102 @@ export default function Dashboard() {
       </nav>
 
       <div className={styles.layout}>
-        {/* Sidebar without Navigation */}
-        <aside className={styles.sidebar}>
-          <div className={styles.avatarSection}>
-            <div className={styles.avatarRing} onClick={() => photoInputRef.current?.click()} role="button" tabIndex={0}>
-              {uploadingPhoto ? (
-                <div className={styles.avatarSpinner}><div className={styles.spinner} /></div>
-              ) : photo ? (
-                <img src={photo} alt={user?.username} className={styles.avatarImg} />
-              ) : (
-                <div className={styles.avatarFallback}><span>{initial}</span></div>
-              )}
-              <div className={styles.avatarEdit}>
-                <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12">
-                  <path d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61zm.176 4.823L9.75 4.81l-6.286 6.287a.253.253 0 00-.064.108l-.558 1.953 1.953-.558a.253.253 0 00.108-.064l6.286-6.286zm1.238-3.763a.25.25 0 00-.354 0L10.811 3.65l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086z"/>
-                </svg>
-              </div>
-            </div>
-            <input ref={photoInputRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={handlePhotoChange} />
-          </div>
-
-          <div className={styles.sideProfile}>
-            {editingName ? (
-              <div className={styles.editBlock}>
-                <input className={styles.editInput} value={newUsername} onChange={e => setNewUsername(e.target.value)} autoFocus disabled={savingName} placeholder="new username" onKeyDown={e => { if (e.key === 'Enter') handleSaveUsername(); if (e.key === 'Escape') setEditingName(false) }} />
-                <div className={styles.editActions}>
-                  <button className={styles.saveBtn} onClick={handleSaveUsername} disabled={savingName}>{savingName ? <span className={styles.btnSpinner} /> : 'Save'}</button>
-                  <button className={styles.cancelBtn} onClick={() => setEditingName(false)} disabled={savingName}>Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <div className={styles.usernameRow}>
-                <span className={styles.sideUsername}>@{user?.username}</span>
-                <button className={styles.editPencil} onClick={() => { setNewUsername(user?.username ?? ''); setEditingName(true) }}>
-                  <svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11">
+        {/* ── Sidebar ── */}
+        <aside
+          className={styles.sidebar}
+          data-open={sidebarOpen ? 'true' : 'false'}
+          data-sidebar
+        >
+          {/* Always-visible strip: avatar + name + pill + ⋯ */}
+          <div className={styles.sidebarInner}>
+            {/* Avatar */}
+            <div className={styles.avatarSection}>
+              <div
+                className={styles.avatarRing}
+                onClick={() => photoInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+              >
+                {uploadingPhoto ? (
+                  <div className={styles.avatarSpinner}><div className={styles.spinner} /></div>
+                ) : photo ? (
+                  <img src={photo} alt={user?.username} className={styles.avatarImg} />
+                ) : (
+                  <div className={styles.avatarFallback}><span>{initial}</span></div>
+                )}
+                <div className={styles.avatarEdit}>
+                  <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12">
                     <path d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61zm.176 4.823L9.75 4.81l-6.286 6.287a.253.253 0 00-.064.108l-.558 1.953 1.953-.558a.253.253 0 00.108-.064l6.286-6.286zm1.238-3.763a.25.25 0 00-.354 0L10.811 3.65l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086z"/>
                   </svg>
-                </button>
+                </div>
               </div>
-            )}
-            <p className={styles.sideEmail}>{user?.email}</p>
-            <span className={styles.activePill}>● Active</span>
-            <div className={styles.sideAccountActions}>
-              <button className={styles.sideActionBtn} onClick={() => setShowChangePw(true)}>
-                Change password
-              </button>
-              <button className={`${styles.sideActionBtn} ${styles.sideActionDanger}`} onClick={() => setShowDeleteAcc(true)}>
-                Delete account
-              </button>
+              <input ref={photoInputRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={handlePhotoChange} />
             </div>
+
+            {/* Profile text */}
+            <div className={styles.sideProfile}>
+              {editingName ? (
+                <div className={styles.editBlock}>
+                  <input
+                    className={styles.editInput}
+                    value={newUsername}
+                    onChange={e => setNewUsername(e.target.value)}
+                    autoFocus disabled={savingName}
+                    placeholder="new username"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleSaveUsername()
+                      if (e.key === 'Escape') setEditingName(false)
+                    }}
+                  />
+                  <div className={styles.editActions}>
+                    <button className={styles.saveBtn} onClick={handleSaveUsername} disabled={savingName}>
+                      {savingName ? <span className={styles.btnSpinner} /> : 'Save'}
+                    </button>
+                    <button className={styles.cancelBtn} onClick={() => setEditingName(false)} disabled={savingName}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.usernameRow}>
+                  <span className={styles.sideUsername}>@{user?.username}</span>
+                  <button
+                    className={styles.editPencil}
+                    onClick={() => { setNewUsername(user?.username ?? ''); setEditingName(true) }}
+                  >
+                    <svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11">
+                      <path d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61zm.176 4.823L9.75 4.81l-6.286 6.287a.253.253 0 00-.064.108l-.558 1.953 1.953-.558a.253.253 0 00.108-.064l6.286-6.286zm1.238-3.763a.25.25 0 00-.354 0L10.811 3.65l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086z"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
+              <p className={styles.sideEmail}>{user?.email}</p>
+              <span className={styles.activePill}>● Active</span>
+            </div>
+
+            {/* Mobile-only ⋯ toggle */}
+            <button
+              className={styles.mobileProfileMenu}
+              onClick={(e) => { e.stopPropagation(); setSidebarOpen(o => !o) }}
+              aria-label="Profile actions"
+              aria-expanded={sidebarOpen}
+            >
+              {sidebarOpen ? '✕' : '⋯'}
+            </button>
+          </div>
+
+          {/* Account action buttons — slide down on mobile, always visible on desktop */}
+          <div className={styles.sideAccountActions}>
+            <button
+              className={styles.sideActionBtn}
+              onClick={() => { setShowChangePw(true); setSidebarOpen(false) }}
+            >
+              Change password
+            </button>
+            <button
+              className={`${styles.sideActionBtn} ${styles.sideActionDanger}`}
+              onClick={() => { setShowDeleteAcc(true); setSidebarOpen(false) }}
+            >
+              Delete account
+            </button>
           </div>
         </aside>
 
