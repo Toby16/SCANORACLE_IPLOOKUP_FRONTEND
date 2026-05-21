@@ -1,194 +1,724 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import IPLookupForm from '../../components/IPLookupForm.jsx'
-import IPResultCard from '../../components/IPResultCard.jsx'
-import { lookupIP } from '../../services/ipService.js'
 import { clearToken, getToken } from '../../services/authService.js'
 import { getUserProfile } from '../../services/authService.js'
 import { useTokenRefresh } from '../../hooks/useTokenRefresh.js'
-import styles from './IPLookup.module.css'
 import { useAuthGuard } from '../../hooks/useAuthGuard.js'
+import styles from './IPLookup.module.css'
 
 function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
 
-// ── SCANORACLE SVG Logo ──────────────────────────────────────────────────────
-function ScanOracleLogo({ size = 40 }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Ghost IP Logo — ghost holding a magnifying glass over a globe/network node
+// ─────────────────────────────────────────────────────────────────────────────
+function GhostIPLogo({ size = 64, animated = true }) {
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
+      width={size} height={size}
+      viewBox="0 0 80 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={styles.logoSvg}
+      className={animated ? styles.logoAnimated : ''}
       aria-hidden="true"
     >
-      {/* Outer ring */}
-      <circle cx="24" cy="24" r="22" stroke="#0069ff" strokeWidth="1.5" opacity="0.4" />
-      {/* Inner ring */}
-      <circle cx="24" cy="24" r="15" stroke="#0069ff" strokeWidth="1" opacity="0.6" />
-      {/* Core dot */}
-      <circle cx="24" cy="24" r="4" fill="#0069ff" />
-      {/* Scan lines — cross-hair */}
-      <line x1="24" y1="2" x2="24" y2="10" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="24" y1="38" x2="24" y2="46" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="2" y1="24" x2="10" y2="24" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="38" y1="24" x2="46" y2="24" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" />
-      {/* Corner brackets */}
-      <path d="M6 14 L6 6 L14 6" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-      <path d="M42 14 L42 6 L34 6" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-      <path d="M6 34 L6 42 L14 42" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-      <path d="M42 34 L42 42 L34 42" stroke="#0069ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-      {/* Orbit arc */}
+      <defs>
+        <radialGradient id="ghostBody" cx="50%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.85" />
+        </radialGradient>
+        <radialGradient id="ghostGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="globeGrad" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#0284c7" stopOpacity="0.8" />
+        </radialGradient>
+        <filter id="ghostShadow">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#7c3aed" floodOpacity="0.45" />
+        </filter>
+        <filter id="magnifyGlow">
+          <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor="#38bdf8" floodOpacity="0.6" />
+        </filter>
+        <clipPath id="globeClip">
+          <circle cx="54" cy="50" r="10" />
+        </clipPath>
+      </defs>
+
+      {/* Ambient glow behind ghost */}
+      <ellipse cx="32" cy="44" rx="22" ry="18" fill="url(#ghostGlow)" className={styles.logoGlow} />
+
+      {/* Ghost body */}
+      <g filter="url(#ghostShadow)" className={styles.ghostBody}>
+        {/* Main ghost shape */}
+        <path
+          d="M14 42 C14 26 22 14 32 14 C42 14 50 26 50 42 L50 58 C50 58 46 54 42 58 C38 62 36 58 32 58 C28 58 26 62 22 58 C18 54 14 58 14 58 Z"
+          fill="url(#ghostBody)"
+        />
+        {/* Ghost eyes */}
+        <ellipse cx="26" cy="38" rx="3.5" ry="4" fill="#0a0e1a" opacity="0.85" />
+        <ellipse cx="38" cy="38" rx="3.5" ry="4" fill="#0a0e1a" opacity="0.85" />
+        {/* Eye shine */}
+        <circle cx="27.2" cy="36.5" r="1.1" fill="white" opacity="0.7" />
+        <circle cx="39.2" cy="36.5" r="1.1" fill="white" opacity="0.7" />
+      </g>
+
+      {/* Ghost right arm extended toward magnifier */}
       <path
-        d="M 8 24 A 16 16 0 0 1 24 8"
-        stroke="#0069ff"
-        strokeWidth="1"
+        d="M48 40 Q54 36 56 38"
+        stroke="#a78bfa"
+        strokeWidth="2.5"
         strokeLinecap="round"
-        opacity="0.35"
-        strokeDasharray="3 4"
+        opacity="0.9"
+        className={styles.ghostArm}
       />
-      <path
-        d="M 40 24 A 16 16 0 0 1 24 40"
-        stroke="#0069ff"
-        strokeWidth="1"
-        strokeLinecap="round"
-        opacity="0.35"
-        strokeDasharray="3 4"
-      />
+
+      {/* Globe / network node */}
+      <g filter="url(#magnifyGlow)" className={styles.globeSpin}>
+        <circle cx="54" cy="50" r="10" fill="url(#globeGrad)" opacity="0.9" />
+        {/* Latitude lines */}
+        <ellipse cx="54" cy="50" rx="10" ry="4" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" fill="none" />
+        {/* Longitude arc */}
+        <path d="M54 40 Q58 50 54 60" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" fill="none" />
+        <path d="M54 40 Q50 50 54 60" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" fill="none" />
+        {/* Vertical/horizontal cross */}
+        <line x1="44" y1="50" x2="64" y2="50" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
+        <line x1="54" y1="40" x2="54" y2="60" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
+        {/* Pin / location dot */}
+        <circle cx="57" cy="47" r="1.8" fill="#fbbf24" />
+        <path d="M57 47 L57 43" stroke="#fbbf24" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+      </g>
+
+      {/* Magnifying glass over the globe */}
+      <g filter="url(#magnifyGlow)" className={styles.magnifier}>
+        <circle cx="54" cy="50" r="12" stroke="#38bdf8" strokeWidth="2" fill="none" opacity="0.75" />
+        {/* Handle */}
+        <line x1="63" y1="59" x2="70" y2="67" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" />
+        {/* Shine inside lens */}
+        <path d="M46 44 Q48 42 51 42" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.35" />
+      </g>
+
+      {/* Data packets pinging from globe */}
+      <circle cx="44" cy="50" r="1.2" fill="#38bdf8" className={styles.ping1} />
+      <circle cx="54" cy="40" r="1.2" fill="#a78bfa" className={styles.ping2} />
+      <circle cx="64" cy="50" r="1.2" fill="#38bdf8" className={styles.ping3} />
     </svg>
   )
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Data field metadata — maps each API key to display label + category
+// ─────────────────────────────────────────────────────────────────────────────
+const FIELD_META = {
+  asn:                    { label: 'ASN',                    cat: 'Network',   icon: '⬡' },
+  hostname:               { label: 'Hostname',               cat: 'Network',   icon: '⬡' },
+  city:                   { label: 'City',                   cat: 'Location',  icon: '◎' },
+  region:                 { label: 'Region',                 cat: 'Location',  icon: '◎' },
+  country:                { label: 'Country Code',           cat: 'Location',  icon: '◎' },
+  country_name:           { label: 'Country Name',           cat: 'Location',  icon: '◎' },
+  latitude:               { label: 'Latitude',               cat: 'Location',  icon: '◎' },
+  longitude:              { label: 'Longitude',              cat: 'Location',  icon: '◎' },
+  organization:           { label: 'Organization',           cat: 'Network',   icon: '⬡' },
+  timezone:               { label: 'Timezone',               cat: 'Location',  icon: '◎' },
+  continent:              { label: 'Continent Code',         cat: 'Location',  icon: '◎' },
+  continent_name:         { label: 'Continent Name',         cat: 'Location',  icon: '◎' },
+  ip_version:             { label: 'IP Version',             cat: 'Network',   icon: '⬡' },
+  country_alpha_3:        { label: 'Alpha-3 Code',           cat: 'Country',   icon: '⊞' },
+  postal_code:            { label: 'Postal Code',            cat: 'Location',  icon: '◎' },
+  country_currency_code:  { label: 'Currency Code',          cat: 'Country',   icon: '⊞' },
+  country_currency_symbol:{ label: 'Currency Symbol',        cat: 'Country',   icon: '⊞' },
+  european_union_member:  { label: 'EU Member',              cat: 'Country',   icon: '⊞' },
+  country_current_time:   { label: 'Local Time',             cat: 'Time',      icon: '◷' },
+  country_current_time_24hr:{ label: 'Time (24hr)',          cat: 'Time',      icon: '◷' },
+  country_current_time_12hr:{ label: 'Time (12hr)',          cat: 'Time',      icon: '◷' },
+  country_current_time_iso: { label: 'Time (ISO)',           cat: 'Time',      icon: '◷' },
+  country_flag_icon:      { label: 'Flag Icon URL',          cat: 'Country',   icon: '⊞' },
+  network_status:         { label: 'Network Status',         cat: 'Network',   icon: '⬡' },
+  network_range:          { label: 'Network Range',          cat: 'Network',   icon: '⬡' },
+  network_start_address:  { label: 'Range Start',            cat: 'Network',   icon: '⬡' },
+  network_end_address:    { label: 'Range End',              cat: 'Network',   icon: '⬡' },
+  network_registration:   { label: 'Registered',             cat: 'Network',   icon: '⬡' },
+  network_last_changed:   { label: 'Last Changed',           cat: 'Network',   icon: '⬡' },
+  contact_email:          { label: 'Contact Email',          cat: 'Contact',   icon: '✉' },
+  contact_phone:          { label: 'Contact Phone',          cat: 'Contact',   icon: '✉' },
+  contact_address:        { label: 'Contact Address',        cat: 'Contact',   icon: '✉' },
+  is_tor:                 { label: 'TOR Exit Node',          cat: 'Threat',    icon: '⚑' },
+  is_blacklisted:         { label: 'Blacklisted',            cat: 'Threat',    icon: '⚑' },
+  threat_score:           { label: 'Threat Score',           cat: 'Threat',    icon: '⚑' },
+  language:               { label: 'Language',               cat: 'Country',   icon: '⊞' },
+  mobile_calling_code:    { label: 'Calling Code',           cat: 'Country',   icon: '⊞' },
+  tld:                    { label: 'TLD',                    cat: 'Country',   icon: '⊞' },
+  fifa:                   { label: 'FIFA Code',              cat: 'Country',   icon: '⊞' },
+  population:             { label: 'Population',             cat: 'Country',   icon: '⊞' },
+  maps:                   { label: 'Maps Link',              cat: 'Location',  icon: '◎' },
+}
+
+const CATEGORIES = ['Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
+const CAT_COLORS = {
+  Network:  { bg: 'rgba(56,189,248,0.08)',  border: 'rgba(56,189,248,0.25)',  text: '#38bdf8' },
+  Location: { bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.25)', text: '#a78bfa' },
+  Country:  { bg: 'rgba(251,191,36,0.08)',  border: 'rgba(251,191,36,0.25)',  text: '#fbbf24' },
+  Time:     { bg: 'rgba(52,211,153,0.08)',  border: 'rgba(52,211,153,0.25)',  text: '#34d399' },
+  Contact:  { bg: 'rgba(251,113,133,0.08)', border: 'rgba(251,113,133,0.25)', text: '#fb7185' },
+  Threat:   { bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.25)',   text: '#ef4444' },
+}
+
+function formatValue(key, val) {
+  if (val === null || val === undefined) return '—'
+  if (typeof val === 'boolean') return val ? 'Yes' : 'No'
+  if (key === 'population') return Number(val).toLocaleString()
+  if (key === 'country_flag_icon') return null // rendered as image
+  if (key === 'maps') return null // rendered as link
+  return String(val)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Live IP Result Panel (right side)
+// ─────────────────────────────────────────────────────────────────────────────
+function LiveIPPanel({ data, loading, error }) {
+  if (loading) return (
+    <div className={styles.liveLoading}>
+      <div className={styles.radarWrap}>
+        <div className={styles.radarRing} />
+        <div className={styles.radarRing2} />
+        <div className={styles.radarSweep} />
+        <div className={styles.radarDot} />
+      </div>
+      <p className={styles.liveLoadingText}>Scanning your IP…</p>
+    </div>
+  )
+
+  if (error) return (
+    <div className={styles.liveError}>
+      <span>⚠</span> {error}
+    </div>
+  )
+
+  if (!data) return null
+
+  const d = data.data
+  const threatNum = parseInt(d.threat_score) || 0
+  const threatColor = threatNum < 30 ? '#34d399' : threatNum < 60 ? '#fbbf24' : '#ef4444'
+
+  return (
+    <div className={styles.livePanel}>
+      {/* Header row */}
+      <div className={styles.livePanelHeader}>
+        <div className={styles.liveIPBadge}>
+          <span className={styles.liveIPDot} />
+          <span className={styles.liveIPText}>{d.ip_address}</span>
+          <span className={styles.liveIPVersion}>{d.ip_version?.toUpperCase()}</span>
+        </div>
+        {d.country_flag_icon && (
+          <img src={d.country_flag_icon} alt={d.country_name} className={styles.liveFlag} />
+        )}
+      </div>
+
+      {/* Threat bar */}
+      <div className={styles.threatWrap}>
+        <div className={styles.threatHeader}>
+          <span className={styles.threatLabel}>Threat Score</span>
+          <span className={styles.threatVal} style={{ color: threatColor }}>{d.threat_score}</span>
+        </div>
+        <div className={styles.threatBar}>
+          <div
+            className={styles.threatFill}
+            style={{ width: d.threat_score, background: threatColor }}
+          />
+        </div>
+        <div className={styles.threatBadges}>
+          <span className={`${styles.threatBadge} ${d.is_tor ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
+            {d.is_tor ? '● TOR' : '○ No TOR'}
+          </span>
+          <span className={`${styles.threatBadge} ${d.is_blacklisted ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
+            {d.is_blacklisted ? '● Blacklisted' : '○ Clean'}
+          </span>
+          <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>
+            ● {d.network_status}
+          </span>
+        </div>
+      </div>
+
+      {/* Grouped data fields */}
+      <div className={styles.liveFields}>
+        {CATEGORIES.map(cat => {
+          const fields = Object.entries(FIELD_META).filter(([, m]) => m.cat === cat)
+          return (
+            <div key={cat} className={styles.liveCatGroup}>
+              <div className={styles.liveCatLabel} style={{ color: CAT_COLORS[cat].text }}>
+                {FIELD_META[Object.keys(FIELD_META).find(k => FIELD_META[k].cat === cat)].icon} {cat}
+              </div>
+              {fields.map(([key, meta]) => {
+                const raw = d[key]
+                if (raw === undefined) return null
+                if (key === 'country_flag_icon') return null
+                if (key === 'maps') return (
+                  <div key={key} className={styles.liveRow}>
+                    <span className={styles.liveRowKey}>{meta.label}</span>
+                    <a href={raw} target="_blank" rel="noreferrer" className={styles.liveLink}>
+                      View Map ↗
+                    </a>
+                  </div>
+                )
+                return (
+                  <div key={key} className={styles.liveRow}>
+                    <span className={styles.liveRowKey}>{meta.label}</span>
+                    <span className={styles.liveRowVal}>{formatValue(key, raw)}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className={styles.liveDisclaimer}>
+        <span>🔒</span> This is a live scan of your current IP — demonstrating real-time accuracy.
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Data Selector Panel (left side)
+// ─────────────────────────────────────────────────────────────────────────────
+function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPurchaseSuccess, userBalances }) {
+  const [selected, setSelected] = useState({})
+  const [daysFor, setDaysFor] = useState(30)
+  const [autoRenew, setAutoRenew] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(null)
+  const [txId, setTxId] = useState(null)
+  const [activeTab, setActiveTab] = useState('Network')
+
+  // Initialize all to false
+  useEffect(() => {
+    if (!lookups) return
+    const init = {}
+    Object.keys(FIELD_META).forEach(k => { init[k] = false })
+    setSelected(init)
+  }, [lookups])
+
+  const toggleField = (key) => {
+    setSelected(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const selectAll = () => {
+    const next = {}
+    Object.keys(FIELD_META).forEach(k => { next[k] = true })
+    setSelected(next)
+  }
+
+  const clearAll = () => {
+    const next = {}
+    Object.keys(FIELD_META).forEach(k => { next[k] = false })
+    setSelected(next)
+  }
+
+  const selectedCount = Object.values(selected).filter(Boolean).length
+  const totalFields = Object.keys(FIELD_META).length
+
+  // Compute total cost from lookups data
+  const totalCost = lookups ? Object.entries(selected).reduce((sum, [key, on]) => {
+    if (!on) return sum
+    const entry = lookups.find?.(l => l.field_name === key || l.key === key)
+    if (!entry) return sum
+    return sum + (entry.price_per_day || entry.price || 0)
+  }, 0) : 0
+
+  const handleSubmit = async () => {
+    if (selectedCount === 0) { setSubmitError('Select at least one data field.'); return }
+    setSubmitting(true); setSubmitError(null); setTxId(null)
+    try {
+      const body = { ...selected, days_for: daysFor, auto_renew: autoRenew }
+      const res = await fetch('https://security.appcardy.com/api/v1.0/scanoracle/payment/create/ip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.message || json.detail || 'Purchase failed.')
+      setTxId(json.data?.transaction_id)
+      onPurchaseSuccess?.(json.data)
+    } catch (e) {
+      setSubmitError(e.message)
+    } finally { setSubmitting(false) }
+  }
+
+  // Get field info from lookups for a given key
+  const getFieldInfo = (key) => {
+    if (!lookups) return null
+    return lookups.find?.(l => l.field_name === key || l.key === key || l.name === key) || null
+  }
+
+  if (lookupsLoading) return (
+    <div className={styles.selectorLoading}>
+      <div className={styles.selectorSpinner} />
+      <p>Loading data catalog…</p>
+    </div>
+  )
+
+  if (lookupsError) return (
+    <div className={styles.selectorError}>
+      <span>⚠</span> {lookupsError}
+    </div>
+  )
+
+  if (txId) return (
+    <div className={styles.successPanel}>
+      <div className={styles.successIcon}>✓</div>
+      <h3 className={styles.successTitle}>Purchase Initiated</h3>
+      <p className={styles.successSub}>Your data subscription is being activated.</p>
+      <div className={styles.successTx}>
+        <span className={styles.successTxLabel}>Transaction ID</span>
+        <code className={styles.successTxCode}>{txId}</code>
+      </div>
+      <button className={styles.successReset} onClick={() => { setTxId(null); clearAll() }}>
+        Configure New Subscription
+      </button>
+    </div>
+  )
+
+  return (
+    <div className={styles.selectorPanel}>
+      {/* Header */}
+      <div className={styles.selectorHeader}>
+        <div className={styles.selectorTitle}>
+          <span className={styles.selectorTitleIcon}>⊛</span>
+          Build Your Data Package
+        </div>
+        <div className={styles.selectorCount}>
+          <span className={styles.selectorCountNum}>{selectedCount}</span>
+          <span className={styles.selectorCountOf}>/ {totalFields} fields</span>
+        </div>
+      </div>
+
+      {/* Quick actions */}
+      <div className={styles.selectorActions}>
+        <button className={styles.quickBtn} onClick={selectAll}>Select All</button>
+        <button className={styles.quickBtn} onClick={clearAll}>Clear</button>
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat}
+            className={`${styles.quickBtn} ${activeTab === cat ? styles.quickBtnActive : ''}`}
+            style={activeTab === cat ? { borderColor: CAT_COLORS[cat].text, color: CAT_COLORS[cat].text } : {}}
+            onClick={() => setActiveTab(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Field list */}
+      <div className={styles.fieldList}>
+        {Object.entries(FIELD_META)
+          .filter(([, m]) => m.cat === activeTab)
+          .map(([key, meta]) => {
+            const info = getFieldInfo(key)
+            const isOn = selected[key] || false
+            return (
+              <label
+                key={key}
+                className={`${styles.fieldRow} ${isOn ? styles.fieldRowOn : ''}`}
+                style={isOn ? {
+                  borderColor: CAT_COLORS[meta.cat].border,
+                  background: CAT_COLORS[meta.cat].bg
+                } : {}}
+              >
+                <div className={`${styles.checkbox} ${isOn ? styles.checkboxOn : ''}`}
+                  style={isOn ? { background: CAT_COLORS[meta.cat].text, borderColor: CAT_COLORS[meta.cat].text } : {}}>
+                  {isOn && <span className={styles.checkmark}>✓</span>}
+                </div>
+                <input type="checkbox" checked={isOn} onChange={() => toggleField(key)} className={styles.hiddenCheck} />
+                <div className={styles.fieldInfo}>
+                  <span className={styles.fieldLabel}>{meta.label}</span>
+                  {info?.description && (
+                    <span className={styles.fieldDesc}>{info.description}</span>
+                  )}
+                </div>
+                {info?.price_per_day !== undefined && (
+                  <span className={styles.fieldPrice}>
+                    ₦{Number(info.price_per_day).toLocaleString()}<sub>/day</sub>
+                  </span>
+                )}
+                {info?.price !== undefined && !info?.price_per_day && (
+                  <span className={styles.fieldPrice}>
+                    ₦{Number(info.price).toLocaleString()}<sub>/day</sub>
+                  </span>
+                )}
+              </label>
+            )
+          })}
+      </div>
+
+      {/* Duration + auto-renew */}
+      <div className={styles.subscriptionConfig}>
+        <div className={styles.configRow}>
+          <div className={styles.configLabel}>
+            <span className={styles.configIcon}>◷</span>
+            Subscription Duration
+          </div>
+          <div className={styles.daysControl}>
+            {[7, 14, 30, 60, 90].map(d => (
+              <button
+                key={d}
+                className={`${styles.dayChip} ${daysFor === d ? styles.dayChipActive : ''}`}
+                onClick={() => setDaysFor(d)}
+              >
+                {d}d
+              </button>
+            ))}
+            <input
+              type="number"
+              min={1} max={365}
+              value={daysFor}
+              onChange={e => setDaysFor(Math.max(1, Math.min(365, parseInt(e.target.value) || 1)))}
+              className={styles.daysInput}
+              title="Custom days"
+            />
+          </div>
+        </div>
+
+        <div className={styles.configRow}>
+          <div className={styles.configLabel}>
+            <span className={styles.configIcon}>↺</span>
+            Auto-Renew
+            <span className={styles.configHint}>Automatically renews when subscription expires</span>
+          </div>
+          <button
+            className={`${styles.toggle} ${autoRenew ? styles.toggleOn : ''}`}
+            onClick={() => setAutoRenew(o => !o)}
+            role="switch"
+            aria-checked={autoRenew}
+          >
+            <span className={styles.toggleThumb} />
+            <span className={styles.toggleLabel}>{autoRenew ? 'ON' : 'OFF'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Cost summary */}
+      {selectedCount > 0 && (
+        <div className={styles.costSummary}>
+          <div className={styles.costRow}>
+            <span>Fields selected</span>
+            <span>{selectedCount}</span>
+          </div>
+          <div className={styles.costRow}>
+            <span>Duration</span>
+            <span>{daysFor} days</span>
+          </div>
+          {totalCost > 0 && (
+            <>
+              <div className={styles.costDivider} />
+              <div className={`${styles.costRow} ${styles.costTotal}`}>
+                <span>Estimated Total</span>
+                <span>₦{(totalCost * daysFor).toLocaleString()}</span>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {submitError && (
+        <div className={styles.submitError}>
+          <span>⚠</span> {submitError}
+        </div>
+      )}
+
+      {/* Purchase button */}
+      <button
+        className={`${styles.purchaseBtn} ${selectedCount === 0 || submitting ? styles.purchaseBtnDisabled : ''}`}
+        onClick={handleSubmit}
+        disabled={selectedCount === 0 || submitting}
+      >
+        {submitting ? (
+          <>
+            <span className={styles.btnSpinner} />
+            Processing…
+          </>
+        ) : (
+          <>
+            ⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}
+            {autoRenew && ' · Auto-Renew'}
+          </>
+        )}
+      </button>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Page
+// ─────────────────────────────────────────────────────────────────────────────
 export default function IPLookup() {
   usePageTitle('SCANORACLE — IP Lookup | Ghostroute')
   useAuthGuard()
   useTokenRefresh()
-  const navigate  = useNavigate()
-  const [result,  setResult]  = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState(null)
-  const [user,    setUser]    = useState(null)
+  const navigate = useNavigate()
 
-  // Fetch balance for nav display
+  const [user, setUser]               = useState(null)
+  const [liveData, setLiveData]       = useState(null)
+  const [liveLoading, setLiveLoading] = useState(true)
+  const [liveError, setLiveError]     = useState(null)
+  const [lookups, setLookups]         = useState(null)
+  const [lookupsLoading, setLookupsLoading] = useState(true)
+  const [lookupsError, setLookupsError]     = useState(null)
+
+  const token = getToken()
+
+  // Fetch user profile
   useEffect(() => {
-    const token = getToken()
     if (!token) return
     getUserProfile(token)
       .then(r => setUser(r.user))
       .catch(() => {})
+  }, [token])
+
+  // Fetch live IP data
+  useEffect(() => {
+    setLiveLoading(true)
+    fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/ip_address', {
+      headers: { 'accept': 'application/json' }
+    })
+      .then(r => r.json())
+      .then(json => { setLiveData(json); setLiveLoading(false) })
+      .catch(e => { setLiveError('Failed to fetch your IP data.'); setLiveLoading(false) })
   }, [])
 
-  const handleLookup = async (ip) => {
-    setLoading(true); setError(null); setResult(null)
-    try {
-      const data = await lookupIP(ip)
-      setResult(data)
-    } catch (err) {
-      setError(err.message || 'Lookup failed. Please try again.')
-    } finally { setLoading(false) }
-  }
+  // Fetch all_lookups (requires auth)
+  useEffect(() => {
+    if (!token) { setLookupsError('Authentication required.'); setLookupsLoading(false); return }
+    setLookupsLoading(true)
+    fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/all_lookups', {
+      headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` }
+    })
+      .then(r => {
+        if (!r.ok) throw new Error(r.status === 401 ? 'Session expired. Please log in again.' : `Server error (${r.status})`)
+        return r.json()
+      })
+      .then(json => {
+        // Handle various response shapes
+        const data = json.data || json.lookups || json.fields || json
+        setLookups(Array.isArray(data) ? data : null)
+        setLookupsLoading(false)
+      })
+      .catch(e => { setLookupsError(e.message); setLookupsLoading(false) })
+  }, [token])
+
+  const handleLogout = () => { clearToken(); navigate('/auth') }
 
   return (
     <div className={styles.page}>
-      {/* Background layers */}
+      {/* Layered background */}
       <div className={styles.bgGrid} aria-hidden="true" />
       <div className={styles.bgGlow1} aria-hidden="true" />
       <div className={styles.bgGlow2} aria-hidden="true" />
 
-      {/* ── Navigation ── */}
+      {/* ── Nav ── */}
       <nav className={styles.nav}>
-        {/* Left: back + brand */}
         <div className={styles.navLeft}>
           <button className={styles.navBack} onClick={() => navigate('/')}>
-            <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11">
               <path d="M7.78 12.53a.75.75 0 01-1.06 0L2.47 8.28a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L4.81 7h7.44a.75.75 0 010 1.5H4.81l2.97 2.97a.75.75 0 010 1.06z" />
             </svg>
             Dashboard
           </button>
-          <div className={styles.navDivider} />
+          <div className={styles.navSep} />
           <div className={styles.navBrand}>
-            <ScanOracleLogo size={22} />
+            <GhostIPLogo size={28} animated={false} />
             <span className={styles.navBrandText}>
-              <span className={styles.navBrandScan}>SCAN</span>ORACLE
+              <span className={styles.navAccent}>SCAN</span>ORACLE
             </span>
-            <span className={styles.navBrandPill}>IP Lookup</span>
+            <span className={styles.navPill}>IP Lookup</span>
           </div>
         </div>
-
-        {/* Right: balances + signout */}
         <div className={styles.navRight}>
           <div className={styles.navBalances}>
-            <div className={styles.navBalance}>
-              <span className={styles.navBalanceCurr}>₦</span>
-              <span className={styles.navBalanceAmt}>{(user?.naira_balance ?? 0).toLocaleString()}</span>
-              <span className={styles.navBalanceLbl}>NGN</span>
+            <div className={styles.navBal}>
+              <span className={styles.navBalCurr}>₦</span>
+              <span className={styles.navBalAmt}>{(user?.naira_balance ?? 0).toLocaleString()}</span>
+              <span className={styles.navBalLbl}>NGN</span>
             </div>
-            <div className={styles.navBalanceSep} />
-            <div className={styles.navBalance}>
-              <span className={styles.navBalanceCurr}>$</span>
-              <span className={styles.navBalanceAmt}>{(user?.dollar_balance ?? 0).toLocaleString()}</span>
-              <span className={styles.navBalanceLbl}>USD</span>
+            <div className={styles.navBalDiv} />
+            <div className={styles.navBal}>
+              <span className={styles.navBalCurr}>$</span>
+              <span className={styles.navBalAmt}>{(user?.dollar_balance ?? 0).toLocaleString()}</span>
+              <span className={styles.navBalLbl}>USD</span>
             </div>
           </div>
-          <button
-            className={styles.signOutBtn}
-            onClick={() => { clearToken(); navigate('/auth') }}
-          >
-            Sign out
-          </button>
+          <button className={styles.signOutBtn} onClick={handleLogout}>Sign out</button>
         </div>
       </nav>
 
-      {/* ── Hero Header ── */}
-      <header className={styles.header}>
-        <div className={styles.heroLogoWrap}>
-          <ScanOracleLogo size={64} />
-          <div className={styles.heroPulse} aria-hidden="true" />
+      {/* ── Hero ── */}
+      <header className={styles.hero}>
+        <div className={styles.heroLogo}>
+          <GhostIPLogo size={80} animated={true} />
+          <div className={styles.heroPulseRing} aria-hidden="true" />
+          <div className={styles.heroPulseRing2} aria-hidden="true" />
         </div>
-        <h1 className={styles.heroTitle}>
-          <span className={styles.heroAccent}>SCAN</span>ORACLE
-        </h1>
-        <p className={styles.heroSub}>IP Lookup Intelligence</p>
-        <div className={styles.heroDivider}>
-          <span />
-          <span className={styles.heroDividerDot} />
-          <span />
+        <div className={styles.heroText}>
+          <h1 className={styles.heroTitle}>
+            <span className={styles.heroAccent}>SCAN</span>ORACLE
+          </h1>
+          <p className={styles.heroSub}>IP Intelligence &amp; Data Marketplace</p>
+        </div>
+        <div className={styles.heroStats}>
+          <div className={styles.heroStat}>
+            <span className={styles.heroStatNum}>42</span>
+            <span className={styles.heroStatLabel}>Data Fields</span>
+          </div>
+          <div className={styles.heroStatDiv} />
+          <div className={styles.heroStat}>
+            <span className={styles.heroStatNum}>Live</span>
+            <span className={styles.heroStatLabel}>Real-Time</span>
+          </div>
+          <div className={styles.heroStatDiv} />
+          <div className={styles.heroStat}>
+            <span className={styles.heroStatNum}>99.9%</span>
+            <span className={styles.heroStatLabel}>Accuracy</span>
+          </div>
         </div>
       </header>
 
-      {/* ── Main Content ── */}
-      <section className={styles.content}>
-        <IPLookupForm onLookup={handleLookup} loading={loading} />
-
-        {error && (
-          <div className={styles.error} role="alert">
-            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
-              <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575zm1.763.707a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368zm-.53 3.996v2.5a.75.75 0 011.5 0v-2.5a.75.75 0 01-1.5 0zM9 11a1 1 0 11-2 0 1 1 0 012 0z" />
-            </svg>
-            {error}
+      {/* ── Split Panel ── */}
+      <main className={styles.splitLayout}>
+        {/* Left — Data Selector */}
+        <div className={styles.leftCol}>
+          <div className={styles.panelLabel}>
+            <span className={styles.panelLabelDot} style={{ background: '#a78bfa' }} />
+            Data Package Builder
           </div>
-        )}
+          <DataSelectorPanel
+            lookups={lookups}
+            lookupsLoading={lookupsLoading}
+            lookupsError={lookupsError}
+            token={token}
+            onPurchaseSuccess={() => {}}
+            userBalances={{ naira: user?.naira_balance, dollar: user?.dollar_balance }}
+          />
+        </div>
 
-        {loading && (
-          <div className={styles.loadingState}>
-            <div className={styles.scanRing}>
-              <div className={styles.scanRingInner} />
-              <div className={styles.scanBeam} />
-            </div>
-            <p className={styles.loadingText}>Scanning target…</p>
-            <p className={styles.loadingSubText}>Resolving geolocation &amp; intelligence data</p>
+        {/* Right — Live Demo */}
+        <div className={styles.rightCol}>
+          <div className={styles.panelLabel}>
+            <span className={styles.panelLabelDot} style={{ background: '#38bdf8' }} />
+            Live Demo — Your IP
+            <span className={styles.panelLabelBadge}>REAL DATA</span>
           </div>
-        )}
+          <div className={styles.livePanelWrap}>
+            <LiveIPPanel data={liveData} loading={liveLoading} error={liveError} />
+          </div>
+        </div>
+      </main>
 
-        {result && !loading && <IPResultCard data={result} />}
-      </section>
-
-      {/* ── Footer ── */}
       <footer className={styles.footer}>
-        SCANORACLE · Part of{' '}
-        <span className={styles.footerAccent}>Ghostroute</span>{' '}
-        Security Suite · {new Date().getFullYear()}
+        SCANORACLE · Part of <span className={styles.footerAccent}>Ghostroute</span> Security Suite · {new Date().getFullYear()}
       </footer>
     </div>
   )
