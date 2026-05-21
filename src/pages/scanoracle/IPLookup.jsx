@@ -95,51 +95,53 @@ function GhostIPLogo({ size = 120, animated = true }) {
 // Data field metadata — maps each API key to display label + category
 // ─────────────────────────────────────────────────────────────────────────────
 const FIELD_META = {
-  asn:                    { label: 'ASN',                    cat: 'Network',   icon: '⬡' },
-  hostname:               { label: 'Hostname',               cat: 'Network',   icon: '⬡' },
-  city:                   { label: 'City',                   cat: 'Location',  icon: '◎' },
-  region:                 { label: 'Region',                 cat: 'Location',  icon: '◎' },
-  country:                { label: 'Country Code',           cat: 'Location',  icon: '◎' },
-  country_name:           { label: 'Country Name',           cat: 'Location',  icon: '◎' },
-  latitude:               { label: 'Latitude',               cat: 'Location',  icon: '◎' },
-  longitude:              { label: 'Longitude',              cat: 'Location',  icon: '◎' },
-  organization:           { label: 'Organization',           cat: 'Network',   icon: '⬡' },
-  timezone:               { label: 'Timezone',               cat: 'Location',  icon: '◎' },
-  continent:              { label: 'Continent Code',         cat: 'Location',  icon: '◎' },
-  continent_name:         { label: 'Continent Name',         cat: 'Location',  icon: '◎' },
-  ip_version:             { label: 'IP Version',             cat: 'Network',   icon: '⬡' },
-  country_alpha_3:        { label: 'Alpha-3 Code',           cat: 'Country',   icon: '⊞' },
-  postal_code:            { label: 'Postal Code',            cat: 'Location',  icon: '◎' },
-  country_currency_code:  { label: 'Currency Code',          cat: 'Country',   icon: '⊞' },
-  country_currency_symbol:{ label: 'Currency Symbol',        cat: 'Country',   icon: '⊞' },
-  european_union_member:  { label: 'EU Member',              cat: 'Country',   icon: '⊞' },
-  country_current_time:   { label: 'Local Time',             cat: 'Time',      icon: '◷' },
-  country_current_time_24hr:{ label: 'Time (24hr)',          cat: 'Time',      icon: '◷' },
-  country_current_time_12hr:{ label: 'Time (12hr)',          cat: 'Time',      icon: '◷' },
-  country_current_time_iso: { label: 'Time (ISO)',           cat: 'Time',      icon: '◷' },
-  country_flag_icon:      { label: 'Flag Icon URL',          cat: 'Country',   icon: '⊞' },
-  network_status:         { label: 'Network Status',         cat: 'Network',   icon: '⬡' },
-  network_range:          { label: 'Network Range',          cat: 'Network',   icon: '⬡' },
-  network_start_address:  { label: 'Range Start',            cat: 'Network',   icon: '⬡' },
-  network_end_address:    { label: 'Range End',              cat: 'Network',   icon: '⬡' },
-  network_registration:   { label: 'Registered',             cat: 'Network',   icon: '⬡' },
-  network_last_changed:   { label: 'Last Changed',           cat: 'Network',   icon: '⬡' },
-  contact_email:          { label: 'Contact Email',          cat: 'Contact',   icon: '✉' },
-  contact_phone:          { label: 'Contact Phone',          cat: 'Contact',   icon: '✉' },
-  contact_address:        { label: 'Contact Address',        cat: 'Contact',   icon: '✉' },
-  is_tor:                 { label: 'TOR Exit Node',          cat: 'Threat',    icon: '⚑' },
-  is_blacklisted:         { label: 'Blacklisted',            cat: 'Threat',    icon: '⚑' },
-  threat_score:           { label: 'Threat Score',           cat: 'Threat',    icon: '⚑' },
-  language:               { label: 'Language',               cat: 'Country',   icon: '⊞' },
-  mobile_calling_code:    { label: 'Calling Code',           cat: 'Country',   icon: '⊞' },
-  tld:                    { label: 'TLD',                    cat: 'Country',   icon: '⊞' },
-  fifa:                   { label: 'FIFA Code',              cat: 'Country',   icon: '⊞' },
-  population:             { label: 'Population',             cat: 'Country',   icon: '⊞' },
-  maps:                   { label: 'Maps Link',              cat: 'Location',  icon: '◎' },
+  asn:                     { label: 'ASN',                    cat: 'Network',   icon: '⬡' },
+  hostname:                { label: 'Hostname',               cat: 'Network',   icon: '⬡' },
+  city:                    { label: 'City',                   cat: 'Location',  icon: '◎' },
+  region:                  { label: 'Region',                 cat: 'Location',  icon: '◎' },
+  country:                 { label: 'Country Code',           cat: 'Location',  icon: '◎' },
+  country_name:            { label: 'Country Name',           cat: 'Location',  icon: '◎' },
+  latitude:                { label: 'Latitude',               cat: 'Location',  icon: '◎' },
+  longitude:               { label: 'Longitude',              cat: 'Location',  icon: '◎' },
+  organization:            { label: 'Organization',           cat: 'Network',   icon: '⬡' },
+  timezone:                { label: 'Timezone',               cat: 'Location',  icon: '◎' },
+  continent:               { label: 'Continent Code',         cat: 'Location',  icon: '◎' },
+  continent_name:          { label: 'Continent Name',         cat: 'Location',  icon: '◎' },
+  ip_version:              { label: 'IP Version',             cat: 'Network',   icon: '⬡' },
+  country_alpha_3:         { label: 'Alpha-3 Code',           cat: 'Country',   icon: '⊞' },
+  postal_code:             { label: 'Postal Code',            cat: 'Location',  icon: '◎' },
+  country_currency_code:   { label: 'Currency Code',          cat: 'Country',   icon: '⊞' },
+  country_currency_symbol:{ label: 'Currency Symbol',         cat: 'Country',   icon: '⊞' },
+  european_union_member:  { label: 'EU Member',               cat: 'Country',   icon: '⊞' },
+  country_current_time:   { label: 'Local Time',              cat: 'Time',      icon: '◷' },
+  country_current_time_24hr:{ label: 'Time (24hr)',           cat: 'Time',      icon: '◷' },
+  country_current_time_12hr:{ label: 'Time (12hr)',           cat: 'Time',      icon: '◷' },
+  country_current_time_iso: { label: 'Time (ISO)',            cat: 'Time',      icon: '◷' },
+  country_flag_icon:      { label: 'Flag Icon URL',           cat: 'Country',   icon: '⊞' },
+  network_status:          { label: 'Network Status',          cat: 'Network',   icon: '⬡' },
+  network_range:           { label: 'Network Range',           cat: 'Network',   icon: '⬡' },
+  network_start_address:  { label: 'Range Start',             cat: 'Network',   icon: '⬡' },
+  network_end_address:    { label: 'Range End',               cat: 'Network',   icon: '⬡' },
+  network_registration:   { label: 'Registered',              cat: 'Network',   icon: '⬡' },
+  network_last_changed:   { label: 'Last Changed',            cat: 'Network',   icon: '⬡' },
+  contact_email:          { label: 'Contact Email',           cat: 'Contact',   icon: '✉' },
+  contact_phone:          { label: 'Contact Phone',           cat: 'Contact',   icon: '✉' },
+  contact_address:        { label: 'Contact Address',         cat: 'Contact',   icon: '✉' },
+  is_tor:                  { label: 'TOR Exit Node',           cat: 'Threat',    icon: '⚑' },
+  is_blacklisted:          { label: 'Blacklisted',             cat: 'Threat',    icon: '⚑' },
+  threat_score:            { label: 'Threat Score',            cat: 'Threat',    icon: '⚑' },
+  language:                { label: 'Language',                cat: 'Country',   icon: '⊞' },
+  mobile_calling_code:     { label: 'Calling Code',            cat: 'Country',   icon: '⊞' },
+  tld:                     { label: 'TLD',                     cat: 'Country',   icon: '' },
+  fifa:                    { label: 'FIFA Code',               cat: 'Country',   icon: '' },
+  population:              { label: 'Population',              cat: 'Country',   icon: '' },
+  maps:                    { label: 'Maps Link',               cat: 'Location',  icon: '◎' },
 }
 
-const CATEGORIES = ['Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
+// Added 'All' option dynamically inside categories map list
+const CATEGORIES = ['All', 'Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
 const CAT_COLORS = {
+  All:      { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)', text: '#e2e8f0' },
   Network:  { bg: 'rgba(56,189,248,0.08)',  border: 'rgba(56,189,248,0.25)',  text: '#38bdf8' },
   Location: { bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.25)', text: '#a78bfa' },
   Country:  { bg: 'rgba(251,191,36,0.08)',  border: 'rgba(251,191,36,0.25)',  text: '#fbbf24' },
@@ -152,8 +154,8 @@ function formatValue(key, val) {
   if (val === null || val === undefined) return '—'
   if (typeof val === 'boolean') return val ? 'Yes' : 'No'
   if (key === 'population') return Number(val).toLocaleString()
-  if (key === 'country_flag_icon') return null // rendered as image
-  if (key === 'maps') return null // rendered as link
+  if (key === 'country_flag_icon') return null 
+  if (key === 'maps') return null 
   return String(val)
 }
 
@@ -184,6 +186,9 @@ function LiveIPPanel({ data, loading, error }) {
   const d = data.data
   const threatNum = parseInt(d.threat_score) || 0
   const threatColor = threatNum < 30 ? '#34d399' : threatNum < 60 ? '#fbbf24' : '#ef4444'
+
+  // Standard static categories for grouping results on the right side lookup panel
+  const DISPLAY_CATEGORIES = ['Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
 
   return (
     <div className={styles.livePanel}>
@@ -226,7 +231,7 @@ function LiveIPPanel({ data, loading, error }) {
 
       {/* Grouped data fields */}
       <div className={styles.liveFields}>
-        {CATEGORIES.map(cat => {
+        {DISPLAY_CATEGORIES.map(cat => {
           const fields = Object.entries(FIELD_META).filter(([, m]) => m.cat === cat)
           return (
             <div key={cat} className={styles.liveCatGroup}>
@@ -274,15 +279,16 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
   const [txId, setTxId] = useState(null)
-  const [activeTab, setActiveTab] = useState('Network')
+  const [activeTab, setActiveTab] = useState('All') // Changed default state to 'All'
 
-  // Initialize all to false
+  // Safe Checkbox state initializer loop
   useEffect(() => {
-    if (!lookups) return
     const init = {}
-    Object.keys(FIELD_META).forEach(k => { init[k] = false })
+    Object.keys(FIELD_META).forEach(k => { 
+      init[k] = false 
+    })
     setSelected(init)
-  }, [lookups])
+  }, [])
 
   const toggleField = (key) => {
     setSelected(prev => ({ ...prev, [key]: !prev[key] }))
@@ -303,10 +309,9 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
   const selectedCount = Object.values(selected).filter(Boolean).length
   const totalFields = Object.keys(FIELD_META).length
 
-  // Compute total cost from lookups data
   const totalCost = lookups ? Object.entries(selected).reduce((sum, [key, on]) => {
     if (!on) return sum
-    const entry = lookups.find?.(l => l.field_name === key || l.key === key)
+    const entry = Array.isArray(lookups) ? lookups.find?.(l => l.field_name === key || l.key === key) : null
     if (!entry) return sum
     return sum + (entry.price_per_day || entry.price || 0)
   }, 0) : 0
@@ -334,24 +339,28 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
     } finally { setSubmitting(false) }
   }
 
-  // Get field info from lookups for a given key
   const getFieldInfo = (key) => {
-    if (!lookups) return null
+    if (!lookups || !Array.isArray(lookups)) return null
     return lookups.find?.(l => l.field_name === key || l.key === key || l.name === key) || null
   }
 
-  if (lookupsLoading) return (
-    <div className={styles.selectorLoading}>
-      <div className={styles.selectorSpinner} />
-      <p>Loading data catalog…</p>
-    </div>
-  )
+  // Blinking Fix: Only display loading spinner container if data hasn't already loaded successfully once
+  if (lookupsLoading && (!lookups || lookups.length === 0)) {
+    return (
+      <div className={styles.selectorLoading}>
+        <div className={styles.selectorSpinner} />
+        <p>Loading data catalog…</p>
+      </div>
+    )
+  }
 
-  if (lookupsError) return (
-    <div className={styles.selectorError}>
-      <span>⚠</span> {lookupsError}
-    </div>
-  )
+  if (lookupsError && (!lookups || lookups.length === 0)) {
+    return (
+      <div className={styles.selectorError}>
+        <span>⚠</span> {lookupsError}
+      </div>
+    )
+  }
 
   if (txId) return (
     <div className={styles.successPanel}>
@@ -382,7 +391,7 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         </div>
       </div>
 
-      {/* Quick actions */}
+      {/* Quick actions tabs */}
       <div className={styles.selectorActions}>
         <button className={styles.quickBtn} onClick={selectAll}>Select All</button>
         <button className={styles.quickBtn} onClick={clearAll}>Clear</button>
@@ -398,10 +407,10 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         ))}
       </div>
 
-      {/* Field list */}
+      {/* Field list Container */}
       <div className={styles.fieldList}>
         {Object.entries(FIELD_META)
-          .filter(([, m]) => m.cat === activeTab)
+          .filter(([, m]) => activeTab === 'All' || m.cat === activeTab)
           .map(([key, meta]) => {
             const info = getFieldInfo(key)
             const isOn = selected[key] || false
@@ -410,17 +419,20 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
                 key={key}
                 className={`${styles.fieldRow} ${isOn ? styles.fieldRowOn : ''}`}
                 style={isOn ? {
-                  borderColor: CAT_COLORS[meta.cat].border,
-                  background: CAT_COLORS[meta.cat].bg
+                  borderColor: CAT_COLORS[meta.cat]?.border || 'rgba(255,255,255,0.2)',
+                  background: CAT_COLORS[meta.cat]?.bg || 'transparent'
                 } : {}}
               >
                 <div className={`${styles.checkbox} ${isOn ? styles.checkboxOn : ''}`}
-                  style={isOn ? { background: CAT_COLORS[meta.cat].text, borderColor: CAT_COLORS[meta.cat].text } : {}}>
+                  style={isOn ? { background: CAT_COLORS[meta.cat]?.text || '#fff', borderColor: CAT_COLORS[meta.cat]?.text || '#fff' } : {}}>
                   {isOn && <span className={styles.checkmark}>✓</span>}
                 </div>
                 <input type="checkbox" checked={isOn} onChange={() => toggleField(key)} className={styles.hiddenCheck} />
                 <div className={styles.fieldInfo}>
-                  <span className={styles.fieldLabel}>{meta.label}</span>
+                  <span className={styles.fieldLabel}>
+                    {/* Fixed: Removed inline category tag showing beside label name in All view */}
+                    {meta.label}
+                  </span>
                   {info?.description && (
                     <span className={styles.fieldDesc}>{info.description}</span>
                   )}
@@ -517,19 +529,19 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
 
       {/* Purchase button */}
       <button
-        className={`${styles.purchaseBtn} ${selectedCount === 0 || submitting ? styles.purchaseBtnDisabled : ''}`}
-        onClick={handleSubmit}
-        disabled={selectedCount === 0 || submitting}
+          className={`${styles.purchaseBtn} ${selectedCount === 0 || submitting ? styles.purchaseBtnDisabled : ''}`}
+          onClick={handleSubmit}
+          disabled={selectedCount === 0 || submitting}
       >
-        {submitting ? (
-          <>
-            <span className={styles.btnSpinner} />
-            Processing…
-          </>
-        ) : (
-          <>
-            ⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}
-            {autoRenew && ' · Auto-Renew'}
+          {submitting ? (
+            <>
+              <span className={styles.btnSpinner} />
+              Processing…
+            </>
+          ) : (
+            <>
+              ⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}
+              {autoRenew && ' · Auto-Renew'}
           </>
         )}
       </button>
@@ -587,7 +599,6 @@ export default function IPLookup() {
         return r.json()
       })
       .then(json => {
-        // Handle various response shapes
         const data = json.data || json.lookups || json.fields || json
         setLookups(Array.isArray(data) ? data : null)
         setLookupsLoading(false)
@@ -599,12 +610,11 @@ export default function IPLookup() {
 
   return (
     <div className={styles.page}>
-      {/* Layered background */}
       <div className={styles.bgGrid} aria-hidden="true" />
       <div className={styles.bgGlow1} aria-hidden="true" />
       <div className={styles.bgGlow2} aria-hidden="true" />
 
-      {/* ── Nav ── */}
+      {/* Nav */}
       <nav className={styles.nav}>
         <div className={styles.navLeft}>
           <button className={styles.navBack} onClick={() => navigate('/')}>
@@ -640,7 +650,7 @@ export default function IPLookup() {
         </div>
       </nav>
 
-      {/* ── Hero ── */}
+      {/* Hero */}
       <header className={styles.hero}>
         <div className={styles.heroLogo}>
           <GhostIPLogo size={80} animated={true} />
@@ -656,7 +666,7 @@ export default function IPLookup() {
         <div className={styles.heroStats}>
           <div className={styles.heroStat}>
             <span className={styles.heroStatNum}>42+</span>
-            <span className={styles.heroStatLabel}>Data Fields 🛢️</span>
+            <span className={styles.heroStatLabel}>Data Fields 🛢</span>
           </div>
           <div className={styles.heroStatDiv} />
           <div className={styles.heroStat}>
@@ -671,9 +681,8 @@ export default function IPLookup() {
         </div>
       </header>
 
-      {/* ── Split Panel ── */}
+      {/* Split Layout */}
       <main className={styles.splitLayout}>
-        {/* Left — Data Selector */}
         <div className={styles.leftCol}>
           <div className={styles.panelLabel}>
             <span className={styles.panelLabelDot} style={{ background: '#a78bfa' }} />
@@ -689,7 +698,6 @@ export default function IPLookup() {
           />
         </div>
 
-        {/* Right — Live Demo */}
         <div className={styles.rightCol}>
           <div className={styles.panelLabel}>
             <span className={styles.panelLabelDot} style={{ background: '#38bdf8' }} />
