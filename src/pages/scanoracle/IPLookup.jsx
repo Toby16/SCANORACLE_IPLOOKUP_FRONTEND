@@ -9,102 +9,87 @@ import styles from './IPLookup.module.css'
 function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Ghost IP Logo — ghost holding a magnifying glass over a globe/network node
+// Exact match to the first image — Soft glowing blue circle
 // ─────────────────────────────────────────────────────────────────────────────
-function GhostIPLogo({ size = 64, animated = true }) {
+function GhostIPLogo({ size = 120, animated = true }) {
   return (
-    <svg
-      width={size} height={size}
-      viewBox="0 0 80 80"
-      fill="none"
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 120 120" 
+      fill="none" 
       xmlns="http://www.w3.org/2000/svg"
       className={animated ? styles.logoAnimated : ''}
-      aria-hidden="true"
     >
-      <defs>
-        <radialGradient id="ghostBody" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.85" />
-        </radialGradient>
-        <radialGradient id="ghostGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="globeGrad" cx="40%" cy="35%" r="60%">
-          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#0284c7" stopOpacity="0.8" />
-        </radialGradient>
-        <filter id="ghostShadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#7c3aed" floodOpacity="0.45" />
-        </filter>
-        <filter id="magnifyGlow">
-          <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor="#38bdf8" floodOpacity="0.6" />
-        </filter>
-        <clipPath id="globeClip">
-          <circle cx="54" cy="50" r="10" />
-        </clipPath>
-      </defs>
-
-      {/* Ambient glow behind ghost */}
-      <ellipse cx="32" cy="44" rx="22" ry="18" fill="url(#ghostGlow)" className={styles.logoGlow} />
-
-      {/* Ghost body */}
-      <g filter="url(#ghostShadow)" className={styles.ghostBody}>
-        {/* Main ghost shape */}
-        <path
-          d="M14 42 C14 26 22 14 32 14 C42 14 50 26 50 42 L50 58 C50 58 46 54 42 58 C38 62 36 58 32 58 C28 58 26 62 22 58 C18 54 14 58 14 58 Z"
-          fill="url(#ghostBody)"
-        />
-        {/* Ghost eyes */}
-        <ellipse cx="26" cy="38" rx="3.5" ry="4" fill="#0a0e1a" opacity="0.85" />
-        <ellipse cx="38" cy="38" rx="3.5" ry="4" fill="#0a0e1a" opacity="0.85" />
-        {/* Eye shine */}
-        <circle cx="27.2" cy="36.5" r="1.1" fill="white" opacity="0.7" />
-        <circle cx="39.2" cy="36.5" r="1.1" fill="white" opacity="0.7" />
-      </g>
-
-      {/* Ghost right arm extended toward magnifier */}
-      <path
-        d="M48 40 Q54 36 56 38"
-        stroke="#a78bfa"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        opacity="0.9"
-        className={styles.ghostArm}
+      {/* Dark rounded square background */}
+      <rect 
+        x="12" 
+        y="12" 
+        width="96" 
+        height="96" 
+        rx="28" 
+        fill="#0f172a" 
+        stroke="#1e2937" 
+        strokeWidth="9"
       />
 
-      {/* Globe / network node */}
-      <g filter="url(#magnifyGlow)" className={styles.globeSpin}>
-        <circle cx="54" cy="50" r="10" fill="url(#globeGrad)" opacity="0.9" />
-        {/* Latitude lines */}
-        <ellipse cx="54" cy="50" rx="10" ry="4" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" fill="none" />
-        {/* Longitude arc */}
-        <path d="M54 40 Q58 50 54 60" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" fill="none" />
-        <path d="M54 40 Q50 50 54 60" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" fill="none" />
-        {/* Vertical/horizontal cross */}
-        <line x1="44" y1="50" x2="64" y2="50" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
-        <line x1="54" y1="40" x2="54" y2="60" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
-        {/* Pin / location dot */}
-        <circle cx="57" cy="47" r="1.8" fill="#fbbf24" />
-        <path d="M57 47 L57 43" stroke="#fbbf24" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
-      </g>
+      {/* Large outer soft glow */}
+      <circle 
+        cx="60" 
+        cy="60" 
+        r="41" 
+        fill="none" 
+        stroke="#22d3ee" 
+        strokeWidth="11" 
+        strokeOpacity="0.25"
+        className={animated ? styles.outerGlow : ''}
+      />
 
-      {/* Magnifying glass over the globe */}
-      <g filter="url(#magnifyGlow)" className={styles.magnifier}>
-        <circle cx="54" cy="50" r="12" stroke="#38bdf8" strokeWidth="2" fill="none" opacity="0.75" />
-        {/* Handle */}
-        <line x1="63" y1="59" x2="70" y2="67" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" />
-        {/* Shine inside lens */}
-        <path d="M46 44 Q48 42 51 42" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.35" />
-      </g>
+      {/* Main bright cyan ring */}
+      <circle 
+        cx="60" 
+        cy="60" 
+        r="34" 
+        fill="none" 
+        stroke="#67e8f9" 
+        strokeWidth="6.5"
+        className={animated ? styles.mainRing : ''}
+      />
 
-      {/* Data packets pinging from globe */}
-      <circle cx="44" cy="50" r="1.2" fill="#38bdf8" className={styles.ping1} />
-      <circle cx="54" cy="40" r="1.2" fill="#a78bfa" className={styles.ping2} />
-      <circle cx="64" cy="50" r="1.2" fill="#38bdf8" className={styles.ping3} />
+      {/* Inner soft glow ring */}
+      <circle 
+        cx="60" 
+        cy="60" 
+        r="26" 
+        fill="none" 
+        stroke="#a5f3fc" 
+        strokeWidth="4" 
+        strokeOpacity="0.75"
+      />
+
+      {/* Very subtle inner circle */}
+      <circle 
+        cx="60" 
+        cy="60" 
+        r="14" 
+        fill="none" 
+        stroke="#e0f2fe" 
+        strokeWidth="3" 
+        strokeOpacity="0.9"
+      />
+
+      {/* Center bright dot */}
+      <circle 
+        cx="60" 
+        cy="60" 
+        r="4.5" 
+        fill="#e0f2fe"
+        className={animated ? styles.dotPulse : ''}
+      />
     </svg>
-  )
+  );
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data field metadata — maps each API key to display label + category
@@ -666,22 +651,22 @@ export default function IPLookup() {
           <h1 className={styles.heroTitle}>
             <span className={styles.heroAccent}>SCAN</span>ORACLE
           </h1>
-          <p className={styles.heroSub}>IP Intelligence &amp; Data Marketplace</p>
+          <p className={styles.heroSub}>IP Lookup &amp; Intelligence 🔎</p>
         </div>
         <div className={styles.heroStats}>
           <div className={styles.heroStat}>
-            <span className={styles.heroStatNum}>42</span>
-            <span className={styles.heroStatLabel}>Data Fields</span>
+            <span className={styles.heroStatNum}>42+</span>
+            <span className={styles.heroStatLabel}>Data Fields 🛢️</span>
           </div>
           <div className={styles.heroStatDiv} />
           <div className={styles.heroStat}>
             <span className={styles.heroStatNum}>Live</span>
-            <span className={styles.heroStatLabel}>Real-Time</span>
+            <span className={styles.heroStatLabel}>Real-Time 🚀</span>
           </div>
           <div className={styles.heroStatDiv} />
           <div className={styles.heroStat}>
-            <span className={styles.heroStatNum}>99.9%</span>
-            <span className={styles.heroStatLabel}>Accuracy</span>
+            <span className={styles.heroStatNum}>110%</span>
+            <span className={styles.heroStatLabel}>Accuracy ⚡</span>
           </div>
         </div>
       </header>
@@ -708,7 +693,7 @@ export default function IPLookup() {
         <div className={styles.rightCol}>
           <div className={styles.panelLabel}>
             <span className={styles.panelLabelDot} style={{ background: '#38bdf8' }} />
-            Live Demo — Your IP
+            Your IP Address
             <span className={styles.panelLabelBadge}>REAL DATA</span>
           </div>
           <div className={styles.livePanelWrap}>
