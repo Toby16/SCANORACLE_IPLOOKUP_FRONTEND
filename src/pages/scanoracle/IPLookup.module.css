@@ -23,13 +23,16 @@
   --text2:        #94a3b8;
   --text3:        #475569;
   --text4:        #2d3550;
-  --mono:         'Courier New', Courier, monospace;
+  
+  /* Unified with Dashboard */
   --sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:         'Courier New', Courier, monospace;   /* kept for data fields */
+  
   --nav-h:        54px;
   --radius:       10px;
 }
 
-/* ── Page shell ── */
+/* Page shell - now matches dashboard */
 .page {
   min-height: 100vh;
   display: flex;
@@ -37,7 +40,7 @@
   align-items: center;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--sans);
+  font-family: var(--sans);           /* ← Unified */
   position: relative;
   overflow-x: hidden;
 }
@@ -188,7 +191,7 @@
 
 .heroText { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .heroTitle {
-  font-family: var(--mono); font-size: clamp(2rem, 5vw, 3rem);
+  font-family: var(--sans); font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700; color: var(--text); letter-spacing: 0.2em; margin: 0;
   text-shadow: 0 0 50px rgba(167,139,250,0.2);
 }
@@ -225,9 +228,9 @@
 
 .panelLabel {
   display: flex; align-items: center; gap: 8px;
-  font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.13em;
   text-transform: uppercase; color: var(--text3);
-  font-family: var(--mono);
+  font-family: var(--sans);
 }
 .panelLabelDot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .panelLabelBadge {
@@ -480,7 +483,7 @@
   0%, 100% { box-shadow: 0 0 4px var(--green); }
   50%       { box-shadow: 0 0 10px var(--green), 0 0 20px rgba(52,211,153,0.3); }
 }
-.liveIPText  { font-family: var(--mono); font-size: 0.92rem; font-weight: 700; color: var(--text); letter-spacing: 0.06em; }
+.liveIPText  { font-family: var(--sans); font-size: 0.92rem; font-weight: 700; color: var(--text); letter-spacing: 0.03em; }
 .liveIPVersion {
   font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--blue); background: var(--blue-dim); border: 1px solid rgba(56,189,248,0.25);
@@ -495,7 +498,7 @@
 }
 .threatHeader { display: flex; justify-content: space-between; align-items: center; }
 .threatLabel  { font-size: 0.73rem; font-weight: 600; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
-.threatVal    { font-family: var(--mono); font-size: 1rem; font-weight: 700; }
+.threatVal    { font-family: var(--sans); font-size: 1rem; font-weight: 700; }
 .threatBar    { height: 4px; background: var(--border2); border-radius: 4px; overflow: hidden; }
 .threatFill   { height: 100%; border-radius: 4px; transition: width 1s ease-out; }
 .threatBadges { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -519,7 +522,7 @@
 .liveCatLabel {
   font-size: 0.64rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
   padding: 0 6px 6px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
-  font-family: var(--mono);
+  font-family: var(--sans);
 }
 
 .liveRow {
@@ -576,6 +579,38 @@
   display: flex; align-items: center; gap: 8px;
   background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25);
   border-radius: var(--radius); padding: 14px 18px; color: var(--red); font-size: 0.82rem;
+}
+
+/* Reduce mono on headings and labels */
+.heroTitle,
+.navBrandText,
+.panelLabel,
+.selectorTitle,
+.liveIPText,
+.threatVal,
+.fieldLabel,
+.liveCatLabel {
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: -0.01em;   /* dashboard style */
+}
+
+/* Keep mono only where it makes sense (data values, codes, etc.) */
+.liveRowVal,
+.successTxCode,
+.navBalAmt,
+.selectorCountNum,
+.fieldPrice,
+.daysInput,
+.heroStatNum,
+.heroSub {
+  font-family: var(--mono);
+}
+
+/* Make nav brand cleaner like dashboard */
+.navBrandText {
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
 }
 
 /* ── Footer ── */
