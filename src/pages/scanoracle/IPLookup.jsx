@@ -183,7 +183,7 @@ function LiveIPPanel({ data, loading, error }) {
         })}
       </div>
       <div className={styles.liveDisclaimer}>
-        <span>🔒</span> A live scan of your current IP address — everything we say is facts!.
+        <span>🔒</span> Everything we say is facts!. 💯
       </div>
     </div>
   )
@@ -518,7 +518,7 @@ export default function IPLookup() {
           <div className={styles.panelLabel}>
             <span className={styles.panelLabelDot} style={{ background: '#38bdf8' }} />
             Your IP Address
-            <span className={styles.panelLabelBadge}>REAL DATA</span>
+            <span className={styles.panelLabelBadge}>live scan</span>
           </div>
           <div className={styles.livePanelWrap}>
             <LiveIPPanel data={liveData} loading={liveLoading} error={liveError} />
