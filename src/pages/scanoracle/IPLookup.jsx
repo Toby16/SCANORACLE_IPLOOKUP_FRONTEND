@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearToken, getToken } from '../../services/authService.js'
 import { getUserProfile } from '../../services/authService.js'
@@ -9,8 +9,8 @@ import styles from './IPLookup.module.css'
 function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// New logo: dark rounded square + glowing cyan ring + plus icon
-// Matches the uploaded reference image
+// Exact replica of the reference image:
+// Dark rounded square → single cyan circle ring → centered plus cross
 // ─────────────────────────────────────────────────────────────────────────────
 function GhostIPLogo({ size = 120, animated = true }) {
   return (
@@ -23,132 +23,64 @@ function GhostIPLogo({ size = 120, animated = true }) {
       className={animated ? styles.logoAnimated : ''}
     >
       {/* Dark rounded square background */}
-      <rect
-        x="8"
-        y="8"
-        width="104"
-        height="104"
-        rx="26"
-        fill="#0b0f1a"
-        stroke="#1a2035"
-        strokeWidth="2"
-      />
+      <rect x="0" y="0" width="120" height="120" rx="26" fill="#0d1117" />
 
-      {/* Outermost faint glow halo */}
-      <circle
-        cx="60"
-        cy="60"
-        r="42"
-        fill="none"
-        stroke="#22d3ee"
-        strokeWidth="8"
-        strokeOpacity="0.08"
-      />
+      {/* Single cyan circle ring */}
+      <circle cx="60" cy="60" r="32" stroke="#22c7e0" strokeWidth="1.8" />
 
-      {/* Soft mid glow ring */}
-      <circle
-        cx="60"
-        cy="60"
-        r="36"
-        fill="none"
-        stroke="#22d3ee"
-        strokeWidth="5"
-        strokeOpacity="0.18"
-      />
-
-      {/* Main bright cyan ring */}
-      <circle
-        cx="60"
-        cy="60"
-        r="29"
-        fill="none"
-        stroke="#67e8f9"
-        strokeWidth="2.2"
-        strokeOpacity="0.95"
-        className={animated ? styles.mainRing : ''}
-      />
-
-      {/* Inner fill — very dark translucent blue center */}
-      <circle
-        cx="60"
-        cy="60"
-        r="26"
-        fill="rgba(34,211,238,0.04)"
-      />
-
-      {/* Plus / cross icon — matching the uploaded image */}
-      {/* Vertical bar */}
-      <rect
-        x="57.5"
-        y="46"
-        width="5"
-        height="28"
-        rx="2.5"
-        fill="#a5f3fc"
-        fillOpacity="0.92"
-        className={animated ? styles.dotPulse : ''}
-      />
-      {/* Horizontal bar */}
-      <rect
-        x="46"
-        y="57.5"
-        width="28"
-        height="5"
-        rx="2.5"
-        fill="#a5f3fc"
-        fillOpacity="0.92"
-        className={animated ? styles.dotPulse : ''}
-      />
+      {/* Plus cross — vertical bar */}
+      <line x1="60" y1="48" x2="60" y2="72" stroke="#22c7e0" strokeWidth="2" strokeLinecap="round" />
+      {/* Plus cross — horizontal bar */}
+      <line x1="48" y1="60" x2="72" y2="60" stroke="#22c7e0" strokeWidth="2" strokeLinecap="round" />
     </svg>
   )
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
-// Data field metadata — maps each API key to display label + category
+// Data field metadata
 // ─────────────────────────────────────────────────────────────────────────────
 const FIELD_META = {
-  asn:                     { label: 'ASN',                    cat: 'Network',   icon: '⬡' },
-  hostname:                { label: 'Hostname',               cat: 'Network',   icon: '⬡' },
-  city:                    { label: 'City',                   cat: 'Location',  icon: '◎' },
-  region:                  { label: 'Region',                 cat: 'Location',  icon: '◎' },
-  country:                 { label: 'Country Code',           cat: 'Location',  icon: '◎' },
-  country_name:            { label: 'Country Name',           cat: 'Location',  icon: '◎' },
-  latitude:                { label: 'Latitude',               cat: 'Location',  icon: '◎' },
-  longitude:               { label: 'Longitude',              cat: 'Location',  icon: '◎' },
-  organization:            { label: 'Organization',           cat: 'Network',   icon: '⬡' },
-  timezone:                { label: 'Timezone',               cat: 'Location',  icon: '◎' },
-  continent:               { label: 'Continent Code',         cat: 'Location',  icon: '◎' },
-  continent_name:          { label: 'Continent Name',         cat: 'Location',  icon: '◎' },
-  ip_version:              { label: 'IP Version',             cat: 'Network',   icon: '⬡' },
-  country_alpha_3:         { label: 'Alpha-3 Code',           cat: 'Country',   icon: '⊞' },
-  postal_code:             { label: 'Postal Code',            cat: 'Location',  icon: '◎' },
-  country_currency_code:   { label: 'Currency Code',          cat: 'Country',   icon: '⊞' },
-  country_currency_symbol: { label: 'Currency Symbol',        cat: 'Country',   icon: '⊞' },
-  european_union_member:   { label: 'EU Member',              cat: 'Country',   icon: '⊞' },
-  country_current_time:    { label: 'Local Time',             cat: 'Time',      icon: '◷' },
-  country_current_time_24hr:{ label: 'Time (24hr)',           cat: 'Time',      icon: '◷' },
-  country_current_time_12hr:{ label: 'Time (12hr)',           cat: 'Time',      icon: '◷' },
-  country_current_time_iso: { label: 'Time (ISO)',            cat: 'Time',      icon: '◷' },
-  country_flag_icon:       { label: 'Flag Icon URL',          cat: 'Country',   icon: '⊞' },
-  network_status:          { label: 'Network Status',         cat: 'Network',   icon: '⬡' },
-  network_range:           { label: 'Network Range',          cat: 'Network',   icon: '⬡' },
-  network_start_address:   { label: 'Range Start',            cat: 'Network',   icon: '⬡' },
-  network_end_address:     { label: 'Range End',              cat: 'Network',   icon: '⬡' },
-  network_registration:    { label: 'Registered',             cat: 'Network',   icon: '⬡' },
-  network_last_changed:    { label: 'Last Changed',           cat: 'Network',   icon: '⬡' },
-  contact_email:           { label: 'Contact Email',          cat: 'Contact',   icon: '✉' },
-  contact_phone:           { label: 'Contact Phone',          cat: 'Contact',   icon: '✉' },
-  contact_address:         { label: 'Contact Address',        cat: 'Contact',   icon: '✉' },
-  is_tor:                  { label: 'TOR Exit Node',          cat: 'Threat',    icon: '⚑' },
-  is_blacklisted:          { label: 'Blacklisted',            cat: 'Threat',    icon: '⚑' },
-  threat_score:            { label: 'Threat Score',           cat: 'Threat',    icon: '⚑' },
-  language:                { label: 'Language',               cat: 'Country',   icon: '⊞' },
-  mobile_calling_code:     { label: 'Calling Code',           cat: 'Country',   icon: '⊞' },
-  tld:                     { label: 'TLD',                    cat: 'Country',   icon: '' },
-  fifa:                    { label: 'FIFA Code',              cat: 'Country',   icon: '' },
-  population:              { label: 'Population',             cat: 'Country',   icon: '' },
-  maps:                    { label: 'Maps Link',              cat: 'Location',  icon: '◎' },
+  asn:                      { label: 'ASN',                cat: 'Network',  icon: '⬡' },
+  hostname:                 { label: 'Hostname',            cat: 'Network',  icon: '⬡' },
+  city:                     { label: 'City',                cat: 'Location', icon: '◎' },
+  region:                   { label: 'Region',              cat: 'Location', icon: '◎' },
+  country:                  { label: 'Country Code',        cat: 'Location', icon: '◎' },
+  country_name:             { label: 'Country Name',        cat: 'Location', icon: '◎' },
+  latitude:                 { label: 'Latitude',            cat: 'Location', icon: '◎' },
+  longitude:                { label: 'Longitude',           cat: 'Location', icon: '◎' },
+  organization:             { label: 'Organization',        cat: 'Network',  icon: '⬡' },
+  timezone:                 { label: 'Timezone',            cat: 'Location', icon: '◎' },
+  continent:                { label: 'Continent Code',      cat: 'Location', icon: '◎' },
+  continent_name:           { label: 'Continent Name',      cat: 'Location', icon: '◎' },
+  ip_version:               { label: 'IP Version',          cat: 'Network',  icon: '⬡' },
+  country_alpha_3:          { label: 'Alpha-3 Code',        cat: 'Country',  icon: '⊞' },
+  postal_code:              { label: 'Postal Code',         cat: 'Location', icon: '◎' },
+  country_currency_code:    { label: 'Currency Code',       cat: 'Country',  icon: '⊞' },
+  country_currency_symbol:  { label: 'Currency Symbol',     cat: 'Country',  icon: '⊞' },
+  european_union_member:    { label: 'EU Member',           cat: 'Country',  icon: '⊞' },
+  country_current_time:     { label: 'Local Time',          cat: 'Time',     icon: '◷' },
+  country_current_time_24hr:{ label: 'Time (24hr)',         cat: 'Time',     icon: '◷' },
+  country_current_time_12hr:{ label: 'Time (12hr)',         cat: 'Time',     icon: '◷' },
+  country_current_time_iso: { label: 'Time (ISO)',          cat: 'Time',     icon: '◷' },
+  country_flag_icon:        { label: 'Flag Icon URL',       cat: 'Country',  icon: '⊞' },
+  network_status:           { label: 'Network Status',      cat: 'Network',  icon: '⬡' },
+  network_range:            { label: 'Network Range',       cat: 'Network',  icon: '⬡' },
+  network_start_address:    { label: 'Range Start',         cat: 'Network',  icon: '⬡' },
+  network_end_address:      { label: 'Range End',           cat: 'Network',  icon: '⬡' },
+  network_registration:     { label: 'Registered',          cat: 'Network',  icon: '⬡' },
+  network_last_changed:     { label: 'Last Changed',        cat: 'Network',  icon: '⬡' },
+  contact_email:            { label: 'Contact Email',       cat: 'Contact',  icon: '✉' },
+  contact_phone:            { label: 'Contact Phone',       cat: 'Contact',  icon: '✉' },
+  contact_address:          { label: 'Contact Address',     cat: 'Contact',  icon: '✉' },
+  is_tor:                   { label: 'TOR Exit Node',       cat: 'Threat',   icon: '⚑' },
+  is_blacklisted:           { label: 'Blacklisted',         cat: 'Threat',   icon: '⚑' },
+  threat_score:             { label: 'Threat Score',        cat: 'Threat',   icon: '⚑' },
+  language:                 { label: 'Language',            cat: 'Country',  icon: '⊞' },
+  mobile_calling_code:      { label: 'Calling Code',        cat: 'Country',  icon: '⊞' },
+  tld:                      { label: 'TLD',                 cat: 'Country',  icon: '' },
+  fifa:                     { label: 'FIFA Code',           cat: 'Country',  icon: '' },
+  population:               { label: 'Population',         cat: 'Country',  icon: '' },
+  maps:                     { label: 'Maps Link',           cat: 'Location', icon: '◎' },
 }
 
 const CATEGORIES = ['All', 'Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
@@ -171,9 +103,6 @@ function formatValue(key, val) {
   return String(val)
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Live IP Result Panel (right side)
-// ─────────────────────────────────────────────────────────────────────────────
 function LiveIPPanel({ data, loading, error }) {
   if (loading) return (
     <div className={styles.liveLoading}>
@@ -186,19 +115,12 @@ function LiveIPPanel({ data, loading, error }) {
       <p className={styles.liveLoadingText}>Scanning your IP…</p>
     </div>
   )
-
-  if (error) return (
-    <div className={styles.liveError}>
-      <span>⚠</span> {error}
-    </div>
-  )
-
+  if (error) return <div className={styles.liveError}><span>⚠</span> {error}</div>
   if (!data) return null
 
   const d = data.data
   const threatNum = parseInt(d.threat_score) || 0
   const threatColor = threatNum < 30 ? '#34d399' : threatNum < 60 ? '#fbbf24' : '#ef4444'
-
   const DISPLAY_CATEGORIES = ['Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
 
   return (
@@ -213,17 +135,13 @@ function LiveIPPanel({ data, loading, error }) {
           <img src={d.country_flag_icon} alt={d.country_name} className={styles.liveFlag} />
         )}
       </div>
-
       <div className={styles.threatWrap}>
         <div className={styles.threatHeader}>
           <span className={styles.threatLabel}>Threat Score</span>
           <span className={styles.threatVal} style={{ color: threatColor }}>{d.threat_score}</span>
         </div>
         <div className={styles.threatBar}>
-          <div
-            className={styles.threatFill}
-            style={{ width: d.threat_score, background: threatColor }}
-          />
+          <div className={styles.threatFill} style={{ width: d.threat_score, background: threatColor }} />
         </div>
         <div className={styles.threatBadges}>
           <span className={`${styles.threatBadge} ${d.is_tor ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
@@ -232,12 +150,9 @@ function LiveIPPanel({ data, loading, error }) {
           <span className={`${styles.threatBadge} ${d.is_blacklisted ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
             {d.is_blacklisted ? '● Blacklisted' : '○ Clean'}
           </span>
-          <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>
-            ● {d.network_status}
-          </span>
+          <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>● {d.network_status}</span>
         </div>
       </div>
-
       <div className={styles.liveFields}>
         {DISPLAY_CATEGORIES.map(cat => {
           const fields = Object.entries(FIELD_META).filter(([, m]) => m.cat === cat)
@@ -253,9 +168,7 @@ function LiveIPPanel({ data, loading, error }) {
                 if (key === 'maps') return (
                   <div key={key} className={styles.liveRow}>
                     <span className={styles.liveRowKey}>{meta.label}</span>
-                    <a href={raw} target="_blank" rel="noreferrer" className={styles.liveLink}>
-                      View Map ↗
-                    </a>
+                    <a href={raw} target="_blank" rel="noreferrer" className={styles.liveLink}>View Map ↗</a>
                   </div>
                 )
                 return (
@@ -269,7 +182,6 @@ function LiveIPPanel({ data, loading, error }) {
           )
         })}
       </div>
-
       <div className={styles.liveDisclaimer}>
         <span>🔒</span> This is a live scan of your current IP — demonstrating real-time accuracy.
       </div>
@@ -277,9 +189,6 @@ function LiveIPPanel({ data, loading, error }) {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Data Selector Panel (left side)
-// ─────────────────────────────────────────────────────────────────────────────
 function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPurchaseSuccess, userBalances }) {
   const [selected, setSelected] = useState({})
   const [daysFor, setDaysFor] = useState(30)
@@ -295,24 +204,12 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
     setSelected(init)
   }, [])
 
-  const toggleField = (key) => {
-    setSelected(prev => ({ ...prev, [key]: !prev[key] }))
-  }
-
-  const selectAll = () => {
-    const next = {}
-    Object.keys(FIELD_META).forEach(k => { next[k] = true })
-    setSelected(next)
-  }
-
-  const clearAll = () => {
-    const next = {}
-    Object.keys(FIELD_META).forEach(k => { next[k] = false })
-    setSelected(next)
-  }
+  const toggleField = key => setSelected(prev => ({ ...prev, [key]: !prev[key] }))
+  const selectAll = () => { const n = {}; Object.keys(FIELD_META).forEach(k => { n[k] = true }); setSelected(n) }
+  const clearAll  = () => { const n = {}; Object.keys(FIELD_META).forEach(k => { n[k] = false }); setSelected(n) }
 
   const selectedCount = Object.values(selected).filter(Boolean).length
-  const totalFields = Object.keys(FIELD_META).length
+  const totalFields   = Object.keys(FIELD_META).length
 
   const totalCost = lookups ? Object.entries(selected).reduce((sum, [key, on]) => {
     if (!on) return sum
@@ -325,38 +222,30 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
     if (selectedCount === 0) { setSubmitError('Select at least one data field.'); return }
     setSubmitting(true); setSubmitError(null); setTxId(null)
     try {
-      const body = { ...selected, days_for: daysFor, auto_renew: autoRenew }
       const res = await fetch('https://security.appcardy.com/api/v1.0/scanoracle/payment/create/ip', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'accept': 'application/json',
-        },
-        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'accept': 'application/json' },
+        body: JSON.stringify({ ...selected, days_for: daysFor, auto_renew: autoRenew }),
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.message || json.detail || 'Purchase failed.')
       setTxId(json.data?.transaction_id)
       onPurchaseSuccess?.(json.data)
-    } catch (e) {
-      setSubmitError(e.message)
-    } finally { setSubmitting(false) }
+    } catch (e) { setSubmitError(e.message) }
+    finally { setSubmitting(false) }
   }
 
-  const getFieldInfo = (key) => {
+  const getFieldInfo = key => {
     if (!lookups || !Array.isArray(lookups)) return null
     return lookups.find?.(l => l.field_name === key || l.key === key || l.name === key) || null
   }
 
-  if (lookupsLoading) {
-    return (
-      <div className={styles.selectorLoading}>
-        <div className={styles.selectorSpinner} />
-        <p>Loading data catalog…</p>
-      </div>
-    )
-  }
+  if (lookupsLoading) return (
+    <div className={styles.selectorLoading}>
+      <div className={styles.selectorSpinner} />
+      <p>Loading data catalog…</p>
+    </div>
+  )
 
   if (txId) return (
     <div className={styles.successPanel}>
@@ -395,9 +284,7 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
             className={`${styles.quickBtn} ${activeTab === cat ? styles.quickBtnActive : ''}`}
             style={activeTab === cat ? { borderColor: CAT_COLORS[cat].text, color: CAT_COLORS[cat].text } : {}}
             onClick={() => setActiveTab(cat)}
-          >
-            {cat}
-          </button>
+          >{cat}</button>
         ))}
       </div>
 
@@ -411,31 +298,24 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
               <label
                 key={key}
                 className={`${styles.fieldRow} ${isOn ? styles.fieldRowOn : ''}`}
-                style={isOn ? {
-                  borderColor: CAT_COLORS[meta.cat]?.border || 'rgba(255,255,255,0.2)',
-                  background: CAT_COLORS[meta.cat]?.bg || 'transparent'
-                } : {}}
+                style={isOn ? { borderColor: CAT_COLORS[meta.cat]?.border, background: CAT_COLORS[meta.cat]?.bg } : {}}
               >
-                <div className={`${styles.checkbox} ${isOn ? styles.checkboxOn : ''}`}
-                  style={isOn ? { background: CAT_COLORS[meta.cat]?.text || '#fff', borderColor: CAT_COLORS[meta.cat]?.text || '#fff' } : {}}>
+                <div
+                  className={`${styles.checkbox} ${isOn ? styles.checkboxOn : ''}`}
+                  style={isOn ? { background: CAT_COLORS[meta.cat]?.text, borderColor: CAT_COLORS[meta.cat]?.text } : {}}
+                >
                   {isOn && <span className={styles.checkmark}>✓</span>}
                 </div>
                 <input type="checkbox" checked={isOn} onChange={() => toggleField(key)} className={styles.hiddenCheck} />
                 <div className={styles.fieldInfo}>
                   <span className={styles.fieldLabel}>{meta.label}</span>
-                  {info?.description && (
-                    <span className={styles.fieldDesc}>{info.description}</span>
-                  )}
+                  {info?.description && <span className={styles.fieldDesc}>{info.description}</span>}
                 </div>
                 {info?.price_per_day !== undefined && (
-                  <span className={styles.fieldPrice}>
-                    ₦{Number(info.price_per_day).toLocaleString()}<sub>/day</sub>
-                  </span>
+                  <span className={styles.fieldPrice}>₦{Number(info.price_per_day).toLocaleString()}<sub>/day</sub></span>
                 )}
                 {info?.price !== undefined && !info?.price_per_day && (
-                  <span className={styles.fieldPrice}>
-                    ₦{Number(info.price).toLocaleString()}<sub>/day</sub>
-                  </span>
+                  <span className={styles.fieldPrice}>₦{Number(info.price).toLocaleString()}<sub>/day</sub></span>
                 )}
               </label>
             )
@@ -450,25 +330,15 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
           </div>
           <div className={styles.daysControl}>
             {[7, 14, 30, 60, 90].map(d => (
-              <button
-                key={d}
-                className={`${styles.dayChip} ${daysFor === d ? styles.dayChipActive : ''}`}
-                onClick={() => setDaysFor(d)}
-              >
-                {d}d
-              </button>
+              <button key={d} className={`${styles.dayChip} ${daysFor === d ? styles.dayChipActive : ''}`} onClick={() => setDaysFor(d)}>{d}d</button>
             ))}
             <input
-              type="number"
-              min={1} max={365}
-              value={daysFor}
+              type="number" min={1} max={365} value={daysFor}
               onChange={e => setDaysFor(Math.max(1, Math.min(365, parseInt(e.target.value) || 1)))}
               className={styles.daysInput}
-              title="Custom days"
             />
           </div>
         </div>
-
         <div className={styles.configRow}>
           <div className={styles.configLabel}>
             <span className={styles.configIcon}>↺</span>
@@ -478,8 +348,7 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
           <button
             className={`${styles.toggle} ${autoRenew ? styles.toggleOn : ''}`}
             onClick={() => setAutoRenew(o => !o)}
-            role="switch"
-            aria-checked={autoRenew}
+            role="switch" aria-checked={autoRenew}
           >
             <span className={styles.toggleThumb} />
             <span className={styles.toggleLabel}>{autoRenew ? 'ON' : 'OFF'}</span>
@@ -489,134 +358,78 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
 
       {selectedCount > 0 && (
         <div className={styles.costSummary}>
-          <div className={styles.costRow}>
-            <span>Fields selected</span>
-            <span>{selectedCount}</span>
-          </div>
-          <div className={styles.costRow}>
-            <span>Duration</span>
-            <span>{daysFor} days</span>
-          </div>
-          {totalCost > 0 && (
-            <>
-              <div className={styles.costDivider} />
-              <div className={`${styles.costRow} ${styles.costTotal}`}>
-                <span>Estimated Total</span>
-                <span>₦{(totalCost * daysFor).toLocaleString()}</span>
-              </div>
-            </>
-          )}
+          <div className={styles.costRow}><span>Fields selected</span><span>{selectedCount}</span></div>
+          <div className={styles.costRow}><span>Duration</span><span>{daysFor} days</span></div>
+          {totalCost > 0 && <>
+            <div className={styles.costDivider} />
+            <div className={`${styles.costRow} ${styles.costTotal}`}>
+              <span>Estimated Total</span>
+              <span>₦{(totalCost * daysFor).toLocaleString()}</span>
+            </div>
+          </>}
         </div>
       )}
 
-      {submitError && (
-        <div className={styles.submitError}>
-          <span>⚠</span> {submitError}
-        </div>
-      )}
+      {submitError && <div className={styles.submitError}><span>⚠</span> {submitError}</div>}
 
       <button
         className={`${styles.purchaseBtn} ${selectedCount === 0 || submitting ? styles.purchaseBtnDisabled : ''}`}
         onClick={handleSubmit}
         disabled={selectedCount === 0 || submitting}
       >
-        {submitting ? (
-          <>
-            <span className={styles.btnSpinner} />
-            Processing…
-          </>
-        ) : (
-          <>
-            ⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}
-            {autoRenew && ' · Auto-Renew'}
-          </>
+        {submitting ? <><span className={styles.btnSpinner} />Processing…</> : (
+          <>⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}{autoRenew && ' · Auto-Renew'}</>
         )}
       </button>
     </div>
   )
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Page
-// ─────────────────────────────────────────────────────────────────────────────
 export default function IPLookup() {
   usePageTitle('SCANORACLE — IP Lookup | Ghostroute')
   useAuthGuard()
   useTokenRefresh()
   const navigate = useNavigate()
 
-  const [user, setUser]               = useState(null)
-  const [liveData, setLiveData]       = useState(null)
-  const [liveLoading, setLiveLoading] = useState(true)
-  const [liveError, setLiveError]     = useState(null)
-  const [lookups, setLookups]         = useState(null)
-  const [lookupsLoading, setLookupsLoading] = useState(() => !!getToken())
-  const [lookupsError, setLookupsError]     = useState(null)
+  const [user, setUser]                         = useState(null)
+  const [liveData, setLiveData]                 = useState(null)
+  const [liveLoading, setLiveLoading]           = useState(true)
+  const [liveError, setLiveError]               = useState(null)
+  const [lookups, setLookups]                   = useState(null)
+  const [lookupsLoading, setLookupsLoading]     = useState(() => !!getToken())
+  const [lookupsError, setLookupsError]         = useState(null)
+  const [token, setToken]                       = useState(() => getToken())
 
-  const [token, setToken] = useState(() => getToken())
-
-  useEffect(() => {
-    const t = getToken()
-    if (t !== token) setToken(t)
-  }, [])
+  useEffect(() => { const t = getToken(); if (t !== token) setToken(t) }, [])
 
   useEffect(() => {
     if (!token) return
-    getUserProfile(token)
-      .then(r => setUser(r.user))
-      .catch(() => {})
+    getUserProfile(token).then(r => setUser(r.user)).catch(() => {})
   }, [token])
 
   useEffect(() => {
     setLiveLoading(true)
-    fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/ip_address', {
-      headers: { 'accept': 'application/json' }
-    })
+    fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/ip_address', { headers: { 'accept': 'application/json' } })
       .then(r => r.json())
       .then(json => { setLiveData(json); setLiveLoading(false) })
-      .catch(e => { setLiveError('Failed to fetch your IP data.'); setLiveLoading(false) })
+      .catch(() => { setLiveError('Failed to fetch your IP data.'); setLiveLoading(false) })
   }, [])
 
   useEffect(() => {
-    if (!token) {
-      setLookupsLoading(false)
-      return
-    }
-
+    if (!token) { setLookupsLoading(false); return }
     let cancelled = false
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 8000)
-
     setLookupsLoading(true)
-
     fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/all_lookups', {
       signal: controller.signal,
       headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
     })
-      .then(r => {
-        if (!r.ok) throw new Error(r.status === 401 ? 'Session expired.' : `Server error (${r.status})`)
-        return r.json()
-      })
-      .then(json => {
-        if (cancelled) return
-        const data = json.data || json.lookups || json.fields || json
-        setLookups(Array.isArray(data) ? data : [])
-      })
-      .catch(() => {
-        if (cancelled) return
-        setLookups([])
-      })
-      .finally(() => {
-        if (cancelled) return
-        clearTimeout(timeout)
-        setLookupsLoading(false)
-      })
-
-    return () => {
-      cancelled = true
-      clearTimeout(timeout)
-      controller.abort()
-    }
+      .then(r => { if (!r.ok) throw new Error(r.status === 401 ? 'Session expired.' : `Server error (${r.status})`); return r.json() })
+      .then(json => { if (cancelled) return; const data = json.data || json.lookups || json.fields || json; setLookups(Array.isArray(data) ? data : []) })
+      .catch(() => { if (cancelled) return; setLookups([]) })
+      .finally(() => { if (cancelled) return; clearTimeout(timeout); setLookupsLoading(false) })
+    return () => { cancelled = true; clearTimeout(timeout); controller.abort() }
   }, [token])
 
   const handleLogout = () => { clearToken(); navigate('/auth') }
@@ -627,7 +440,6 @@ export default function IPLookup() {
       <div className={styles.bgGlow1} aria-hidden="true" />
       <div className={styles.bgGlow2} aria-hidden="true" />
 
-      {/* Nav */}
       <nav className={styles.nav}>
         <div className={styles.navLeft}>
           <button className={styles.navBack} onClick={() => navigate('/')}>
@@ -639,9 +451,7 @@ export default function IPLookup() {
           <div className={styles.navSep} />
           <div className={styles.navBrand}>
             <GhostIPLogo size={28} animated={false} />
-            <span className={styles.navBrandText}>
-              <span className={styles.navAccent}>SCAN</span>ORACLE
-            </span>
+            <span className={styles.navBrandText}><span className={styles.navAccent}>SCAN</span>ORACLE</span>
             <span className={styles.navPill}>IP Lookup</span>
           </div>
         </div>
@@ -663,17 +473,12 @@ export default function IPLookup() {
         </div>
       </nav>
 
-      {/* Hero */}
       <header className={styles.hero}>
         <div className={styles.heroLogo}>
           <GhostIPLogo size={80} animated={true} />
-          <div className={styles.heroPulseRing} aria-hidden="true" />
-          <div className={styles.heroPulseRing2} aria-hidden="true" />
         </div>
         <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}>
-            <span className={styles.heroAccent}>SCAN</span>ORACLE
-          </h1>
+          <h1 className={styles.heroTitle}><span className={styles.heroAccent}>SCAN</span>ORACLE</h1>
           <p className={styles.heroSub}>IP Lookup &amp; Intelligence 🔎</p>
         </div>
         <div className={styles.heroStats}>
@@ -694,7 +499,6 @@ export default function IPLookup() {
         </div>
       </header>
 
-      {/* Split Layout */}
       <main className={styles.splitLayout}>
         <div className={styles.leftCol}>
           <div className={styles.panelLabel}>
@@ -710,7 +514,6 @@ export default function IPLookup() {
             userBalances={{ naira: user?.naira_balance, dollar: user?.dollar_balance }}
           />
         </div>
-
         <div className={styles.rightCol}>
           <div className={styles.panelLabel}>
             <span className={styles.panelLabelDot} style={{ background: '#38bdf8' }} />
