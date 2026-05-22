@@ -1,7 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    SCANORACLE IP Lookup — Full redesign
    Aesthetic: DigitalOcean dark × cyberpunk intelligence terminal
-   Ghost IP logo + split-panel data marketplace layout
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -23,16 +22,13 @@
   --text2:        #94a3b8;
   --text3:        #475569;
   --text4:        #2d3550;
-  
-  /* Unified with Dashboard */
   --sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --mono:         'Courier New', Courier, monospace;   /* kept for data fields */
-  
+  --mono:         'Courier New', Courier, monospace;
   --nav-h:        54px;
   --radius:       10px;
 }
 
-/* Page shell - now matches dashboard */
+/* Page shell */
 .page {
   min-height: 100vh;
   display: flex;
@@ -40,7 +36,7 @@
   align-items: center;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--sans);           /* ← Unified */
+  font-family: var(--sans);
   position: relative;
   overflow-x: hidden;
 }
@@ -65,44 +61,45 @@
   bottom: -150px; right: -100px; pointer-events: none; z-index: 0;
 }
 
-/* ============================================= */
-/*   BLUE GLOW CIRCLE ICON ANIMATIONS           */
-/* ============================================= */
+/* ══════════════════════════════════════
+   LOGO ANIMATIONS
+   ══════════════════════════════════════ */
 
+/* Gentle float for the whole SVG */
 .logoAnimated {
   animation: logoFloat 4.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.25));
 }
 
-.outerGlow {
-  animation: outerGlowPulse 3.5s ease-in-out infinite;
-}
-
+/* The main cyan ring pulses its glow */
 .mainRing {
-  animation: mainRingPulse 3s ease-in-out infinite;
+  animation: ringGlow 3s ease-in-out infinite;
 }
 
+/* The plus icon pulses brightness */
 .dotPulse {
-  animation: dotPulse 2.4s ease-in-out infinite;
+  animation: plusPulse 2.8s ease-in-out infinite;
 }
 
 @keyframes logoFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-7px); }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-7px); }
 }
 
-@keyframes outerGlowPulse {
-  0%, 100% { opacity: 0.25; }
-  50% { opacity: 0.45; }
+@keyframes ringGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(103, 232, 249, 0.5));
+    opacity: 0.95;
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(103, 232, 249, 0.9)) drop-shadow(0 0 24px rgba(34, 211, 238, 0.4));
+    opacity: 1;
+  }
 }
 
-@keyframes mainRingPulse {
-  0%, 100% { r: 34; stroke-width: 6.5; }
-  50% { r: 36; stroke-width: 7; }
-}
-
-@keyframes dotPulse {
-  0%, 100% { r: 4.5; opacity: 1; }
-  50% { r: 6; opacity: 0.85; }
+@keyframes plusPulse {
+  0%, 100% { opacity: 0.92; }
+  50%       { opacity: 0.65; }
 }
 
 /* ══════════════════════════════════════
@@ -135,7 +132,7 @@
 .navSep { width: 1px; height: 20px; background: var(--border2); flex-shrink: 0; }
 
 .navBrand { display: flex; align-items: center; gap: 7px; }
-.navBrandText { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.08em; white-space: nowrap; }
+.navBrandText { font-family: var(--sans); font-size: 13.5px; font-weight: 700; color: var(--text); letter-spacing: 0.02em; white-space: nowrap; }
 .navAccent { color: var(--purple); }
 .navPill {
   font-size: 9px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
@@ -149,7 +146,7 @@
 }
 .navBal { display: flex; align-items: baseline; gap: 3px; padding: 5px 13px; }
 .navBalCurr { font-size: 10px; font-weight: 700; color: var(--purple); font-family: var(--mono); }
-.navBalAmt  { font-size: 12.5px; font-weight: 700; color: var(--text); font-family: var(--mono); letter-spacing: 0.02em; }
+.navBalAmt  { font-size: 12.5px; font-weight: 700; color: var(--text); font-family: var(--sans); letter-spacing: 0.02em; }
 .navBalLbl  { font-size: 9px; font-weight: 600; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
 .navBalDiv  { width: 1px; height: 26px; background: var(--border2); }
 
@@ -175,18 +172,20 @@
   width: 120px; height: 120px;
 }
 .heroPulseRing {
-  position: absolute; inset: -12px; border-radius: 50%;
-  border: 1px solid rgba(167,139,250,0.18);
-  animation: heroPulse 3s ease-in-out infinite;
+  position: absolute; inset: -12px; border-radius: 28%;
+  border: 1px solid rgba(34, 211, 238, 0.14);
+  animation: heroPulse 3.2s ease-in-out infinite;
+  pointer-events: none;
 }
 .heroPulseRing2 {
-  position: absolute; inset: -26px; border-radius: 50%;
-  border: 1px solid rgba(167,139,250,0.07);
-  animation: heroPulse 3s ease-in-out 1.5s infinite;
+  position: absolute; inset: -26px; border-radius: 30%;
+  border: 1px solid rgba(34, 211, 238, 0.06);
+  animation: heroPulse 3.2s ease-in-out 1.6s infinite;
+  pointer-events: none;
 }
 @keyframes heroPulse {
   0%, 100% { opacity: 0.7; transform: scale(1); }
-  50%       { opacity: 0.15; transform: scale(1.1); }
+  50%       { opacity: 0.12; transform: scale(1.08); }
 }
 
 .heroText { display: flex; flex-direction: column; align-items: center; gap: 4px; }
@@ -197,7 +196,7 @@
 }
 .heroAccent { color: var(--purple); }
 .heroSub {
-  font-family: var(--mono); font-size: 0.63rem; letter-spacing: 0.42em;
+  font-family: var(--sans); font-size: 0.63rem; letter-spacing: 0.42em;
   text-transform: uppercase; color: var(--text3); margin: 0;
 }
 
@@ -207,7 +206,7 @@
   border-radius: 10px; overflow: hidden; margin-top: 4px;
 }
 .heroStat { display: flex; flex-direction: column; align-items: center; padding: 10px 22px; gap: 2px; }
-.heroStatNum { font-family: var(--mono); font-size: 1.15rem; font-weight: 700; color: var(--purple); }
+.heroStatNum { font-family: var(--sans); font-size: 1.15rem; font-weight: 700; color: var(--purple); }
 .heroStatLabel { font-size: 0.66rem; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
 .heroStatDiv { width: 1px; height: 36px; background: var(--border2); }
 
@@ -265,8 +264,8 @@
 }
 .selectorTitleIcon { color: var(--purple); font-size: 1rem; }
 .selectorCount { display: flex; align-items: baseline; gap: 2px; }
-.selectorCountNum { font-family: var(--mono); font-size: 1.2rem; font-weight: 700; color: var(--purple); }
-.selectorCountOf  { font-family: var(--mono); font-size: 0.75rem; color: var(--text3); }
+.selectorCountNum { font-family: var(--sans); font-size: 1.2rem; font-weight: 700; color: var(--purple); }
+.selectorCountOf  { font-family: var(--sans); font-size: 0.75rem; color: var(--text3); }
 
 .selectorActions {
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
@@ -313,18 +312,18 @@
 .checkmark { font-size: 9px; color: #0a0e1a; font-weight: 900; line-height: 1; }
 
 .fieldInfo { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
-.fieldLabel { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.fieldLabel { font-size: 0.8rem; font-weight: 600; color: var(--text); font-family: var(--sans); }
 .fieldDesc  { font-size: 0.68rem; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .fieldPrice {
-  font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+  font-family: var(--sans); font-size: 0.72rem; font-weight: 700;
   color: var(--green); white-space: nowrap; flex-shrink: 0;
 }
 .fieldPrice sub { font-size: 0.58rem; color: var(--text3); }
 
 /* ── Subscription config ── */
 .subscriptionConfig {
-  display: flex; flex-direction: column; gap: 0;
+  display: flex; flex-direction: column;
   border-top: 1px solid var(--border); padding: 14px 18px; gap: 14px;
   background: var(--surface2);
 }
@@ -369,11 +368,10 @@
   background: var(--border2); transition: background 150ms, transform 150ms;
 }
 .toggleOn .toggleThumb { background: var(--purple); transform: translateX(2px); }
-.toggleLabel { }
 
 /* Cost summary */
 .costSummary {
-  margin: 0 18px 0; background: var(--surface2); border: 1px solid var(--border2);
+  margin: 0 18px; background: var(--surface2); border: 1px solid var(--border2);
   border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px;
 }
 .costRow {
@@ -466,7 +464,6 @@
   display: flex; flex-direction: column;
 }
 
-/* Header */
 .livePanelHeader {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 18px;
@@ -550,7 +547,6 @@
 }
 .liveLoadingText { font-family: var(--mono); font-size: 0.78rem; color: var(--text2); letter-spacing: 0.08em; }
 
-/* Radar loader */
 .radarWrap {
   position: relative; width: 64px; height: 64px;
 }
@@ -579,38 +575,6 @@
   display: flex; align-items: center; gap: 8px;
   background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25);
   border-radius: var(--radius); padding: 14px 18px; color: var(--red); font-size: 0.82rem;
-}
-
-/* Reduce mono on headings and labels */
-.heroTitle,
-.navBrandText,
-.panelLabel,
-.selectorTitle,
-.liveIPText,
-.threatVal,
-.fieldLabel,
-.liveCatLabel {
-  font-family: var(--sans);
-  font-weight: 700;
-  letter-spacing: -0.01em;   /* dashboard style */
-}
-
-/* Keep mono only where it makes sense (data values, codes, etc.) */
-.liveRowVal,
-.successTxCode,
-.navBalAmt,
-.selectorCountNum,
-.fieldPrice,
-.daysInput,
-.heroStatNum,
-.heroSub {
-  font-family: var(--sans);
-}
-
-/* Make nav brand cleaner like dashboard */
-.navBrandText {
-  font-size: 13.5px;
-  letter-spacing: 0.02em;
 }
 
 /* ── Footer ── */

@@ -9,85 +9,98 @@ import styles from './IPLookup.module.css'
 function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Exact match to the first image — Soft glowing blue circle
+// New logo: dark rounded square + glowing cyan ring + plus icon
+// Matches the uploaded reference image
 // ─────────────────────────────────────────────────────────────────────────────
 function GhostIPLogo({ size = 120, animated = true }) {
   return (
-    <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 120 120" 
-      fill="none" 
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 120 120"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={animated ? styles.logoAnimated : ''}
     >
       {/* Dark rounded square background */}
-      <rect 
-        x="12" 
-        y="12" 
-        width="96" 
-        height="96" 
-        rx="28" 
-        fill="#0f172a" 
-        stroke="#1e2937" 
-        strokeWidth="9"
+      <rect
+        x="8"
+        y="8"
+        width="104"
+        height="104"
+        rx="26"
+        fill="#0b0f1a"
+        stroke="#1a2035"
+        strokeWidth="2"
       />
 
-      {/* Large outer soft glow */}
-      <circle 
-        cx="60" 
-        cy="60" 
-        r="41" 
-        fill="none" 
-        stroke="#22d3ee" 
-        strokeWidth="11" 
-        strokeOpacity="0.25"
-        className={animated ? styles.outerGlow : ''}
+      {/* Outermost faint glow halo */}
+      <circle
+        cx="60"
+        cy="60"
+        r="42"
+        fill="none"
+        stroke="#22d3ee"
+        strokeWidth="8"
+        strokeOpacity="0.08"
+      />
+
+      {/* Soft mid glow ring */}
+      <circle
+        cx="60"
+        cy="60"
+        r="36"
+        fill="none"
+        stroke="#22d3ee"
+        strokeWidth="5"
+        strokeOpacity="0.18"
       />
 
       {/* Main bright cyan ring */}
-      <circle 
-        cx="60" 
-        cy="60" 
-        r="34" 
-        fill="none" 
-        stroke="#67e8f9" 
-        strokeWidth="6.5"
+      <circle
+        cx="60"
+        cy="60"
+        r="29"
+        fill="none"
+        stroke="#67e8f9"
+        strokeWidth="2.2"
+        strokeOpacity="0.95"
         className={animated ? styles.mainRing : ''}
       />
 
-      {/* Inner soft glow ring */}
-      <circle 
-        cx="60" 
-        cy="60" 
-        r="26" 
-        fill="none" 
-        stroke="#a5f3fc" 
-        strokeWidth="4" 
-        strokeOpacity="0.75"
+      {/* Inner fill — very dark translucent blue center */}
+      <circle
+        cx="60"
+        cy="60"
+        r="26"
+        fill="rgba(34,211,238,0.04)"
       />
 
-      {/* Very subtle inner circle */}
-      <circle 
-        cx="60" 
-        cy="60" 
-        r="14" 
-        fill="none" 
-        stroke="#e0f2fe" 
-        strokeWidth="3" 
-        strokeOpacity="0.9"
+      {/* Plus / cross icon — matching the uploaded image */}
+      {/* Vertical bar */}
+      <rect
+        x="57.5"
+        y="46"
+        width="5"
+        height="28"
+        rx="2.5"
+        fill="#a5f3fc"
+        fillOpacity="0.92"
+        className={animated ? styles.dotPulse : ''}
       />
-
-      {/* Center bright dot */}
-      <circle 
-        cx="60" 
-        cy="60" 
-        r="4.5" 
-        fill="#e0f2fe"
+      {/* Horizontal bar */}
+      <rect
+        x="46"
+        y="57.5"
+        width="28"
+        height="5"
+        rx="2.5"
+        fill="#a5f3fc"
+        fillOpacity="0.92"
         className={animated ? styles.dotPulse : ''}
       />
     </svg>
-  );
+  )
 }
 
 
@@ -111,34 +124,33 @@ const FIELD_META = {
   country_alpha_3:         { label: 'Alpha-3 Code',           cat: 'Country',   icon: '⊞' },
   postal_code:             { label: 'Postal Code',            cat: 'Location',  icon: '◎' },
   country_currency_code:   { label: 'Currency Code',          cat: 'Country',   icon: '⊞' },
-  country_currency_symbol:{ label: 'Currency Symbol',         cat: 'Country',   icon: '⊞' },
-  european_union_member:  { label: 'EU Member',               cat: 'Country',   icon: '⊞' },
-  country_current_time:   { label: 'Local Time',              cat: 'Time',      icon: '◷' },
+  country_currency_symbol: { label: 'Currency Symbol',        cat: 'Country',   icon: '⊞' },
+  european_union_member:   { label: 'EU Member',              cat: 'Country',   icon: '⊞' },
+  country_current_time:    { label: 'Local Time',             cat: 'Time',      icon: '◷' },
   country_current_time_24hr:{ label: 'Time (24hr)',           cat: 'Time',      icon: '◷' },
   country_current_time_12hr:{ label: 'Time (12hr)',           cat: 'Time',      icon: '◷' },
   country_current_time_iso: { label: 'Time (ISO)',            cat: 'Time',      icon: '◷' },
-  country_flag_icon:      { label: 'Flag Icon URL',           cat: 'Country',   icon: '⊞' },
-  network_status:          { label: 'Network Status',          cat: 'Network',   icon: '⬡' },
-  network_range:           { label: 'Network Range',           cat: 'Network',   icon: '⬡' },
-  network_start_address:  { label: 'Range Start',             cat: 'Network',   icon: '⬡' },
-  network_end_address:    { label: 'Range End',               cat: 'Network',   icon: '⬡' },
-  network_registration:   { label: 'Registered',              cat: 'Network',   icon: '⬡' },
-  network_last_changed:   { label: 'Last Changed',            cat: 'Network',   icon: '⬡' },
-  contact_email:          { label: 'Contact Email',           cat: 'Contact',   icon: '✉' },
-  contact_phone:          { label: 'Contact Phone',           cat: 'Contact',   icon: '✉' },
-  contact_address:        { label: 'Contact Address',         cat: 'Contact',   icon: '✉' },
-  is_tor:                  { label: 'TOR Exit Node',           cat: 'Threat',    icon: '⚑' },
-  is_blacklisted:          { label: 'Blacklisted',             cat: 'Threat',    icon: '⚑' },
-  threat_score:            { label: 'Threat Score',            cat: 'Threat',    icon: '⚑' },
-  language:                { label: 'Language',                cat: 'Country',   icon: '⊞' },
-  mobile_calling_code:     { label: 'Calling Code',            cat: 'Country',   icon: '⊞' },
-  tld:                     { label: 'TLD',                     cat: 'Country',   icon: '' },
-  fifa:                    { label: 'FIFA Code',               cat: 'Country',   icon: '' },
-  population:              { label: 'Population',              cat: 'Country',   icon: '' },
-  maps:                    { label: 'Maps Link',               cat: 'Location',  icon: '◎' },
+  country_flag_icon:       { label: 'Flag Icon URL',          cat: 'Country',   icon: '⊞' },
+  network_status:          { label: 'Network Status',         cat: 'Network',   icon: '⬡' },
+  network_range:           { label: 'Network Range',          cat: 'Network',   icon: '⬡' },
+  network_start_address:   { label: 'Range Start',            cat: 'Network',   icon: '⬡' },
+  network_end_address:     { label: 'Range End',              cat: 'Network',   icon: '⬡' },
+  network_registration:    { label: 'Registered',             cat: 'Network',   icon: '⬡' },
+  network_last_changed:    { label: 'Last Changed',           cat: 'Network',   icon: '⬡' },
+  contact_email:           { label: 'Contact Email',          cat: 'Contact',   icon: '✉' },
+  contact_phone:           { label: 'Contact Phone',          cat: 'Contact',   icon: '✉' },
+  contact_address:         { label: 'Contact Address',        cat: 'Contact',   icon: '✉' },
+  is_tor:                  { label: 'TOR Exit Node',          cat: 'Threat',    icon: '⚑' },
+  is_blacklisted:          { label: 'Blacklisted',            cat: 'Threat',    icon: '⚑' },
+  threat_score:            { label: 'Threat Score',           cat: 'Threat',    icon: '⚑' },
+  language:                { label: 'Language',               cat: 'Country',   icon: '⊞' },
+  mobile_calling_code:     { label: 'Calling Code',           cat: 'Country',   icon: '⊞' },
+  tld:                     { label: 'TLD',                    cat: 'Country',   icon: '' },
+  fifa:                    { label: 'FIFA Code',              cat: 'Country',   icon: '' },
+  population:              { label: 'Population',             cat: 'Country',   icon: '' },
+  maps:                    { label: 'Maps Link',              cat: 'Location',  icon: '◎' },
 }
 
-// Added 'All' option dynamically inside categories map list
 const CATEGORIES = ['All', 'Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
 const CAT_COLORS = {
   All:      { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)', text: '#e2e8f0' },
@@ -154,8 +166,8 @@ function formatValue(key, val) {
   if (val === null || val === undefined) return '—'
   if (typeof val === 'boolean') return val ? 'Yes' : 'No'
   if (key === 'population') return Number(val).toLocaleString()
-  if (key === 'country_flag_icon') return null 
-  if (key === 'maps') return null 
+  if (key === 'country_flag_icon') return null
+  if (key === 'maps') return null
   return String(val)
 }
 
@@ -187,12 +199,10 @@ function LiveIPPanel({ data, loading, error }) {
   const threatNum = parseInt(d.threat_score) || 0
   const threatColor = threatNum < 30 ? '#34d399' : threatNum < 60 ? '#fbbf24' : '#ef4444'
 
-  // Standard static categories for grouping results on the right side lookup panel
   const DISPLAY_CATEGORIES = ['Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
 
   return (
     <div className={styles.livePanel}>
-      {/* Header row */}
       <div className={styles.livePanelHeader}>
         <div className={styles.liveIPBadge}>
           <span className={styles.liveIPDot} />
@@ -204,7 +214,6 @@ function LiveIPPanel({ data, loading, error }) {
         )}
       </div>
 
-      {/* Threat bar */}
       <div className={styles.threatWrap}>
         <div className={styles.threatHeader}>
           <span className={styles.threatLabel}>Threat Score</span>
@@ -229,7 +238,6 @@ function LiveIPPanel({ data, loading, error }) {
         </div>
       </div>
 
-      {/* Grouped data fields */}
       <div className={styles.liveFields}>
         {DISPLAY_CATEGORIES.map(cat => {
           const fields = Object.entries(FIELD_META).filter(([, m]) => m.cat === cat)
@@ -279,14 +287,11 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
   const [txId, setTxId] = useState(null)
-  const [activeTab, setActiveTab] = useState('All') // Changed default state to 'All'
+  const [activeTab, setActiveTab] = useState('All')
 
-  // Safe Checkbox state initializer loop
   useEffect(() => {
     const init = {}
-    Object.keys(FIELD_META).forEach(k => { 
-      init[k] = false 
-    })
+    Object.keys(FIELD_META).forEach(k => { init[k] = false })
     setSelected(init)
   }, [])
 
@@ -352,7 +357,6 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
       </div>
     )
   }
-  // errors are non-fatal — panel renders without pricing if API failed
 
   if (txId) return (
     <div className={styles.successPanel}>
@@ -371,7 +375,6 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
 
   return (
     <div className={styles.selectorPanel}>
-      {/* Header */}
       <div className={styles.selectorHeader}>
         <div className={styles.selectorTitle}>
           <span className={styles.selectorTitleIcon}>⊛</span>
@@ -383,7 +386,6 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         </div>
       </div>
 
-      {/* Quick actions tabs */}
       <div className={styles.selectorActions}>
         <button className={styles.quickBtn} onClick={selectAll}>Select All</button>
         <button className={styles.quickBtn} onClick={clearAll}>Clear</button>
@@ -399,7 +401,6 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         ))}
       </div>
 
-      {/* Field list Container */}
       <div className={styles.fieldList}>
         {Object.entries(FIELD_META)
           .filter(([, m]) => activeTab === 'All' || m.cat === activeTab)
@@ -421,10 +422,7 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
                 </div>
                 <input type="checkbox" checked={isOn} onChange={() => toggleField(key)} className={styles.hiddenCheck} />
                 <div className={styles.fieldInfo}>
-                  <span className={styles.fieldLabel}>
-                    {/* Fixed: Removed inline category tag showing beside label name in All view */}
-                    {meta.label}
-                  </span>
+                  <span className={styles.fieldLabel}>{meta.label}</span>
                   {info?.description && (
                     <span className={styles.fieldDesc}>{info.description}</span>
                   )}
@@ -444,7 +442,6 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
           })}
       </div>
 
-      {/* Duration + auto-renew */}
       <div className={styles.subscriptionConfig}>
         <div className={styles.configRow}>
           <div className={styles.configLabel}>
@@ -490,7 +487,6 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         </div>
       </div>
 
-      {/* Cost summary */}
       {selectedCount > 0 && (
         <div className={styles.costSummary}>
           <div className={styles.costRow}>
@@ -519,21 +515,20 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         </div>
       )}
 
-      {/* Purchase button */}
       <button
-          className={`${styles.purchaseBtn} ${selectedCount === 0 || submitting ? styles.purchaseBtnDisabled : ''}`}
-          onClick={handleSubmit}
-          disabled={selectedCount === 0 || submitting}
+        className={`${styles.purchaseBtn} ${selectedCount === 0 || submitting ? styles.purchaseBtnDisabled : ''}`}
+        onClick={handleSubmit}
+        disabled={selectedCount === 0 || submitting}
       >
-          {submitting ? (
-            <>
-              <span className={styles.btnSpinner} />
-              Processing…
-            </>
-          ) : (
-            <>
-              ⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}
-              {autoRenew && ' · Auto-Renew'}
+        {submitting ? (
+          <>
+            <span className={styles.btnSpinner} />
+            Processing…
+          </>
+        ) : (
+          <>
+            ⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}
+            {autoRenew && ' · Auto-Renew'}
           </>
         )}
       </button>
@@ -564,8 +559,7 @@ export default function IPLookup() {
     const t = getToken()
     if (t !== token) setToken(t)
   }, [])
-	
-  // Fetch user profile
+
   useEffect(() => {
     if (!token) return
     getUserProfile(token)
@@ -573,7 +567,6 @@ export default function IPLookup() {
       .catch(() => {})
   }, [token])
 
-  // Fetch live IP data
   useEffect(() => {
     setLiveLoading(true)
     fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/ip_address', {
@@ -584,7 +577,6 @@ export default function IPLookup() {
       .catch(e => { setLiveError('Failed to fetch your IP data.'); setLiveLoading(false) })
   }, [])
 
-  // Fetch all_lookups (requires auth)
   useEffect(() => {
     if (!token) {
       setLookupsLoading(false)
@@ -612,7 +604,7 @@ export default function IPLookup() {
       })
       .catch(() => {
         if (cancelled) return
-        setLookups([]) // unblock UI — pricing just won't show
+        setLookups([])
       })
       .finally(() => {
         if (cancelled) return
