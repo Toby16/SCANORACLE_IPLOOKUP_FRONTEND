@@ -421,7 +421,7 @@
 }
 .liveRow:hover { background: var(--surface2); }
 .liveRowKey { font-size: 0.73rem; color: var(--text3); white-space: nowrap; flex-shrink: 0; }
-.liveRowVal { font-family: var(--sans); font-size: 0.80rem; letter-spacing: 0.08em; color: var(--text); text-align: right; word-break: break-all; }
+.liveRowVal { font-family: var(--sans); font-size: 0.67rem; letter-spacing: 0.05em; color: var(--text); text-align: right; word-break: break-all; }
 .liveLink   { font-family: var(--sans); font-size: 0.73rem; letter-spacing: 0.05em; color: var(--blue); text-decoration: none; }
 .liveLink:hover { text-decoration: underline; }
 
