@@ -31,7 +31,7 @@ function GhostIPLogo({ size = 120, animated = true }) {
       {/* Plus cross — vertical bar */}
       <line x1="60" y1="48" x2="60" y2="72" stroke="#22c7e0" strokeWidth="2" strokeLinecap="round" />
       {/* Plus cross — horizontal bar */}
-      <line x1="48" y1="75" x2="72" y2="75" stroke="#22c7e0" strokeWidth="2" strokeLinecap="round" />
+      <line x1="48" y1="50" x2="72" y2="50" stroke="#22c7e0" strokeWidth="2" strokeLinecap="round" />
     </svg>
   )
 }
