@@ -122,21 +122,6 @@ function tierColor(usd) {
   return '#ef4444'
 }
 
-// ─── Tooltip for description ──────────────────────────────────────────────────
-function DescTooltip({ text }) {
-  const [visible, setVisible] = useState(false)
-  if (!text) return null
-  return (
-    <span
-      className={styles.descTooltipWrap}
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-    >
-      <span className={styles.descTooltipIcon}>?</span>
-      {visible && <span className={styles.descTooltipBox}>{text}</span>}
-    </span>
-  )
-}
 
 // ─── Pricing tier legend ──────────────────────────────────────────────────────
 function PricingTierLegend({ rate }) {
@@ -244,7 +229,6 @@ function LiveIPPanel({ data, loading, error, lookupMeta }) {
                   <div key={key} className={styles.liveRow}>
                     <span className={styles.liveRowKey}>
                       {meta.label}
-                      <DescTooltip text={desc} />
                     </span>
                     <a href={raw} target="_blank" rel="noreferrer" className={styles.liveLink}>View Map ↗</a>
                   </div>
@@ -253,7 +237,6 @@ function LiveIPPanel({ data, loading, error, lookupMeta }) {
                   <div key={key} className={styles.liveRow}>
                     <span className={styles.liveRowKey}>
                       {meta.label}
-                      <DescTooltip text={desc} />
                     </span>
                     <span className={styles.liveRowVal}>{formatValue(key, raw)}</span>
                   </div>
