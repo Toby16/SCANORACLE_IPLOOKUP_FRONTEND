@@ -520,12 +520,12 @@
   text-align: center;
   padding: 1.5rem 1rem;
   color: #888;
-  font-size: 0.9rem;
+  font-size: 0.5rem;
   border-top: 1px solid rgba(255,255,255,0.08);
   margin-top: auto;
 }
 
 .footerAccent {
-  color: #7c3aed;
+  color: #a78bfa;
   font-weight: 600;
 }
