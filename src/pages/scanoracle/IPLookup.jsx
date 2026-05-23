@@ -24,47 +24,48 @@ function GhostIPLogo({ size = 120, animated = true }) {
 }
 
 // Keys here must exactly match the API's IP_ADDRESS object keys
+// NOTE: API POST body uses "maps" (not "map") — key corrected below
 const FIELD_META = {
   asn:                        { label: 'ASN',                cat: 'Network',  icon: '⬡' },
   hostname:                   { label: 'Hostname',            cat: 'Network',  icon: '⬡' },
   city:                       { label: 'City',                cat: 'Location', icon: '◎' },
   region:                     { label: 'Region',              cat: 'Location', icon: '◎' },
-  country:                    { label: 'Country',        cat: 'Location', icon: '◎' },
+  country:                    { label: 'Country',             cat: 'Location', icon: '◎' },
   country_name:               { label: 'Country Name',        cat: 'Location', icon: '◎' },
   latitude:                   { label: 'Latitude',            cat: 'Location', icon: '◎' },
   longitude:                  { label: 'Longitude',           cat: 'Location', icon: '◎' },
   organization:               { label: 'Organization',        cat: 'Network',  icon: '⬡' },
   timezone:                   { label: 'Timezone',            cat: 'Location', icon: '◎' },
-  continent:                  { label: 'Continent',      cat: 'Location', icon: '◎' },
+  continent:                  { label: 'Continent',           cat: 'Location', icon: '◎' },
   continent_name:             { label: 'Continent Name',      cat: 'Location', icon: '◎' },
   ip_version:                 { label: 'IP Version',          cat: 'Network',  icon: '⬡' },
-  country_alpha_3:            { label: 'Country Alpha-3',        cat: 'Country',  icon: '⊞' },
+  country_alpha_3:            { label: 'Country Alpha-3',     cat: 'Country',  icon: '⊞' },
   postal_code:                { label: 'Postal Code',         cat: 'Location', icon: '◎' },
   country_currency_code:      { label: 'Country Currency Code',       cat: 'Country',  icon: '⊞' },
   country_currency_symbol:    { label: 'Country Currency Symbol',     cat: 'Country',  icon: '⊞' },
-  european_union_member:      { label: 'EU Member?',           cat: 'Country',  icon: '⊞' },
+  european_union_member:      { label: 'EU Member?',          cat: 'Country',  icon: '⊞' },
   country_current_time:       { label: 'Country Local Time',          cat: 'Time',     icon: '◷' },
-  country_current_time_24hr:  { label: 'Country Local Time (24hr)',         cat: 'Time',     icon: '◷' },
-  country_current_time_12hr:  { label: 'Country Local Time (12hr)',         cat: 'Time',     icon: '◷' },
-  country_current_time_iso:   { label: 'Country Local Time (ISO)',          cat: 'Time',     icon: '◷' },
-  country_flag_icon:          { label: 'Country Flag Icon',       cat: 'Country',  icon: '⊞' },
+  country_current_time_24hr:  { label: 'Country Local Time (24hr)',   cat: 'Time',     icon: '◷' },
+  country_current_time_12hr:  { label: 'Country Local Time (12hr)',   cat: 'Time',     icon: '◷' },
+  country_current_time_iso:   { label: 'Country Local Time (ISO)',    cat: 'Time',     icon: '◷' },
+  country_flag_icon:          { label: 'Country Flag Icon',   cat: 'Country',  icon: '⊞' },
   network_status:             { label: 'Network Status',      cat: 'Network',  icon: '⬡' },
   network_range:              { label: 'Network Range',       cat: 'Network',  icon: '⬡' },
-  network_start_address:      { label: 'Network Start Address',         cat: 'Network',  icon: '⬡' },
-  network_end_address:        { label: 'Network End Address',           cat: 'Network',  icon: '⬡' },
+  network_start_address:      { label: 'Network Start Address',       cat: 'Network',  icon: '⬡' },
+  network_end_address:        { label: 'Network End Address',         cat: 'Network',  icon: '⬡' },
   network_registration:       { label: 'Network Registered',          cat: 'Network',  icon: '⬡' },
   network_last_changed:       { label: 'Network Last Changed',        cat: 'Network',  icon: '⬡' },
   contact_email:              { label: 'Contact Email',       cat: 'Contact',  icon: '✉' },
   contact_phone:              { label: 'Contact Phone',       cat: 'Contact',  icon: '✉' },
   contact_address:            { label: 'Contact Address',     cat: 'Contact',  icon: '✉' },
-  is_tor:                     { label: 'TOR Exit Node?',       cat: 'Threat',   icon: '⚑' },
-  is_blacklisted:             { label: 'Is Blacklisted?',         cat: 'Threat',   icon: '⚑' },
+  is_tor:                     { label: 'TOR Exit Node?',      cat: 'Threat',   icon: '⚑' },
+  is_blacklisted:             { label: 'Is Blacklisted?',     cat: 'Threat',   icon: '⚑' },
   threat_score:               { label: 'Threat Score',        cat: 'Threat',   icon: '⚑' },
   language:                   { label: 'Language',            cat: 'Country',  icon: '⊞' },
-  mobile_calling_code:        { label: 'Country Mobile Calling Code',        cat: 'Country',  icon: '⊞' },
+  mobile_calling_code:        { label: 'Country Mobile Calling Code', cat: 'Country',  icon: '⊞' },
   tld:                        { label: 'TLD',                 cat: 'Country',  icon: '⊞' },
-  fifa:                       { label: 'FIFA Country Code',           cat: 'Country',  icon: '⊞' },
-  map:                        { label: 'Map Link',           cat: 'Location', icon: '◎' }, // API key is "map" not "maps"
+  fifa:                       { label: 'FIFA Country Code',   cat: 'Country',  icon: '⊞' },
+  maps:                       { label: 'Map Link',            cat: 'Location', icon: '◎' }, // API key is "maps"
   population:                 { label: 'Population',          cat: 'Country',  icon: '⊞' },
 }
 
@@ -84,22 +85,20 @@ function formatValue(key, val) {
   if (typeof val === 'boolean') return val ? 'Yes' : 'No'
   if (key === 'population') return Number(val).toLocaleString()
   if (key === 'country_flag_icon') return null
-  if (key === 'map') return null
+  if (key === 'maps') return null
   return String(val)
 }
 
 // ─── Price helpers ────────────────────────────────────────────────────────────
-// A field is only free if price is explicitly "0.00" AND the key exists in lookupMeta.
-// If lookupMeta doesn't have the key yet (still loading), we render nothing.
 function parsePriceUSD(info) {
-  if (!info) return null          // meta not loaded yet
+  if (!info) return null
   const n = parseFloat(info.price)
   return isNaN(n) ? null : n
 }
 
 function PriceBadge({ info, rate }) {
   const usd = parsePriceUSD(info)
-  if (usd === null) return null   // not loaded
+  if (usd === null) return null
   if (usd === 0) return <span className={styles.priceFree}>FREE</span>
   const ngn = Math.round(usd * parseFloat(rate || 1200))
   return (
@@ -120,7 +119,6 @@ function tierColor(usd) {
   if (usd <= 0.35)  return '#fb7185'
   return '#ef4444'
 }
-
 
 // ─── Pricing tier legend ──────────────────────────────────────────────────────
 function PricingTierLegend({ rate }) {
@@ -223,20 +221,15 @@ function LiveIPPanel({ data, loading, error, lookupMeta }) {
                 const raw = d[key]
                 if (raw === undefined) return null
                 if (key === 'country_flag_icon') return null
-                const desc = lookupMeta?.[key]?.description || null
-                if (key === 'map') return (
+                if (key === 'maps') return (
                   <div key={key} className={styles.liveRow}>
-                    <span className={styles.liveRowKey}>
-                      {meta.label}
-                    </span>
+                    <span className={styles.liveRowKey}>{meta.label}</span>
                     <a href={raw} target="_blank" rel="noreferrer" className={styles.liveLink}>View Map ↗</a>
                   </div>
                 )
                 return (
                   <div key={key} className={styles.liveRow}>
-                    <span className={styles.liveRowKey}>
-                      {meta.label}
-                    </span>
+                    <span className={styles.liveRowKey}>{meta.label}</span>
                     <span className={styles.liveRowVal}>{formatValue(key, raw)}</span>
                   </div>
                 )
@@ -276,7 +269,6 @@ function DataSelectorPanel({ lookupMeta, rate, lookupsLoading, token, onPurchase
   const selectedCount = Object.values(selected).filter(Boolean).length
   const totalFields   = Object.keys(FIELD_META).length
 
-  // Accumulate cost only from fields with a known, non-null price
   const totalCostUSD = lookupMeta
     ? Object.entries(selected).reduce((sum, [key, on]) => {
         if (!on) return sum
@@ -357,8 +349,8 @@ function DataSelectorPanel({ lookupMeta, rate, lookupsLoading, token, onPurchase
         {Object.entries(FIELD_META)
           .filter(([, m]) => activeTab === 'All' || m.cat === activeTab)
           .map(([key, meta]) => {
-            const info = lookupMeta?.[key]          // { price, description } or undefined
-            const usd = parsePriceUSD(info)         // null = not loaded, 0 = free, >0 = paid
+            const info = lookupMeta?.[key]
+            const usd = parsePriceUSD(info)
             const isOn = selected[key] || false
             const dot = tierColor(usd)
 
@@ -477,6 +469,188 @@ function DataSelectorPanel({ lookupMeta, rate, lookupsLoading, token, onPurchase
   )
 }
 
+// ─── Subscription Ledger ──────────────────────────────────────────────────────
+function SubscriptionLedger({ token, refreshTrigger }) {
+  const [entries, setEntries] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState(null)
+  const [expanded, setExpanded] = useState(null)
+
+  useEffect(() => {
+    if (!token) { setLoading(false); return }
+    setLoading(true); setError(null)
+    fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/categories/ip', {
+      headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
+    })
+      .then(r => {
+        if (!r.ok) throw new Error(`Server error (${r.status})`)
+        return r.json()
+      })
+      .then(json => { setEntries(json?.data ?? []); setLoading(false) })
+      .catch(e => { setError(e.message); setLoading(false) })
+  }, [token, refreshTrigger])
+
+  const [deletingId, setDeletingId]   = useState(null)
+  const [deleteError, setDeleteError] = useState(null)
+
+  const handleDelete = async (categoryId) => {
+    setDeletingId(categoryId); setDeleteError(null)
+    try {
+      const res = await fetch('https://security.appcardy.com/api/v1.0/scanoracle/delete/category/id', {
+        method: 'DELETE',
+        headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transaction_id: categoryId }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.message || json.detail || 'Delete failed.')
+      // Remove from local list immediately for snappy UX
+      setEntries(prev => prev.filter(e => e.category_id !== categoryId))
+      if (expanded === categoryId) setExpanded(null)
+    } catch (e) { setDeleteError(e.message) }
+    finally { setDeletingId(null) }
+  }
+
+  const paid   = entries.filter(e => e.transaction_status)
+  const unpaid = entries.filter(e => !e.transaction_status)
+
+  function StatusBadge({ ok }) {
+    return ok
+      ? <span className={styles.ledgerStatusPaid}>● Paid</span>
+      : <span className={styles.ledgerStatusUnpaid}>○ Pending</span>
+  }
+
+  function EntryRow({ entry }) {
+    const isOpen    = expanded === entry.category_id
+    const hasKeys   = entry.keys && entry.keys.length > 0
+    const hasPrice  = entry.dollar_price_per_day > 0
+    const isDeleting = deletingId === entry.category_id
+    const expandable = hasKeys || hasPrice
+
+    return (
+      <div
+        className={`${styles.ledgerRow} ${isOpen ? styles.ledgerRowOpen : ''} ${!hasKeys && !hasPrice ? styles.ledgerRowEmpty : ''}`}
+        onClick={() => expandable ? setExpanded(isOpen ? null : entry.category_id) : null}
+        style={{ cursor: expandable ? 'pointer' : 'default' }}
+      >
+        <div className={styles.ledgerRowMain}>
+          <div className={styles.ledgerRowLeft}>
+            <StatusBadge ok={entry.transaction_status} />
+            <code className={styles.ledgerTxId}>{entry.category_id}</code>
+            {entry.auto_renew && <span className={styles.ledgerAutoRenew}>↺ Auto</span>}
+          </div>
+          <div className={styles.ledgerRowRight}>
+            {hasKeys && (
+              <span className={styles.ledgerKeyCount}>{entry.keys.length} field{entry.keys.length !== 1 ? 's' : ''}</span>
+            )}
+            {hasPrice ? (
+              <div className={styles.ledgerPriceWrap}>
+                <span className={styles.ledgerPriceUsd}>${entry.dollar_price_per_day.toFixed(2)}/day</span>
+                <span className={styles.ledgerPriceNgn}>₦{Number(entry.naira_price_per_day).toLocaleString()}/day</span>
+              </div>
+            ) : (
+              <span className={styles.ledgerFree}>FREE</span>
+            )}
+            <div className={styles.ledgerDays}>
+              <span className={styles.ledgerDaysLeft}>{entry.days_left}d left</span>
+              {entry.days_for > 0 && <span className={styles.ledgerDaysFor}>of {entry.days_for}d</span>}
+            </div>
+            {expandable && (
+              <span className={`${styles.ledgerChevron} ${isOpen ? styles.ledgerChevronOpen : ''}`}>›</span>
+            )}
+            <button
+              className={`${styles.ledgerDeleteBtn} ${isDeleting ? styles.ledgerDeleteBtnBusy : ''}`}
+              onClick={e => { e.stopPropagation(); if (!isDeleting) handleDelete(entry.category_id) }}
+              title="Delete this entry"
+              disabled={isDeleting}
+            >
+              {isDeleting ? <span className={styles.ledgerDeleteSpinner} /> : '✕'}
+            </button>
+          </div>
+        </div>
+
+        {isOpen && (
+          <div className={styles.ledgerRowDetail} onClick={e => e.stopPropagation()}>
+            {hasKeys && (
+              <div className={styles.ledgerKeyList}>
+                <span className={styles.ledgerKeyListLabel}>Subscribed Fields</span>
+                <div className={styles.ledgerKeyPills}>
+                  {entry.keys.map(k => (
+                    <span key={k} className={styles.ledgerKeyPill}>
+                      {FIELD_META[k]?.label ?? k}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {hasPrice && (
+              <div className={styles.ledgerTotals}>
+                <div className={styles.ledgerTotalRow}>
+                  <span>Total Cost</span>
+                  <span className={styles.ledgerTotalUsd}>${entry.dollar_total_price.toFixed(2)}</span>
+                  <span className={styles.ledgerTotalNgn}>₦{Number(entry.naira_total_price).toLocaleString()}</span>
+                </div>
+                <div className={styles.ledgerTotalRow}>
+                  <span>Rate</span>
+                  <span>$1 = ₦{Number(entry.rate).toLocaleString()}</span>
+                </div>
+              </div>
+            )}
+            {entry.api_key && (
+              <div className={styles.ledgerApiKey}>
+                <span className={styles.ledgerApiKeyLabel}>API Key</span>
+                <code className={styles.ledgerApiKeyVal}>{entry.api_key}</code>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <section className={styles.ledgerSection}>
+      <div className={styles.ledgerHeader}>
+        <div className={styles.ledgerHeaderLeft}>
+          <span className={styles.ledgerHeaderIcon}>⊟</span>
+          <span className={styles.ledgerHeaderTitle}>Subscription Ledger</span>
+          <span className={styles.ledgerHeaderSub}>IP_ADDRESS</span>
+        </div>
+        <div className={styles.ledgerHeaderRight}>
+          <span className={styles.ledgerStat}><span style={{ color: '#34d399' }}>●</span> {paid.length} paid</span>
+          <span className={styles.ledgerStat}><span style={{ color: '#fb7185' }}>○</span> {unpaid.length} pending</span>
+          <span className={styles.ledgerTotal}>{entries.length} total</span>
+        </div>
+      </div>
+
+      <div className={styles.ledgerBody}>
+        {loading && (
+          <div className={styles.ledgerLoading}>
+            <div className={styles.selectorSpinner} />
+            <span>Fetching subscriptions…</span>
+          </div>
+        )}
+        {error && (
+          <div className={styles.ledgerError}><span>⚠</span> {error}</div>
+        )}
+        {!loading && !error && entries.length === 0 && (
+          <div className={styles.ledgerEmpty}>
+            <span className={styles.ledgerEmptyIcon}>⊘</span>
+            <p>No subscriptions yet. Build a data package above to get started.</p>
+          </div>
+        )}
+        {deleteError && (
+          <div className={styles.ledgerError}><span>⚠</span> {deleteError}</div>
+        )}
+        {!loading && !error && entries.length > 0 && (
+          <div className={styles.ledgerList}>
+            {entries.map(entry => <EntryRow key={entry.category_id} entry={entry} />)}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function IPLookup() {
   usePageTitle('SCANORACLE — IP Lookup | Ghostroute')
@@ -492,6 +666,7 @@ export default function IPLookup() {
   const [rate, setRate]                     = useState('1200')
   const [lookupsLoading, setLookupsLoading] = useState(() => !!getToken())
   const [token, setToken]                   = useState(() => getToken())
+  const [ledgerRefresh, setLedgerRefresh]   = useState(0)
 
   useEffect(() => { const t = getToken(); if (t !== token) setToken(t) }, [])
 
@@ -524,7 +699,6 @@ export default function IPLookup() {
       })
       .then(json => {
         if (cancelled) return
-        // Shape: { data: { currency, rate, IP_ADDRESS: { asn: { price, description }, map: {...}, ... } } }
         const d = json?.data
         setLookupMeta(d?.IP_ADDRESS ?? {})
         setRate(d?.rate ?? '1200')
@@ -535,6 +709,11 @@ export default function IPLookup() {
   }, [token])
 
   const handleLogout = () => { clearToken(); navigate('/auth') }
+
+  const handlePurchaseSuccess = () => {
+    // Refresh the ledger after a successful purchase
+    setLedgerRefresh(n => n + 1)
+  }
 
   return (
     <div className={styles.page}>
@@ -612,7 +791,7 @@ export default function IPLookup() {
             rate={rate}
             lookupsLoading={lookupsLoading}
             token={token}
-            onPurchaseSuccess={() => {}}
+            onPurchaseSuccess={handlePurchaseSuccess}
             userBalances={{ naira: user?.naira_balance, dollar: user?.dollar_balance }}
           />
         </div>
@@ -632,6 +811,12 @@ export default function IPLookup() {
           </div>
         </div>
       </main>
+
+      {token && (
+        <div className={styles.ledgerWrap}>
+          <SubscriptionLedger token={token} refreshTrigger={ledgerRefresh} />
+        </div>
+      )}
 
       <footer className={styles.footer}>
         ScanOracle™ - <span className={styles.footerAccent}>Ghostroute</span> Security™ - {new Date().getFullYear()} 📡

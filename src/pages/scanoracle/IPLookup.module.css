@@ -586,3 +586,179 @@
   .descTooltipBox { width: 170px; }
   .pricingTiers { gap: 4px; }
 }
+
+/* ══════════════════════════════════════
+   SUBSCRIPTION LEDGER — append to bottom of IPLookup.module.css
+   ══════════════════════════════════════ */
+.ledgerWrap {
+  width: 100%; max-width: 1300px;
+  padding: 0 20px 48px;
+  position: relative; z-index: 1; box-sizing: border-box;
+}
+
+.ledgerSection {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius); overflow: hidden;
+}
+
+.ledgerHeader {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.ledgerHeaderLeft { display: flex; align-items: center; gap: 9px; }
+.ledgerHeaderIcon { font-size: 1rem; color: var(--purple); }
+.ledgerHeaderTitle { font-size: 0.82rem; font-weight: 700; color: var(--text); font-family: var(--sans); }
+.ledgerHeaderSub {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--blue); background: var(--blue-dim); border: 1px solid rgba(56,189,248,0.28);
+  border-radius: 4px; padding: 2px 7px;
+}
+.ledgerHeaderRight { display: flex; align-items: center; gap: 14px; }
+.ledgerStat { display: flex; align-items: center; gap: 5px; font-size: 0.73rem; font-weight: 600; color: var(--text2); }
+.ledgerTotal {
+  font-size: 0.73rem; font-weight: 700; color: var(--text3);
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 5px; padding: 2px 9px;
+}
+
+.ledgerBody { padding: 10px 12px; }
+
+.ledgerLoading {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 32px 20px; color: var(--text2); font-size: 0.8rem;
+}
+.ledgerError {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 7px; padding: 12px 16px; margin: 8px 0;
+  color: var(--red); font-size: 0.8rem;
+}
+.ledgerEmpty {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 40px 20px; text-align: center;
+}
+.ledgerEmptyIcon { font-size: 1.6rem; color: var(--text4); }
+.ledgerEmpty p { font-size: 0.8rem; color: var(--text3); margin: 0; }
+
+.ledgerList { display: flex; flex-direction: column; gap: 6px; }
+
+.ledgerRow {
+  border: 1px solid var(--border2); border-radius: 8px;
+  background: var(--surface2); overflow: hidden;
+  transition: border-color 150ms, background 150ms;
+}
+.ledgerRow:hover:not(.ledgerRowEmpty) { border-color: rgba(167,139,250,0.3); }
+.ledgerRowOpen { border-color: rgba(167,139,250,0.45) !important; }
+.ledgerRowEmpty { opacity: 0.55; }
+
+.ledgerRowMain {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  padding: 10px 14px;
+}
+.ledgerRowLeft { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ledgerRowRight { display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+
+.ledgerStatusPaid {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em;
+  color: var(--green); background: rgba(52,211,153,0.1);
+  border: 1px solid rgba(52,211,153,0.3); border-radius: 4px; padding: 2px 7px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.ledgerStatusUnpaid {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em;
+  color: #fb7185; background: rgba(251,113,133,0.08);
+  border: 1px solid rgba(251,113,133,0.3); border-radius: 4px; padding: 2px 7px;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.ledgerTxId { font-family: var(--sans); font-size: 0.72rem; font-weight: 600; color: var(--text2); letter-spacing: 0.04em; }
+.ledgerAutoRenew {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--purple); background: var(--purple-dim);
+  border: 1px solid rgba(167,139,250,0.25); border-radius: 4px; padding: 1px 6px;
+}
+
+.ledgerKeyCount {
+  font-size: 0.68rem; font-weight: 700; color: var(--blue);
+  background: var(--blue-dim); border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 4px; padding: 2px 7px;
+}
+.ledgerFree {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em;
+  color: var(--green); background: rgba(52,211,153,0.1);
+  border: 1px solid rgba(52,211,153,0.25); border-radius: 4px; padding: 2px 6px;
+}
+.ledgerPriceWrap { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.ledgerPriceUsd { font-size: 0.72rem; font-weight: 700; color: var(--green); line-height: 1; }
+.ledgerPriceNgn { font-size: 0.62rem; color: var(--text3); line-height: 1; }
+
+.ledgerDays { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.ledgerDaysLeft { font-size: 0.72rem; font-weight: 700; color: var(--text2); line-height: 1; }
+.ledgerDaysFor  { font-size: 0.62rem; color: var(--text4); line-height: 1; }
+
+.ledgerChevron {
+  font-size: 1.1rem; color: var(--text3); line-height: 1;
+  transition: transform 200ms; display: inline-block;
+}
+.ledgerChevronOpen { transform: rotate(90deg); }
+
+.ledgerRowDetail {
+  border-top: 1px solid var(--border);
+  padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface3);
+}
+
+.ledgerKeyList { display: flex; flex-direction: column; gap: 6px; }
+.ledgerKeyListLabel {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text3);
+}
+.ledgerKeyPills { display: flex; flex-wrap: wrap; gap: 5px; }
+.ledgerKeyPill {
+  font-size: 0.68rem; font-weight: 600; color: var(--text2);
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 5px; padding: 3px 9px;
+}
+
+.ledgerTotals { display: flex; flex-direction: column; gap: 5px; }
+.ledgerTotalRow { display: flex; align-items: center; gap: 10px; font-size: 0.74rem; color: var(--text2); }
+.ledgerTotalRow > span:first-child { color: var(--text3); min-width: 80px; }
+.ledgerTotalUsd { font-weight: 700; color: var(--green); }
+.ledgerTotalNgn { font-size: 0.67rem; color: var(--text3); }
+
+.ledgerApiKey { display: flex; flex-direction: column; gap: 4px; }
+.ledgerApiKeyLabel {
+  font-size: 0.63rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text3);
+}
+.ledgerApiKeyVal {
+  font-family: var(--sans); font-size: 0.75rem; color: var(--purple);
+  background: var(--purple-dim); border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 5px; padding: 6px 12px; word-break: break-all;
+}
+
+.ledgerDeleteBtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 5px; flex-shrink: 0;
+  background: transparent; border: 1px solid transparent;
+  font-size: 0.65rem; font-weight: 700; color: var(--text4);
+  cursor: pointer; font-family: var(--sans);
+  transition: color 150ms, border-color 150ms, background 150ms;
+}
+.ledgerDeleteBtn:hover:not(:disabled) {
+  color: var(--red); border-color: rgba(239,68,68,0.35);
+  background: rgba(239,68,68,0.07);
+}
+.ledgerDeleteBtnBusy { opacity: 0.5; cursor: not-allowed; }
+.ledgerDeleteSpinner {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid rgba(239,68,68,0.3); border-top-color: var(--red);
+  animation: spin 0.7s linear infinite; display: inline-block;
+}
+
+@media (max-width: 600px) {
+  .ledgerWrap { padding: 0 12px 36px; }
+  .ledgerRowMain { flex-direction: column; align-items: flex-start; }
+  .ledgerRowRight { justify-content: flex-start; }
+}
