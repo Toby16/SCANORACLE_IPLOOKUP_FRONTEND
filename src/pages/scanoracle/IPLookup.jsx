@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearToken, getToken } from '../../services/authService.js'
 import { getUserProfile } from '../../services/authService.js'
@@ -8,37 +8,21 @@ import styles from './IPLookup.module.css'
 
 function usePageTitle(t) { useEffect(() => { document.title = t }, [t]) }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Exact replica of the reference image:
-// Dark rounded square → single cyan circle ring → centered plus cross
-// ─────────────────────────────────────────────────────────────────────────────
 function GhostIPLogo({ size = 120, animated = true }) {
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 120 120"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      width={size} height={size} viewBox="0 0 120 120"
+      fill="none" xmlns="http://www.w3.org/2000/svg"
       className={animated ? styles.logoAnimated : ''}
     >
-      {/* Dark rounded square background */}
       <rect x="0" y="0" width="120" height="120" rx="26" fill="#0d1117" />
-
-      {/* Single cyan circle ring */}
       <circle cx="60" cy="60" r="29" stroke="#22c7e0" strokeWidth="4" />
-
-      {/* Plus cross — vertical bar */}
       <line x1="60" y1="47" x2="60" y2="70" stroke="#22c7e0" strokeWidth="5" strokeLinecap="round" />
-      {/* Plus cross — horizontal bar */}
       <line x1="50" y1="55" x2="70" y2="55" stroke="#22c7e0" strokeWidth="5" strokeLinecap="round" />
     </svg>
   )
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Data field metadata
-// ─────────────────────────────────────────────────────────────────────────────
 const FIELD_META = {
   asn:                      { label: 'ASN',                cat: 'Network',  icon: '⬡' },
   hostname:                 { label: 'Hostname',            cat: 'Network',  icon: '⬡' },
@@ -79,7 +63,7 @@ const FIELD_META = {
   mobile_calling_code:      { label: 'Calling Code',        cat: 'Country',  icon: '⊞' },
   tld:                      { label: 'TLD',                 cat: 'Country',  icon: '' },
   fifa:                     { label: 'FIFA Code',           cat: 'Country',  icon: '' },
-  population:               { label: 'Population',         cat: 'Country',  icon: '' },
+  population:               { label: 'Population',          cat: 'Country',  icon: '' },
   maps:                     { label: 'Maps Link',           cat: 'Location', icon: '◎' },
 }
 
@@ -103,7 +87,77 @@ function formatValue(key, val) {
   return String(val)
 }
 
-function LiveIPPanel({ data, loading, error }) {
+// ─── Pricing helpers ────────────────────────────────────────────────────────
+function PriceBadge({ usdPrice, rate, isFree }) {
+  if (isFree) return <span className={styles.priceFree}>FREE</span>
+  const usd = parseFloat(usdPrice)
+  if (isNaN(usd)) return null
+  const ngn = Math.round(usd * parseFloat(rate || 1200))
+  return (
+    <div className={styles.priceBadge}>
+      <span className={styles.priceUsd}>${usd.toFixed(2)}</span>
+      <span className={styles.priceNgn}>₦{ngn.toLocaleString()}</span>
+      <span className={styles.priceUnit}>/day</span>
+    </div>
+  )
+}
+
+// ─── Tooltip for description ─────────────────────────────────────────────────
+function DescTooltip({ text }) {
+  const [visible, setVisible] = useState(false)
+  const ref = useRef(null)
+  if (!text) return null
+  return (
+    <span
+      className={styles.descTooltipWrap}
+      ref={ref}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      <span className={styles.descTooltipIcon}>?</span>
+      {visible && (
+        <span className={styles.descTooltipBox}>{text}</span>
+      )}
+    </span>
+  )
+}
+
+// ─── Pricing tier strip (shown in selector header) ───────────────────────────
+function PricingTierLegend({ rate }) {
+  const tiers = [
+    { label: 'Free', usd: 0,    color: '#34d399' },
+    { label: '$0.10', usd: 0.10, color: '#38bdf8' },
+    { label: '$0.20', usd: 0.20, color: '#a78bfa' },
+    { label: '$0.30', usd: 0.30, color: '#fbbf24' },
+    { label: '$0.35', usd: 0.35, color: '#fb7185' },
+    { label: '$0.40', usd: 0.40, color: '#ef4444' },
+  ]
+  return (
+    <div className={styles.pricingLegend}>
+      <span className={styles.pricingLegendTitle}>PRICING TIERS</span>
+      <div className={styles.pricingLegendRate}>
+        <span className={styles.rateIcon}>↔</span>
+        $1 = ₦{Number(rate || 1200).toLocaleString()} NGN
+      </div>
+      <div className={styles.pricingTiers}>
+        {tiers.map(t => (
+          <div key={t.label} className={styles.pricingTier}>
+            <span className={styles.pricingTierDot} style={{ background: t.color }} />
+            <span className={styles.pricingTierLabel}>{t.label}</span>
+            {t.usd > 0 && (
+              <span className={styles.pricingTierNgn}>
+                ₦{Math.round(t.usd * Number(rate || 1200)).toLocaleString()}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Live IP Panel ────────────────────────────────────────────────────────────
+function LiveIPPanel({ data, loading, error, lookupMeta }) {
   if (loading) return (
     <div className={styles.liveLoading}>
       <div className={styles.radarWrap}>
@@ -135,6 +189,7 @@ function LiveIPPanel({ data, loading, error }) {
           <img src={d.country_flag_icon} alt={d.country_name} className={styles.liveFlag} />
         )}
       </div>
+
       <div className={styles.threatWrap}>
         <div className={styles.threatHeader}>
           <span className={styles.threatLabel}>Threat Score</span>
@@ -153,6 +208,7 @@ function LiveIPPanel({ data, loading, error }) {
           <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>● {d.network_status}</span>
         </div>
       </div>
+
       <div className={styles.liveFields}>
         {DISPLAY_CATEGORIES.map(cat => {
           const fields = Object.entries(FIELD_META).filter(([, m]) => m.cat === cat)
@@ -165,15 +221,22 @@ function LiveIPPanel({ data, loading, error }) {
                 const raw = d[key]
                 if (raw === undefined) return null
                 if (key === 'country_flag_icon') return null
+                const desc = lookupMeta?.[key]?.description || null
                 if (key === 'maps') return (
                   <div key={key} className={styles.liveRow}>
-                    <span className={styles.liveRowKey}>{meta.label}</span>
+                    <span className={styles.liveRowKey}>
+                      {meta.label}
+                      <DescTooltip text={desc} />
+                    </span>
                     <a href={raw} target="_blank" rel="noreferrer" className={styles.liveLink}>View Map ↗</a>
                   </div>
                 )
                 return (
                   <div key={key} className={styles.liveRow}>
-                    <span className={styles.liveRowKey}>{meta.label}</span>
+                    <span className={styles.liveRowKey}>
+                      {meta.label}
+                      <DescTooltip text={desc} />
+                    </span>
                     <span className={styles.liveRowVal}>{formatValue(key, raw)}</span>
                   </div>
                 )
@@ -182,6 +245,7 @@ function LiveIPPanel({ data, loading, error }) {
           )
         })}
       </div>
+
       <div className={styles.liveDisclaimer}>
         <span>🔒</span> Everything we say is facts!.
       </div>
@@ -189,7 +253,8 @@ function LiveIPPanel({ data, loading, error }) {
   )
 }
 
-function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPurchaseSuccess, userBalances }) {
+// ─── Data Selector Panel ──────────────────────────────────────────────────────
+function DataSelectorPanel({ lookupMeta, rate, lookupsLoading, lookupsError, token, onPurchaseSuccess, userBalances }) {
   const [selected, setSelected] = useState({})
   const [daysFor, setDaysFor] = useState(30)
   const [autoRenew, setAutoRenew] = useState(false)
@@ -211,12 +276,14 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
   const selectedCount = Object.values(selected).filter(Boolean).length
   const totalFields   = Object.keys(FIELD_META).length
 
-  const totalCost = lookups ? Object.entries(selected).reduce((sum, [key, on]) => {
+  // Total cost in USD × rate = NGN per day
+  const totalCostUSD = lookupMeta ? Object.entries(selected).reduce((sum, [key, on]) => {
     if (!on) return sum
-    const entry = Array.isArray(lookups) ? lookups.find?.(l => l.field_name === key || l.key === key) : null
+    const entry = lookupMeta[key]
     if (!entry) return sum
-    return sum + (entry.price_per_day || entry.price || 0)
+    return sum + parseFloat(entry.price || 0)
   }, 0) : 0
+  const totalCostNGN = Math.round(totalCostUSD * Number(rate || 1200))
 
   const handleSubmit = async () => {
     if (selectedCount === 0) { setSubmitError('Select at least one data field.'); return }
@@ -233,11 +300,6 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
       onPurchaseSuccess?.(json.data)
     } catch (e) { setSubmitError(e.message) }
     finally { setSubmitting(false) }
-  }
-
-  const getFieldInfo = key => {
-    if (!lookups || !Array.isArray(lookups)) return null
-    return lookups.find?.(l => l.field_name === key || l.key === key || l.name === key) || null
   }
 
   if (lookupsLoading) return (
@@ -275,6 +337,9 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         </div>
       </div>
 
+      {/* Pricing tier legend */}
+      <PricingTierLegend rate={rate} />
+
       <div className={styles.selectorActions}>
         <button className={styles.quickBtn} onClick={selectAll}>Select All</button>
         <button className={styles.quickBtn} onClick={clearAll}>Clear</button>
@@ -292,8 +357,19 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         {Object.entries(FIELD_META)
           .filter(([, m]) => activeTab === 'All' || m.cat === activeTab)
           .map(([key, meta]) => {
-            const info = getFieldInfo(key)
+            const info = lookupMeta?.[key]
             const isOn = selected[key] || false
+            const usdPrice = parseFloat(info?.price || 0)
+            const isFree = usdPrice === 0
+
+            // tier color for dot
+            const tierColor = isFree ? '#34d399'
+              : usdPrice <= 0.10 ? '#38bdf8'
+              : usdPrice <= 0.20 ? '#a78bfa'
+              : usdPrice <= 0.30 ? '#fbbf24'
+              : usdPrice <= 0.35 ? '#fb7185'
+              : '#ef4444'
+
             return (
               <label
                 key={key}
@@ -307,16 +383,18 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
                   {isOn && <span className={styles.checkmark}>✓</span>}
                 </div>
                 <input type="checkbox" checked={isOn} onChange={() => toggleField(key)} className={styles.hiddenCheck} />
+
+                {/* Tier dot */}
+                <span className={styles.tierDot} style={{ background: tierColor }} title={isFree ? 'Free' : `$${usdPrice.toFixed(2)}/day`} />
+
                 <div className={styles.fieldInfo}>
                   <span className={styles.fieldLabel}>{meta.label}</span>
-                  {info?.description && <span className={styles.fieldDesc}>{info.description}</span>}
+                  {info?.description && (
+                    <span className={styles.fieldDesc} title={info.description}>{info.description}</span>
+                  )}
                 </div>
-                {info?.price_per_day !== undefined && (
-                  <span className={styles.fieldPrice}>₦{Number(info.price_per_day).toLocaleString()}<sub>/day</sub></span>
-                )}
-                {info?.price !== undefined && !info?.price_per_day && (
-                  <span className={styles.fieldPrice}>₦{Number(info.price).toLocaleString()}<sub>/day</sub></span>
-                )}
+
+                <PriceBadge usdPrice={info?.price} rate={rate} isFree={isFree} />
               </label>
             )
           })}
@@ -360,13 +438,36 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
         <div className={styles.costSummary}>
           <div className={styles.costRow}><span>Fields selected</span><span>{selectedCount}</span></div>
           <div className={styles.costRow}><span>Duration</span><span>{daysFor} days</span></div>
-          {totalCost > 0 && <>
-            <div className={styles.costDivider} />
-            <div className={`${styles.costRow} ${styles.costTotal}`}>
-              <span>Estimated Total</span>
-              <span>₦{(totalCost * daysFor).toLocaleString()}</span>
-            </div>
-          </>}
+          {totalCostUSD > 0 && (
+            <>
+              <div className={styles.costDivider} />
+              <div className={styles.costRow}>
+                <span>Per day (USD)</span>
+                <span className={styles.costUsdVal}>${totalCostUSD.toFixed(2)}</span>
+              </div>
+              <div className={styles.costRow}>
+                <span>Per day (NGN)</span>
+                <span>₦{totalCostNGN.toLocaleString()}</span>
+              </div>
+              <div className={styles.costDivider} />
+              <div className={`${styles.costRow} ${styles.costTotal}`}>
+                <span>Total ({daysFor}d)</span>
+                <div className={styles.costTotalVals}>
+                  <span className={styles.costTotalUsd}>${(totalCostUSD * daysFor).toFixed(2)}</span>
+                  <span className={styles.costTotalNgn}>₦{(totalCostNGN * daysFor).toLocaleString()}</span>
+                </div>
+              </div>
+            </>
+          )}
+          {totalCostUSD === 0 && selectedCount > 0 && (
+            <>
+              <div className={styles.costDivider} />
+              <div className={`${styles.costRow} ${styles.costTotal}`}>
+                <span>Total ({daysFor}d)</span>
+                <span className={styles.priceFree}>FREE</span>
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -385,20 +486,23 @@ function DataSelectorPanel({ lookups, lookupsLoading, lookupsError, token, onPur
   )
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function IPLookup() {
   usePageTitle('SCANORACLE — IP Lookup | Ghostroute')
   useAuthGuard()
   useTokenRefresh()
   const navigate = useNavigate()
 
-  const [user, setUser]                         = useState(null)
-  const [liveData, setLiveData]                 = useState(null)
-  const [liveLoading, setLiveLoading]           = useState(true)
-  const [liveError, setLiveError]               = useState(null)
-  const [lookups, setLookups]                   = useState(null)
-  const [lookupsLoading, setLookupsLoading]     = useState(() => !!getToken())
-  const [lookupsError, setLookupsError]         = useState(null)
-  const [token, setToken]                       = useState(() => getToken())
+  const [user, setUser]                     = useState(null)
+  const [liveData, setLiveData]             = useState(null)
+  const [liveLoading, setLiveLoading]       = useState(true)
+  const [liveError, setLiveError]           = useState(null)
+  // lookupMeta = { asn: { price, description }, ... }  (IP_ADDRESS object from API)
+  const [lookupMeta, setLookupMeta]         = useState(null)
+  const [rate, setRate]                     = useState('1200')
+  const [lookupsLoading, setLookupsLoading] = useState(() => !!getToken())
+  const [lookupsError, setLookupsError]     = useState(null)
+  const [token, setToken]                   = useState(() => getToken())
 
   useEffect(() => { const t = getToken(); if (t !== token) setToken(t) }, [])
 
@@ -425,9 +529,22 @@ export default function IPLookup() {
       signal: controller.signal,
       headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
     })
-      .then(r => { if (!r.ok) throw new Error(r.status === 401 ? 'Session expired.' : `Server error (${r.status})`); return r.json() })
-      .then(json => { if (cancelled) return; const data = json.data || json.lookups || json.fields || json; setLookups(Array.isArray(data) ? data : []) })
-      .catch(() => { if (cancelled) return; setLookups([]) })
+      .then(r => {
+        if (!r.ok) throw new Error(r.status === 401 ? 'Session expired.' : `Server error (${r.status})`)
+        return r.json()
+      })
+      .then(json => {
+        if (cancelled) return
+        // API shape: { data: { currency, rate, IP_ADDRESS: { asn: { price, description }, ... } } }
+        const data = json?.data
+        if (data?.IP_ADDRESS) {
+          setLookupMeta(data.IP_ADDRESS)
+          setRate(data.rate || '1200')
+        } else {
+          setLookupMeta({})
+        }
+      })
+      .catch(() => { if (cancelled) return; setLookupMeta({}) })
       .finally(() => { if (cancelled) return; clearTimeout(timeout); setLookupsLoading(false) })
     return () => { cancelled = true; clearTimeout(timeout); controller.abort() }
   }, [token])
@@ -506,7 +623,8 @@ export default function IPLookup() {
             Data Package Builder
           </div>
           <DataSelectorPanel
-            lookups={lookups}
+            lookupMeta={lookupMeta}
+            rate={rate}
             lookupsLoading={lookupsLoading}
             lookupsError={lookupsError}
             token={token}
@@ -521,7 +639,12 @@ export default function IPLookup() {
             <span className={styles.panelLabelBadge}>live scan</span>
           </div>
           <div className={styles.livePanelWrap}>
-            <LiveIPPanel data={liveData} loading={liveLoading} error={liveError} />
+            <LiveIPPanel
+              data={liveData}
+              loading={liveLoading}
+              error={liveError}
+              lookupMeta={lookupMeta}
+            />
           </div>
         </div>
       </main>
