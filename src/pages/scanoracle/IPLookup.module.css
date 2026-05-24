@@ -150,11 +150,16 @@
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 20px; padding: 0 20px 48px;
   position: relative; z-index: 1; box-sizing: border-box;
-  align-items: stretch;
+  /* FIX: use start instead of stretch so neither col forces the other's height */
+  align-items: start;
 }
-/* .leftCol, .rightCol { display: flex; flex-direction: column; gap: 8px; } */
+
+/* FIX: remove height:100% — let each col size naturally to its content */
 .leftCol, .rightCol {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
 
 .panelLabel {
@@ -286,7 +291,7 @@
 .selectorPanel {
   background: var(--surface); border: 1px solid var(--border2);
   border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column;
-  flex: 1;
+  /* FIX: removed flex:1 — let panel size to content, not try to fill parent height */
 }
 .selectorHeader {
   display: flex; align-items: center; justify-content: space-between;
@@ -462,11 +467,17 @@
 /* ══════════════════════════════════════
    LIVE IP PANEL
    ══════════════════════════════════════ */
-.livePanelWrap { flex: 1; display: flex; flex-direction: column; }
+
+/* FIX: removed flex:1 from livePanelWrap — natural height only */
+.livePanelWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+/* FIX: removed flex:1 from livePanel — sizes to content, no stretching */
 .livePanel {
   background: var(--surface); border: 1px solid var(--border2);
   border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column;
-  flex: 1
 }
 .livePanelHeader {
   display: flex; align-items: center; justify-content: space-between;
@@ -579,10 +590,25 @@
    RESPONSIVE
    ══════════════════════════════════════ */
 @media (max-width: 900px) {
-  .splitLayout { grid-template-columns: 1fr; }
+  .splitLayout {
+    grid-template-columns: 1fr;
+    /* FIX: ensure rows size to content, not stretched */
+    align-items: start;
+  }
   .rightCol { order: -1; }
+  /* FIX: cap liveFields scroll area on tablet */
   .liveFields { max-height: 380px; }
+  /* FIX: both cols take full width, natural height */
+  .leftCol, .rightCol {
+    width: 100%;
+    height: auto;
+  }
+  /* FIX: panels fill their col width but don't try to stretch vertically */
+  .livePanel, .selectorPanel {
+    width: 100%;
+  }
 }
+
 @media (max-width: 600px) {
   .nav { padding: 0 12px; }
   .navBalances { display: none; }
@@ -593,12 +619,17 @@
   .splitLayout { padding: 0 6px 36px 6px; gap: 12px; }
   .descTooltipBox { width: 170px; }
   .pricingTiers { gap: 4px; }
+  /* FIX: tighter field scroll on small phones */
+  .liveFields { max-height: 300px; }
+  /* FIX: ensure panels don't overflow viewport */
+  .livePanel, .selectorPanel {
+    min-width: 0;
+    max-width: 100%;
+  }
 }
 
-
-
 /* ══════════════════════════════════════
-   SUBSCRIPTION LEDGER — append to bottom of IPLookup.module.css
+   SUBSCRIPTION LEDGER
    ══════════════════════════════════════ */
 .ledgerWrap {
   width: 100%; max-width: 1300px;
@@ -818,22 +849,22 @@
 @media (max-width: 600px) {
   .ledgerWrap { padding: 0 12px 36px; }
   .ledgerRowMain {
-    flex-wrap: nowrap;         /* never wrap — left shrinks, right stays */
+    flex-wrap: nowrap;
     align-items: center;
     gap: 6px;
   }
   .ledgerRowLeft {
-    flex: 1 1 0;               /* grows to fill available space */
-    min-width: 0;              /* allows text truncation */
+    flex: 1 1 0;
+    min-width: 0;
     flex-wrap: wrap;
     gap: 4px;
   }
   .ledgerTxId {
-    font-size: 0.65rem;        /* smaller on mobile so it fits */
+    font-size: 0.65rem;
     word-break: break-all;
   }
   .ledgerRowRight {
-    flex-shrink: 0;            /* never shrinks — always on the right */
+    flex-shrink: 0;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 6px;
