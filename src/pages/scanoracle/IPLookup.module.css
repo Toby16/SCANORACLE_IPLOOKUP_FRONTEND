@@ -845,29 +845,47 @@
   background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.6);
 }
 
-/* ── Mobile: keep right side pinned to the right ── */
+
 @media (max-width: 600px) {
   .ledgerWrap { padding: 0 12px 36px; }
+
+  /* Stack the row into a card: ID header on top, meta below */
   .ledgerRowMain {
-    flex-wrap: nowrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  /* Top line: status badge + truncated ID + auto badge */
+  .ledgerRowLeft {
+    display: flex;
     align-items: center;
     gap: 6px;
-  }
-  .ledgerRowLeft {
-    flex: 1 1 0;
     min-width: 0;
-    flex-wrap: wrap;
-    gap: 4px;
+    flex-wrap: nowrap;
   }
   .ledgerTxId {
-    font-size: 0.65rem;
-    word-break: break-all;
+    font-size: 0.68rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
   }
+
+  /* Bottom line: all the meta chips + actions */
   .ledgerRowRight {
-    flex-shrink: 0;
+    display: flex;
+    align-items: center;
     flex-wrap: wrap;
-    justify-content: flex-end;
     gap: 6px;
+    justify-content: flex-start;
+  }
+
+  /* Push delete to the far right */
+  .ledgerDeleteBtn {
+    margin-left: auto;
   }
 }
 
