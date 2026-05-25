@@ -150,6 +150,7 @@
   display: grid; grid-template-columns: 420px 1fr;
   gap: 20px; padding: 0 20px 48px;
   position: relative; z-index: 1; box-sizing: border-box;
+  /* FIX: align-items stretch so right col fills height naturally */
   align-items: start;
 }
 
@@ -176,15 +177,30 @@
 
 /* ══════════════════════════════════════
    CATEGORY LIST
+   FIX: Give the list a proper max-height with bottom padding so the last
+   card is never clipped by the scroll container's edge.
    ══════════════════════════════════════ */
 .catList {
   display: flex; flex-direction: column; gap: 8px;
-  max-height: 440px; overflow-y: auto;
+  /* Enough height for ~3.5 cards so users know there's more to scroll */
+  max-height: 460px;
+  overflow-y: auto;
+  /* Bottom padding ensures the last card isn't cut off by the container */
+  padding-bottom: 12px;
+  padding-right: 4px;
   scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
-  padding-right: 2px;
+  /* Smooth scroll feel */
+  scroll-behavior: smooth;
 }
 .catList::-webkit-scrollbar { width: 4px; }
 .catList::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+/* Subtle fade at the bottom to hint there's more content */
+.catList::after {
+  content: '';
+  display: block;
+  height: 1px;
+  flex-shrink: 0;
+}
 
 .catsLoading {
   display: flex; align-items: center; gap: 10px;
@@ -218,6 +234,8 @@
   cursor: pointer; transition: border-color 150ms, background 150ms;
   position: relative; overflow: hidden;
   display: flex; flex-direction: column; gap: 8px;
+  /* FIX: prevent card from ever being squeezed smaller than its content */
+  flex-shrink: 0;
 }
 .catCard:hover { border-color: rgba(167,139,250,0.3); background: var(--surface2); }
 .catCardSelected {

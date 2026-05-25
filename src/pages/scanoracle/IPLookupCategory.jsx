@@ -78,13 +78,21 @@ const CAT_COLORS = {
 
 const DISPLAY_CATEGORIES = ['Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
 
+// ─── FIX: Only skip truly absent values (null/undefined), never skip false.
+// false is valid data (e.g. is_blacklisted=false means "clean" — show it).
+function isAbsent(val) {
+  return val === null || val === undefined
+}
+
 function formatValue(key, val) {
-  if (val === null || val === undefined || val === false) return null
+  if (isAbsent(val)) return null
   if (typeof val === 'boolean') return val ? 'Yes' : 'No'
   if (key === 'population') return Number(val).toLocaleString()
-  if (key === 'country_flag_icon') return null
-  if (key === 'maps') return null
-  return String(val)
+  if (key === 'country_flag_icon') return null   // rendered as <img>, not text
+  if (key === 'maps') return null                // rendered as <a>, not text
+  const str = String(val)
+  if (str.trim() === '') return null
+  return str
 }
 
 function isValidIP(ip) {
@@ -180,20 +188,27 @@ function ResultPanel({ result, loading, error, ipQueried }) {
   const d = result
   const threatNum = parseInt(String(d.threat_score ?? '').replace('%', '')) || 0
   const threatColor = threatNum < 30 ? '#34d399' : threatNum < 60 ? '#fbbf24' : '#ef4444'
-  const hasThreat = (d.threat_score !== undefined && d.threat_score !== false)
-    || (d.is_tor !== undefined && d.is_tor !== false)
-    || (d.is_blacklisted !== undefined && d.is_blacklisted !== false)
 
+  // ─── FIX: A field is "present" if the API returned it (key exists in d),
+  // even when the value is false/0/empty-string. Only skip null/undefined.
+  // This means is_blacklisted=false ("clean") and is_tor=false ("not TOR") both render.
   const fieldsByCategory = {}
   Object.entries(d).forEach(([key, val]) => {
     if (!FIELD_META[key]) return
-    if (val === false || val === null || val === undefined) return
+    if (isAbsent(val)) return           // skip only truly missing values
     const cat = FIELD_META[key].cat
     if (!fieldsByCategory[cat]) fieldsByCategory[cat] = []
     fieldsByCategory[cat].push([key, val])
   })
 
-  const hasFlag = d.country_flag_icon && d.country_flag_icon !== false
+  // Threat summary section: show if ANY threat key came back from the API
+  const hasThreatScore     = !isAbsent(d.threat_score)
+  const hasTorField        = !isAbsent(d.is_tor)
+  const hasBlacklistField  = !isAbsent(d.is_blacklisted)
+  const hasNetworkStatus   = !isAbsent(d.network_status)
+  const hasThreat = hasThreatScore || hasTorField || hasBlacklistField
+
+  const hasFlag = d.country_flag_icon && !isAbsent(d.country_flag_icon)
 
   return (
     <div className={styles.resultPanel}>
@@ -201,7 +216,7 @@ function ResultPanel({ result, loading, error, ipQueried }) {
         <div className={styles.resultIPBadge}>
           <span className={styles.resultIPDot} />
           <span className={styles.resultIPText}>{d.ip_address}</span>
-          {d.ip_version && d.ip_version !== false && (
+          {!isAbsent(d.ip_version) && (
             <span className={styles.resultIPVersion}>{String(d.ip_version).toUpperCase()}</span>
           )}
         </div>
@@ -212,7 +227,7 @@ function ResultPanel({ result, loading, error, ipQueried }) {
 
       {hasThreat && (
         <div className={styles.threatWrap}>
-          {d.threat_score !== undefined && d.threat_score !== false && (
+          {hasThreatScore && (
             <>
               <div className={styles.threatHeader}>
                 <span className={styles.threatLabel}>Threat Score</span>
@@ -224,17 +239,17 @@ function ResultPanel({ result, loading, error, ipQueried }) {
             </>
           )}
           <div className={styles.threatBadges}>
-            {d.is_tor !== undefined && d.is_tor !== false && (
+            {hasTorField && (
               <span className={`${styles.threatBadge} ${d.is_tor ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
-                {d.is_tor ? '● TOR' : '○ No TOR'}
+                {d.is_tor ? '● TOR Exit Node' : '○ No TOR'}
               </span>
             )}
-            {d.is_blacklisted !== undefined && d.is_blacklisted !== false && (
+            {hasBlacklistField && (
               <span className={`${styles.threatBadge} ${d.is_blacklisted ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
                 {d.is_blacklisted ? '● Blacklisted' : '○ Clean'}
               </span>
             )}
-            {d.network_status && d.network_status !== false && (
+            {hasNetworkStatus && (
               <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>● {d.network_status}</span>
             )}
           </div>
@@ -287,7 +302,6 @@ export default function IPLookupCategory() {
   useTokenRefresh()
   const navigate = useNavigate()
 
-  // Stable token ref — read once on mount, never changes mid-session
   const tokenRef = useRef(getToken())
   const token = tokenRef.current
 
@@ -304,13 +318,11 @@ export default function IPLookupCategory() {
   const [ipQueried, setIpQueried] = useState('')
   const [inputError, setInputError] = useState('')
 
-  // Load user profile — runs once
   useEffect(() => {
     if (!token) return
     getUserProfile(token).then(r => setUser(r.user)).catch(() => {})
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Load categories — runs once
   useEffect(() => {
     if (!token) { setCatsLoading(false); return }
     setCatsLoading(true)
@@ -432,6 +444,7 @@ export default function IPLookupCategory() {
             Select a Subscription
           </div>
 
+          {/* FIX: removed max-height cap on the wrapper — scroll is on catList itself */}
           <div className={styles.catList}>
             {catsLoading && (
               <div className={styles.catsLoading}>
