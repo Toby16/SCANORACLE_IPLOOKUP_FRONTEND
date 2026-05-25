@@ -415,17 +415,12 @@ export default function IPLookupCategory() {
         <div className={styles.heroStats}>
           <div className={styles.heroStat}>
             <span className={styles.heroStatNum}>{categories.length}</span>
-            <span className={styles.heroStatLabel}>Active Plans</span>
-          </div>
-          <div className={styles.heroStatDiv} />
-          <div className={styles.heroStat}>
-            <span className={styles.heroStatNum}>{categories.reduce((s, c) => s + (c.keys?.length ?? 0), 0)}</span>
-            <span className={styles.heroStatLabel}>Total Fields</span>
+            <span className={styles.heroStatLabel}>Active Plans 🎯</span>
           </div>
           <div className={styles.heroStatDiv} />
           <div className={styles.heroStat}>
             <span className={styles.heroStatNum}>Live</span>
-            <span className={styles.heroStatLabel}>Real-Time</span>
+            <span className={styles.heroStatLabel}>Real-Time ✔️</span>
           </div>
         </div>
       </header>
