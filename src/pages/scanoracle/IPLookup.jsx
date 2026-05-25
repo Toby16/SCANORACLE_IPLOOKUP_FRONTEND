@@ -1008,9 +1008,21 @@ export default function IPLookup() {
       </main>
 
       {token && (
-        <div className={styles.ledgerWrap}>
-          <SubscriptionLedger token={token} refreshTrigger={ledgerRefresh} />
-        </div>
+	<div className={styles.ledgerWrap}>
+    	  <div className={styles.ledgerTopBar}>
+      	    <span className={styles.ledgerTopBarLabel}>
+              <span className={styles.ledgerTopBarIcon}>⊟</span>
+              Subscriptions
+      	    </span>
+      	    <button
+              className={styles.ledgerCatBtn}
+              onClick={() => navigate('/scanoracle/iplookup/category')}
+      	    >
+	      ⊛ Open Categories 🏷️
+	    </button>
+    	  </div>
+    	  <SubscriptionLedger token={token} refreshTrigger={ledgerRefresh} />
+  	</div>
       )}
 
       <footer className={styles.footer}>
