@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearToken, getToken } from '../../services/authService.js'
 import { getUserProfile } from '../../services/authService.js'
@@ -184,7 +184,6 @@ function ResultPanel({ result, loading, error, ipQueried }) {
     || (d.is_tor !== undefined && d.is_tor !== false)
     || (d.is_blacklisted !== undefined && d.is_blacklisted !== false)
 
-  // Group returned fields by category
   const fieldsByCategory = {}
   Object.entries(d).forEach(([key, val]) => {
     if (!FIELD_META[key]) return
@@ -283,12 +282,15 @@ function ResultPanel({ result, loading, error, ipQueried }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function IPLookupCategory() {
-  usePageTitle('SCANORACLE — Category Lookup | Ghostroute')
+  usePageTitle('SCANORACLE — IP Lookup Categories | Ghostroute')
   useAuthGuard()
   useTokenRefresh()
   const navigate = useNavigate()
 
-  const token = getToken()
+  // Stable token ref — read once on mount, never changes mid-session
+  const tokenRef = useRef(getToken())
+  const token = tokenRef.current
+
   const [user, setUser] = useState(null)
   const [categories, setCategories] = useState([])
   const [catsLoading, setCatsLoading] = useState(true)
@@ -302,14 +304,17 @@ export default function IPLookupCategory() {
   const [ipQueried, setIpQueried] = useState('')
   const [inputError, setInputError] = useState('')
 
+  // Load user profile — runs once
   useEffect(() => {
     if (!token) return
     getUserProfile(token).then(r => setUser(r.user)).catch(() => {})
-  }, [token])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loadCategories = useCallback(() => {
+  // Load categories — runs once
+  useEffect(() => {
     if (!token) { setCatsLoading(false); return }
-    setCatsLoading(true); setCatsError(null)
+    setCatsLoading(true)
+    setCatsError(null)
     fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/categories/ip', {
       headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
     })
@@ -323,9 +328,7 @@ export default function IPLookupCategory() {
         setCatsLoading(false)
       })
       .catch(e => { setCatsError(e.message); setCatsLoading(false) })
-  }, [token])
-
-  useEffect(() => { loadCategories() }, [loadCategories])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleScan = async () => {
     setInputError('')
@@ -370,7 +373,7 @@ export default function IPLookupCategory() {
             Dashboard
           </button>
           <div className={styles.navSep} />
-          <button className={styles.navBack} onClick={() => navigate('/ip-lookup')}>
+          <button className={styles.navBack} onClick={() => navigate('/scanoracle/iplookup')}>
             <svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11">
               <path d="M7.78 12.53a.75.75 0 01-1.06 0L2.47 8.28a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L4.81 7h7.44a.75.75 0 010 1.5H4.81l2.97 2.97a.75.75 0 010 1.06z" />
             </svg>
@@ -380,7 +383,7 @@ export default function IPLookupCategory() {
           <div className={styles.navBrand}>
             <GhostIPLogo size={28} animated={false} />
             <span className={styles.navBrandText}><span className={styles.navAccent}>SCAN</span>ORACLE</span>
-            <span className={styles.navPill}>Category Lookup</span>
+            <span className={styles.navPill}>Category</span>
           </div>
         </div>
         <div className={styles.navRight}>
@@ -406,23 +409,23 @@ export default function IPLookupCategory() {
           <GhostIPLogo size={72} animated={true} />
         </div>
         <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}><span className={styles.heroAccent}>CATEGORY</span> LOOKUP</h1>
+          <h1 className={styles.heroTitle}><span className={styles.heroAccent}>SCAN</span> ORACLE</h1>
           <p className={styles.heroSub}>Test your subscribed IP data packages 🔬</p>
         </div>
         <div className={styles.heroStats}>
           <div className={styles.heroStat}>
             <span className={styles.heroStatNum}>{categories.length}</span>
-            <span className={styles.heroStatLabel}>Active Plans 📋</span>
+            <span className={styles.heroStatLabel}>Active Plans</span>
           </div>
           <div className={styles.heroStatDiv} />
           <div className={styles.heroStat}>
             <span className={styles.heroStatNum}>{categories.reduce((s, c) => s + (c.keys?.length ?? 0), 0)}</span>
-            <span className={styles.heroStatLabel}>Total Fields 🛢</span>
+            <span className={styles.heroStatLabel}>Total Fields</span>
           </div>
           <div className={styles.heroStatDiv} />
           <div className={styles.heroStat}>
             <span className={styles.heroStatNum}>Live</span>
-            <span className={styles.heroStatLabel}>Real-Time 🚀</span>
+            <span className={styles.heroStatLabel}>Real-Time</span>
           </div>
         </div>
       </header>
@@ -448,7 +451,7 @@ export default function IPLookupCategory() {
               <div className={styles.catsEmpty}>
                 <span className={styles.catsEmptyIcon}>⊘</span>
                 <p>No active subscriptions found.</p>
-                <button className={styles.catsEmptyBtn} onClick={() => navigate('/ip-lookup')}>
+                <button className={styles.catsEmptyBtn} onClick={() => navigate('/scanoracle/iplookup')}>
                   Buy a Subscription →
                 </button>
               </div>
