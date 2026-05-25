@@ -7,6 +7,7 @@ import SSOCallback from './pages/SSOCallback.jsx'
 import Verify      from './pages/Verify.jsx'
 import Dashboard   from './pages/Dashboard.jsx'
 import IPLookup    from './pages/scanoracle/IPLookup.jsx'
+import IPLookupCategory from './pages/scanoracle/IPLookupCategory.jsx'
 import NotFound    from './pages/NotFound.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
 
@@ -34,6 +35,9 @@ function App() {
             <PrivateRoute><IPLookup /></PrivateRoute>
           } />
 
+	  <Route path="/scanoracle/iplookup/category" element={
+            <PrivateRoute><IPLookupCategory /></PrivateRoute>
+          } />
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>

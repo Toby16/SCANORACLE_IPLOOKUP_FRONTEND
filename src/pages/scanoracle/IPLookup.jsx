@@ -802,6 +802,7 @@ function SubscriptionLedger({ token, refreshTrigger }) {
           onVerified={() => {
             setVerifyEntry(null)
             loadEntries()
+	    getUserProfile(token).then(r => setUser(r.user)).catch(() => {})
           }}
         />
       )}
@@ -920,6 +921,10 @@ export default function IPLookup() {
             Dashboard
           </button>
           <div className={styles.navSep} />
+	  <button className={styles.navBack} onClick={() => navigate('/scanoracle/iplookup/category')}>
+      		⊛ Open Categories 🏷️
+	  </button>
+	  <div className={styles.navSep} />
           <div className={styles.navBrand}>
             <GhostIPLogo size={28} animated={false} />
             <span className={styles.navBrandText}><span className={styles.navAccent}>SCAN</span>ORACLE</span>
