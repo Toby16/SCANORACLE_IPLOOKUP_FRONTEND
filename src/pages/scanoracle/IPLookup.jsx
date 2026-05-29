@@ -607,6 +607,22 @@ function VerifyPaymentModal({ entry, token, onClose, onVerified, onRefreshUser  
   )
 }
 
+
+function CopyButton({ text }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    })
+  }
+  return (
+    <button className={styles.apiCopyBtn} onClick={handleCopy} title="Copy API Key">
+      {copied ? '✔️ copied' : '📋 copy'}
+    </button>
+  )
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // STEP 1 ── Paste this entire component into IPLookup.jsx
 //            Place it just ABOVE the "SubscriptionLedger" function definition
@@ -653,7 +669,16 @@ function ApiEndpointDocs({ apiKey }) {
     try {
       const res  = await fetch(endpoints[idx].url, { headers: { accept: 'application/json' } })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.detail || json.message || `HTTP ${res.status}`)
+      if (!res.ok) {
+  	const detail = json.detail
+  	const msg =
+    	  typeof detail === 'string'
+      	    ? detail
+	    : typeof detail === 'object' && detail !== null
+              ? (detail.error || detail.message || JSON.stringify(detail))
+              : (json.message || `HTTP ${res.status}`)
+  	throw new Error(msg)
+      }
       setLiveResult(p => ({ ...p, [idx]: json }))
     } catch (e) {
       setLiveError(p => ({ ...p, [idx]: e.message }))
@@ -665,9 +690,9 @@ function ApiEndpointDocs({ apiKey }) {
   return (
     <div className={styles.apiDocsWrap}>
       <div className={styles.apiDocsHeader}>
-        <span className={styles.apiDocsHeaderIcon}>⌥</span>
+        <span className={styles.apiDocsHeaderIcon}>🔗</span>
         <span className={styles.apiDocsHeaderTitle}>API Endpoints</span>
-        <span className={styles.apiDocsHeaderSub}>Masked · JSON · No auth header</span>
+        <span className={styles.apiDocsHeaderSub}>JSON · No auth header</span>
       </div>
 
       {endpoints.map((ep, idx) => (
@@ -926,14 +951,22 @@ function SubscriptionLedger({ token, refreshTrigger, onRefreshUser }) {
                   </div>
                 </div>
               )}
-              {entry.api_key && (
-                <div className={styles.ledgerApiKey}>
-                  <span className={styles.ledgerApiKeyLabel}>API Key</span>
-                  <code className={styles.ledgerApiKeyVal}>{entry.api_key}</code>
-                </div>
-              )}
+	      {entry.api_key && (
+		<div className={styles.apiKeyCard}>
+		  <div className={styles.apiKeyCardHead}>
+		    <span className={styles.apiKeyCardIcon}>⌗</span>
+		    <span className={styles.apiKeyCardTitle}>API KEY</span>
+		    <span className={styles.apiKeyCardSub}>Use this in your endpoint URLs</span>
+		  </div>
+		  <div className={styles.apiUrlBar}>
+		    <code className={styles.apiUrlText} style={{ color: 'var(--purple)' }}>{entry.api_key}</code>
+		    <CopyButton text={entry.api_key} />
+		  </div>
+		</div>
+	      )}
 	      {entry.api_key && <ApiEndpointDocs apiKey={entry.api_key} />}
-            </div>
+            \\
+		  </div>
           )}
         </div>
       </>
