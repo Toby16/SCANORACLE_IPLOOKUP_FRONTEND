@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   getUserProfile, updateUsername, updateProfilePhoto,
-  changePassword, deleteAccount,
+  changePassword, deactivateAccount,
   getToken, clearToken, saveToken,
 } from '../services/authService.js'
 import { useAuthGuard } from '../hooks/useAuthGuard.js'
@@ -298,8 +298,8 @@ export default function Dashboard() {
     return r
   }
 
-  const handleDeleteAccount = async () => {
-    await deleteAccount(getToken())
+  const handleDeactivateAccount = async () => {
+    await deactivateAccount(getToken())
     clearToken()
     navigate('/auth', { replace: true })
   }
@@ -334,7 +334,12 @@ export default function Dashboard() {
         <ChangePwModal onClose={() => setShowChangePw(false)} onSubmit={handleChangePassword} push={push} />
       )}
       {showDeleteAcc && (
-        <DeleteAccModal onClose={() => setShowDeleteAcc(false)} onConfirm={handleDeleteAccount} username={user?.username} push={push} />
+	<DeleteAccModal
+	onClose={() => setShowDeleteAcc(false)}
+    	onConfirm={handleDeactivateAccount}
+    	username={user?.username}
+    	push={push}
+  	/>
       )}
 
       {/* Top Nav */}
@@ -451,13 +456,13 @@ export default function Dashboard() {
               className={styles.sideActionBtn}
               onClick={() => { setShowChangePw(true); setSidebarOpen(false) }}
             >
-              Change password
+              🗝️ Change password
             </button>
             <button
               className={`${styles.sideActionBtn} ${styles.sideActionDanger}`}
               onClick={() => { setShowDeleteAcc(true); setSidebarOpen(false) }}
             >
-              Delete account
+              🔒 Deactivate account
             </button>
           </div>
         </aside>

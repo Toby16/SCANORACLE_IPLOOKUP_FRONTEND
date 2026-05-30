@@ -258,3 +258,22 @@ export async function deleteAccount(token) {
   }
   return json
 }
+
+
+export async function deactivateAccount(token) {
+  const res = await fetch(
+    'https://security.appcardy.com/api/v1.0/user/deactivate/profile',
+    {
+      method: 'DELETE',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    }
+  )
+  const json = await res.json()
+  if (!res.ok || (json.statusCode && json.statusCode !== 200)) {
+    throw new Error(json?.detail?.message || json?.message || 'Failed to deactivate account.')
+  }
+  return json
+}

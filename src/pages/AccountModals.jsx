@@ -115,24 +115,24 @@ export function ChangePwModal({ onClose, onSubmit, push }) {
   )
 }
 
-// ── Delete Account Modal ──────────────────────────────────────────────────────
+// ── Deactivate Account Modal ──────────────────────────────────────────────────
 export function DeleteAccModal({ onClose, onConfirm, username, push }) {
   const { visible, close } = useVisible(onClose)
   const [confirm,  setConfirm]  = useState('')
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
-  const PHRASE = 'delete my account'
+  const PHRASE = 'deactivate my account'
 
-  const handleDelete = async () => {
+  const handleDeactivate = async () => {
     if (confirm.toLowerCase() !== PHRASE) {
       setError(`Type "${PHRASE}" exactly to confirm.`); return
     }
     setLoading(true); setError('')
     try {
       await onConfirm()
-      push(`Account deleted. Goodbye, ${username}.`, 'info')
+      push(`Account deactivated. See you soon, ${username}.`, 'info')
     } catch (e) {
-      setError(e.message || 'Could not delete account. Please try again.')
+      setError(e.message || 'Could not deactivate account. Please try again.')
       setLoading(false)
     }
   }
@@ -144,13 +144,14 @@ export function DeleteAccModal({ onClose, onConfirm, username, push }) {
         <div className={styles.header}>
           <div className={styles.headerLeft}>
             <div className={`${styles.iconWrap} ${styles.iconWrapDanger}`}>
+              {/* Pause icon — suits "deactivate" better than a trash can */}
               <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16">
-                <path d="M11 1.75V3h2.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.559a.75.75 0 10-1.492.141l.66 6.941A1.75 1.75 0 005.405 15h5.19c.9 0 1.652-.681 1.741-1.559l.66-6.94a.75.75 0 00-1.492-.142l-.66 6.941a.25.25 0 01-.249.2h-5.19a.25.25 0 01-.249-.2l-.66-6.941z"/>
+                <path d="M5.75 2.5a.75.75 0 00-.75.75v9.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75v-9.5a.75.75 0 00-.75-.75h-1.5zm3 0a.75.75 0 00-.75.75v9.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75v-9.5a.75.75 0 00-.75-.75h-1.5z"/>
               </svg>
             </div>
             <div>
-              <h2 className={styles.title}>Delete Account</h2>
-              <p className={styles.subtitle}>This action is permanent and cannot be undone</p>
+              <h2 className={styles.title}>Deactivate Account</h2>
+              <p className={styles.subtitle}>Your account will be suspended</p>
             </div>
           </div>
           <button className={styles.closeBtn} onClick={close}><XIcon /></button>
@@ -160,15 +161,16 @@ export function DeleteAccModal({ onClose, onConfirm, username, push }) {
 
         <div className={styles.body}>
           <div className={styles.warningBox}>
-            <p>Deleting your account will permanently remove your profile, balance, and all associated data. <strong>This cannot be reversed.</strong></p>
+            <p>Deactivating your account will suspend access to all Ghostroute services and freeze your balance. <strong>To reactivate, you will need to contact our support team.</strong></p>
+            <p style={{ marginTop: '8px' }}>⚠️ Deactivation may put your account progress at risk — <strong>you could lose it at any time after deactivation.</strong></p>
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="del-confirm" className={styles.label}>
+            <label htmlFor="deactivate-confirm" className={styles.label}>
               Type <span className={styles.phrase}>"{PHRASE}"</span> to confirm
             </label>
             <input
-              id="del-confirm"
+              id="deactivate-confirm"
               type="text"
               className={`${styles.input} ${styles.inputDanger}`}
               value={confirm}
@@ -183,9 +185,9 @@ export function DeleteAccModal({ onClose, onConfirm, username, push }) {
 
         <div className={styles.footer}>
           <button className={styles.cancelBtn} onClick={close} disabled={loading}>Cancel</button>
-          <button className={styles.dangerBtn} onClick={handleDelete}
+          <button className={styles.dangerBtn} onClick={handleDeactivate}
             disabled={loading || confirm.toLowerCase() !== PHRASE}>
-            {loading ? <><Spinner /> Deleting…</> : 'Delete My Account'}
+            {loading ? <><Spinner /> Deactivating…</> : 'Deactivate My Account'}
           </button>
         </div>
       </div>
