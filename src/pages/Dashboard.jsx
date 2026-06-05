@@ -10,6 +10,7 @@ import { useTokenRefresh } from '../hooks/useTokenRefresh.js'
 import GhostLogo from '../components/GhostLogo.jsx'
 import DepositModal from './DepositModal.jsx'
 import DonateModal from './DonateModal.jsx'
+import SupportModal from './SupportModal.jsx'
 import { ChangePwModal, DeleteAccModal } from './AccountModals.jsx'
 import styles from './Dashboard.module.css'
 
@@ -242,6 +243,7 @@ export default function Dashboard() {
   const [showDeleteAcc, setShowDeleteAcc] = useState(false)
   const [showDeposit, setShowDeposit] = useState(false)
   const [showDonate, setShowDonate] = useState(false)
+  const [showSupport, setShowSupport] = useState(false)
   // Mobile profile drawer
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -330,6 +332,7 @@ export default function Dashboard() {
         <DepositModal onClose={() => setShowDeposit(false)} onBalanceUpdate={handleBalanceUpdate} />
       )}
       {showDonate && <DonateModal onClose={() => setShowDonate(false)} />}
+      {showSupport && <SupportModal onClose={() => setShowSupport(false)} />}
       {showChangePw && (
         <ChangePwModal onClose={() => setShowChangePw(false)} onSubmit={handleChangePassword} push={push} />
       )}
@@ -464,6 +467,12 @@ export default function Dashboard() {
             >
               🔒 Deactivate account
             </button>
+	    <button
+	      className={styles.sideActionBtn}
+	      onClick={() => { setShowSupport(true); setSidebarOpen(false) }}
+	    >
+	      💬 Contact support
+	    </button>
           </div>
         </aside>
 
