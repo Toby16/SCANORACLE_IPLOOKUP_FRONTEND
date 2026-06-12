@@ -506,7 +506,7 @@ export default function IPLookupCategory() {
     if (!token) { setCatsLoading(false); return }
     setCatsLoading(true)
     setCatsError(null)
-    fetch('https://security.appcardy.com/api/v1.0/scanoracle/get/categories/ip', {
+    fetch('https://secure.ghostroute.icu/api/v1.0/scanoracle/get/categories/ip', {
       headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
     })
       .then(r => {
@@ -531,7 +531,7 @@ export default function IPLookupCategory() {
     setScanning(true); setScanResult(null); setScanError(null)
     setIpQueried(ip)
     try {
-      const res = await fetch('https://security.appcardy.com/api/v1.0/scanoracle/ip/info/category/id/', {
+      const res = await fetch('https://secure.ghostroute.icu/api/v1.0/scanoracle/ip/info/category/id/', {
         method: 'POST',
         headers: {
           'accept': 'application/json',
