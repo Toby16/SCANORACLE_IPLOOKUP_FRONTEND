@@ -15,16 +15,16 @@ export default defineConfig({
     open: false,
     proxy: {
       '/api/scanoracle/lookup': {
-        target: 'https://security.appcardy.com',
+        target: 'https://secure.ghostroute.icu',
         changeOrigin: true,
         rewrite: path => {
-          // /api/scanoracle/lookup/{key}       → /api/v1.0/scanoracle/ip/info/api/{key}/
-          // /api/scanoracle/lookup/{key}/{ip}  → /api/v1.0/scanoracle/ip/info/api/{key}/{ip}
+          // /api/scanoracle/lookup/{key}       → /api/v1.0/scanoracle/ip/{key}/
+          // /api/scanoracle/lookup/{key}/{ip}  → /api/v1.0/scanoracle/ip/{key}/{ip}
           const parts = path.replace('/api/scanoracle/lookup/', '').split('/')
           const [key, ip] = parts
           return ip
-            ? `/api/v1.0/scanoracle/ip/info/api/${key}/${ip}`
-            : `/api/v1.0/scanoracle/ip/info/api/${key}/`
+            ? `/api/v1.0/scanoracle/ip/${key}/${ip}`
+            : `/api/v1.0/scanoracle/ip/${key}/`
         },
       },
     },
