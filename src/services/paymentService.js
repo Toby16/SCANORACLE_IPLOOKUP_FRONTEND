@@ -1,6 +1,6 @@
 import { getToken } from './authService.js'
 
-const BASE = 'https://security.appcardy.com/api/v1.0/payment/payment/deposit'
+const BASE = 'https://secure.ghostroute.icu/api/v1.0/payment/payment/deposit'
 
 async function request(url, body, auth = false) {
   const headers = { 'Content-Type': 'application/json', Accept: 'application/json' }
@@ -42,7 +42,7 @@ export async function depositVerify(payment_id, paystack_reference) {
 /** Step 3 (donations) — verify donation, returns { message, naira_amount, dollar_amount } */
 export async function donationsVerify(payment_id, paystack_reference) {
   const json = await request(
-    'https://security.appcardy.com/api/v1.0/payment/payment/donations/verify',
+    'https://secure.ghostroute.icu/api/v1.0/payment/payment/donations/verify',
     { payment_id, paystack_reference }
   )
   return json.data
