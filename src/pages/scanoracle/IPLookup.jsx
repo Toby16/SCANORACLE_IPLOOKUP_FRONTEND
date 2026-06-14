@@ -24,47 +24,52 @@ function GhostIPLogo({ size = 120, animated = true }) {
 }
 
 const FIELD_META = {
-  asn:                        { label: 'ASN',                cat: 'Network',  icon: '⬡' },
-  hostname:                   { label: 'Hostname',            cat: 'Network',  icon: '⬡' },
-  city:                       { label: 'City',                cat: 'Location', icon: '◎' },
-  region:                     { label: 'Region',              cat: 'Location', icon: '◎' },
-  country:                    { label: 'Country',             cat: 'Location', icon: '◎' },
-  country_name:               { label: 'Country Name',        cat: 'Location', icon: '◎' },
-  latitude:                   { label: 'Latitude',            cat: 'Location', icon: '◎' },
-  longitude:                  { label: 'Longitude',           cat: 'Location', icon: '◎' },
-  organization:               { label: 'Organization',        cat: 'Network',  icon: '⬡' },
-  timezone:                   { label: 'Timezone',            cat: 'Location', icon: '◎' },
-  continent:                  { label: 'Continent',           cat: 'Location', icon: '◎' },
-  continent_name:             { label: 'Continent Name',      cat: 'Location', icon: '◎' },
-  ip_version:                 { label: 'IP Version',          cat: 'Network',  icon: '⬡' },
-  country_alpha_3:            { label: 'Country Alpha-3',     cat: 'Country',  icon: '⊞' },
-  postal_code:                { label: 'Postal Code',         cat: 'Location', icon: '◎' },
-  country_currency_code:      { label: 'Country Currency Code',       cat: 'Country',  icon: '⊞' },
-  country_currency_symbol:    { label: 'Country Currency Symbol',     cat: 'Country',  icon: '⊞' },
-  european_union_member:      { label: 'EU Member?',          cat: 'Country',  icon: '⊞' },
-  country_current_time:       { label: 'Country Local Time',          cat: 'Time',     icon: '◷' },
-  country_current_time_24hr:  { label: 'Country Local Time (24hr)',   cat: 'Time',     icon: '◷' },
-  country_current_time_12hr:  { label: 'Country Local Time (12hr)',   cat: 'Time',     icon: '◷' },
-  country_current_time_iso:   { label: 'Country Local Time (ISO)',    cat: 'Time',     icon: '◷' },
-  country_flag_icon:          { label: 'Country Flag Icon',   cat: 'Country',  icon: '⊞' },
-  network_status:             { label: 'Network Status',      cat: 'Network',  icon: '⬡' },
-  network_range:              { label: 'Network Range',       cat: 'Network',  icon: '⬡' },
-  network_start_address:      { label: 'Network Start Address',       cat: 'Network',  icon: '⬡' },
-  network_end_address:        { label: 'Network End Address',         cat: 'Network',  icon: '⬡' },
-  network_registration:       { label: 'Network Registered',          cat: 'Network',  icon: '⬡' },
-  network_last_changed:       { label: 'Network Last Changed',        cat: 'Network',  icon: '⬡' },
-  contact_email:              { label: 'Contact Email',       cat: 'Contact',  icon: '✉' },
-  contact_phone:              { label: 'Contact Phone',       cat: 'Contact',  icon: '✉' },
-  contact_address:            { label: 'Contact Address',     cat: 'Contact',  icon: '✉' },
-  is_tor:                     { label: 'TOR Exit Node?',      cat: 'Threat',   icon: '⚑' },
-  is_blacklisted:             { label: 'Is Blacklisted?',     cat: 'Threat',   icon: '⚑' },
-  threat_score:               { label: 'Threat Score',        cat: 'Threat',   icon: '⚑' },
-  language:                   { label: 'Language',            cat: 'Country',  icon: '⊞' },
-  mobile_calling_code:        { label: 'Country Mobile Calling Code', cat: 'Country',  icon: '⊞' },
-  tld:                        { label: 'TLD',                 cat: 'Country',  icon: '⊞' },
-  fifa:                       { label: 'FIFA Country Code',   cat: 'Country',  icon: '⊞' },
-  maps:                       { label: 'Map Link',            cat: 'Location', icon: '◎' },
-  population:                 { label: 'Population',          cat: 'Country',  icon: '⊞' },
+  asn:                        { label: 'ASN',                          cat: 'Network',  icon: '⬡' },
+  hostname:                   { label: 'Hostname',                     cat: 'Network',  icon: '⬡' },
+  city:                       { label: 'City',                         cat: 'Location', icon: '◎' },
+  region:                     { label: 'Region',                       cat: 'Location', icon: '◎' },
+  country:                    { label: 'Country',                      cat: 'Location', icon: '◎' },
+  country_name:               { label: 'Country Name',                 cat: 'Location', icon: '◎' },
+  latitude:                   { label: 'Latitude',                     cat: 'Location', icon: '◎' },
+  longitude:                  { label: 'Longitude',                    cat: 'Location', icon: '◎' },
+  organization:               { label: 'Organization',                 cat: 'Network',  icon: '⬡' },
+  timezone:                   { label: 'Timezone',                     cat: 'Location', icon: '◎' },
+  continent:                  { label: 'Continent',                    cat: 'Location', icon: '◎' },
+  continent_name:             { label: 'Continent Name',               cat: 'Location', icon: '◎' },
+  ip_version:                 { label: 'IP Version',                   cat: 'Network',  icon: '⬡' },
+  country_alpha_3:            { label: 'Country Alpha-3',              cat: 'Country',  icon: '⊞' },
+  postal_code:                { label: 'Postal Code',                  cat: 'Location', icon: '◎' },
+  country_currency_code:      { label: 'Country Currency Code',        cat: 'Country',  icon: '⊞' },
+  country_currency_symbol:    { label: 'Country Currency Symbol',      cat: 'Country',  icon: '⊞' },
+  european_union_member:      { label: 'EU Member?',                   cat: 'Country',  icon: '⊞' },
+  country_current_time:       { label: 'Country Local Time',           cat: 'Time',     icon: '◷' },
+  country_current_time_24hr:  { label: 'Country Local Time (24hr)',    cat: 'Time',     icon: '◷' },
+  country_current_time_12hr:  { label: 'Country Local Time (12hr)',    cat: 'Time',     icon: '◷' },
+  country_current_time_iso:   { label: 'Country Local Time (ISO)',     cat: 'Time',     icon: '◷' },
+  country_flag_icon:          { label: 'Country Flag Icon',            cat: 'Country',  icon: '⊞' },
+  network_status:             { label: 'Network Status',               cat: 'Network',  icon: '⬡' },
+  network_range:              { label: 'Network Range',                cat: 'Network',  icon: '⬡' },
+  network_start_address:      { label: 'Network Start Address',        cat: 'Network',  icon: '⬡' },
+  network_end_address:        { label: 'Network End Address',          cat: 'Network',  icon: '⬡' },
+  network_registration:       { label: 'Network Registered',           cat: 'Network',  icon: '⬡' },
+  network_last_changed:       { label: 'Network Last Changed',         cat: 'Network',  icon: '⬡' },
+  network_type:               { label: 'Network Type',                 cat: 'Network',  icon: '⬡' },
+  contact_email:              { label: 'Contact Email',                cat: 'Contact',  icon: '✉' },
+  contact_phone:              { label: 'Contact Phone',                cat: 'Contact',  icon: '✉' },
+  contact_address:            { label: 'Contact Address',              cat: 'Contact',  icon: '✉' },
+  is_tor:                     { label: 'TOR Exit Node?',               cat: 'Threat',   icon: '⚑' },
+  is_blacklisted:             { label: 'Is Blacklisted?',              cat: 'Threat',   icon: '⚑' },
+  is_vpn:                     { label: 'Is VPN?',                      cat: 'Threat',   icon: '⚑' },
+  is_proxy:                   { label: 'Is Proxy?',                    cat: 'Threat',   icon: '⚑' },
+  threat_score:               { label: 'Threat Score',                 cat: 'Threat',   icon: '⚑' },
+  vpn_score:                  { label: 'VPN Score',                    cat: 'Threat',   icon: '⚑' },
+  proxy_score:                { label: 'Proxy Score',                  cat: 'Threat',   icon: '⚑' },
+  language:                   { label: 'Language',                     cat: 'Country',  icon: '⊞' },
+  mobile_calling_code:        { label: 'Country Mobile Calling Code',  cat: 'Country',  icon: '⊞' },
+  tld:                        { label: 'TLD',                          cat: 'Country',  icon: '⊞' },
+  fifa:                       { label: 'FIFA Country Code',            cat: 'Country',  icon: '⊞' },
+  maps:                       { label: 'Map Link',                     cat: 'Location', icon: '◎' },
+  population:                 { label: 'Population',                   cat: 'Country',  icon: '⊞' },
 }
 
 const CATEGORIES = ['All', 'Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
@@ -111,21 +116,22 @@ function tierColor(usd) {
   if (usd === null) return '#2d3550'
   if (usd === 0)    return '#34d399'
   if (usd <= 0.10)  return '#38bdf8'
+  if (usd <= 0.15)  return '#ef4444'
   if (usd <= 0.20)  return '#a78bfa'
+  if (usd <= 0.25)  return '#fb7185'
   if (usd <= 0.30)  return '#fbbf24'
-  if (usd <= 0.35)  return '#fb7185'
-  return '#ef4444'
+  return '#f97316'
 }
 
 function PricingTierLegend({ rate }) {
   const tiers = [
-    { label: 'Free',  usd: 0,    color: '#34d399' },
-    { label: '$0.10', usd: 0.10, color: '#38bdf8' },
-	{ label: '$0.15', usd: 0.15, color: '#ef4444' },
-    { label: '$0.20', usd: 0.20, color: '#a78bfa' },
-	{ label: '$0.25', usd: 0.25, color: '#fb7185' },
-    { label: '$0.30', usd: 0.30, color: '#fbbf24' },
-    
+    { label: 'Free',   usd: 0,    color: '#34d399' },
+    { label: '$0.10',  usd: 0.10, color: '#38bdf8' },
+    { label: '$0.15',  usd: 0.15, color: '#ef4444' },
+    { label: '$0.20',  usd: 0.20, color: '#a78bfa' },
+    { label: '$0.25',  usd: 0.25, color: '#fb7185' },
+    { label: '$0.30',  usd: 0.30, color: '#fbbf24' },
+    { label: '$0.35',  usd: 0.35, color: '#f97316' },
   ]
   return (
     <div className={styles.pricingLegend}>
@@ -171,7 +177,13 @@ function LiveIPPanel({ data, loading, error, lookupMeta }) {
 
   const d = data.data
   const threatNum = parseInt(d.threat_score) || 0
+  const vpnNum    = parseInt(d.vpn_score)    || 0
+  const proxyNum  = parseInt(d.proxy_score)  || 0
+
   const threatColor = threatNum < 30 ? '#34d399' : threatNum < 60 ? '#fbbf24' : '#ef4444'
+  const vpnColor    = vpnNum    < 30 ? '#34d399' : vpnNum    < 60 ? '#fbbf24' : '#ef4444'
+  const proxyColor  = proxyNum  < 30 ? '#34d399' : proxyNum  < 60 ? '#fbbf24' : '#ef4444'
+
   const DISPLAY_CATEGORIES = ['Network', 'Location', 'Country', 'Time', 'Contact', 'Threat']
 
   return (
@@ -187,14 +199,46 @@ function LiveIPPanel({ data, loading, error, lookupMeta }) {
         )}
       </div>
 
+      {/* ── Multi-score threat block ── */}
       <div className={styles.threatWrap}>
-        <div className={styles.threatHeader}>
-          <span className={styles.threatLabel}>Threat Score</span>
-          <span className={styles.threatVal} style={{ color: threatColor }}>{d.threat_score}</span>
+        {/* Threat Score */}
+        <div className={styles.threatScoreRow}>
+          <div className={styles.threatHeader}>
+            <span className={styles.threatLabel}>Threat Score</span>
+            <span className={styles.threatVal} style={{ color: threatColor }}>{d.threat_score}</span>
+          </div>
+          <div className={styles.threatBar}>
+            <div className={styles.threatFill} style={{ width: d.threat_score, background: threatColor }} />
+          </div>
         </div>
-        <div className={styles.threatBar}>
-          <div className={styles.threatFill} style={{ width: d.threat_score, background: threatColor }} />
-        </div>
+
+        {/* VPN Score */}
+        {d.vpn_score !== undefined && (
+          <div className={styles.threatScoreRow}>
+            <div className={styles.threatHeader}>
+              <span className={styles.threatLabel}>VPN Score</span>
+              <span className={styles.threatVal} style={{ color: vpnColor, fontSize: '0.82rem' }}>{d.vpn_score}</span>
+            </div>
+            <div className={styles.threatBar}>
+              <div className={styles.threatFill} style={{ width: d.vpn_score, background: vpnColor }} />
+            </div>
+          </div>
+        )}
+
+        {/* Proxy Score */}
+        {d.proxy_score !== undefined && (
+          <div className={styles.threatScoreRow}>
+            <div className={styles.threatHeader}>
+              <span className={styles.threatLabel}>Proxy Score</span>
+              <span className={styles.threatVal} style={{ color: proxyColor, fontSize: '0.82rem' }}>{d.proxy_score}</span>
+            </div>
+            <div className={styles.threatBar}>
+              <div className={styles.threatFill} style={{ width: d.proxy_score, background: proxyColor }} />
+            </div>
+          </div>
+        )}
+
+        {/* Badges */}
         <div className={styles.threatBadges}>
           <span className={`${styles.threatBadge} ${d.is_tor ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
             {d.is_tor ? '● TOR' : '○ No TOR'}
@@ -202,7 +246,18 @@ function LiveIPPanel({ data, loading, error, lookupMeta }) {
           <span className={`${styles.threatBadge} ${d.is_blacklisted ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
             {d.is_blacklisted ? '● Blacklisted' : '○ Clean'}
           </span>
-          <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>● {d.network_status}</span>
+          <span className={`${styles.threatBadge} ${d.is_vpn ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
+            {d.is_vpn ? '● VPN' : '○ No VPN'}
+          </span>
+          <span className={`${styles.threatBadge} ${d.is_proxy ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
+            {d.is_proxy ? '● Proxy' : '○ No Proxy'}
+          </span>
+          {d.network_status && (
+            <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>● {d.network_status}</span>
+          )}
+          {d.network_type && (
+            <span className={`${styles.threatBadge} ${styles.threatBadgeInfo}`}>◈ {d.network_type}</span>
+          )}
         </div>
       </div>
 
@@ -356,866 +411,4 @@ function DataSelectorPanel({ lookupMeta, rate, lookupsLoading, token, onPurchase
                 key={key}
                 className={`${styles.fieldRow} ${isOn ? styles.fieldRowOn : ''}`}
                 style={isOn ? { borderColor: CAT_COLORS[meta.cat]?.border, background: CAT_COLORS[meta.cat]?.bg } : {}}
-              >
-                <div
-                  className={`${styles.checkbox} ${isOn ? styles.checkboxOn : ''}`}
-                  style={isOn ? { background: CAT_COLORS[meta.cat]?.text, borderColor: CAT_COLORS[meta.cat]?.text } : {}}
-                >
-                  {isOn && <span className={styles.checkmark}>✓</span>}
-                </div>
-                <input type="checkbox" checked={isOn} onChange={() => toggleField(key)} className={styles.hiddenCheck} />
-
-                <span
-                  className={styles.tierDot}
-                  style={{ background: dot }}
-                  title={usd === null ? 'Loading…' : usd === 0 ? 'Free' : `$${usd.toFixed(2)}/day`}
-                />
-
-                <div className={styles.fieldInfo}>
-                  <span className={styles.fieldLabel}>{meta.label}</span>
-                  {info?.description && (
-                    <span className={styles.fieldDesc} title={info.description}>{info.description}</span>
-                  )}
-                </div>
-
-                <PriceBadge info={info} rate={rate} />
-              </label>
-            )
-          })}
-      </div>
-
-      <div className={styles.subscriptionConfig}>
-        <div className={styles.configRow}>
-          <div className={styles.configLabel}>
-            <span className={styles.configIcon}>◷</span>
-            Subscription Duration
-          </div>
-          <div className={styles.daysControl}>
-            {[7, 14, 30, 60, 90].map(d => (
-              <button key={d} className={`${styles.dayChip} ${daysFor === d ? styles.dayChipActive : ''}`} onClick={() => setDaysFor(d)}>{d}d</button>
-            ))}
-            <input
-              type="number" min={1} max={365} value={daysFor}
-              onChange={e => setDaysFor(Math.max(1, Math.min(365, parseInt(e.target.value) || 1)))}
-              className={styles.daysInput}
-            />
-          </div>
-        </div>
-        <div className={styles.configRow}>
-          <div className={styles.configLabel}>
-            <span className={styles.configIcon}>↺</span>
-            Auto-Renew
-            <span className={styles.configHint}>Automatically renews when subscription expires</span>
-          </div>
-          <button
-            className={`${styles.toggle} ${autoRenew ? styles.toggleOn : ''}`}
-            onClick={() => setAutoRenew(o => !o)}
-            role="switch" aria-checked={autoRenew}
-          >
-            <span className={styles.toggleThumb} />
-            <span className={styles.toggleLabel}>{autoRenew ? 'ON' : 'OFF'}</span>
-          </button>
-        </div>
-      </div>
-
-      {selectedCount > 0 && (
-        <div className={styles.costSummary}>
-          <div className={styles.costRow}><span>Fields selected</span><span>{selectedCount}</span></div>
-          <div className={styles.costRow}><span>Duration</span><span>{daysFor} days</span></div>
-          <div className={styles.costDivider} />
-          {totalCostUSD > 0 ? (
-            <>
-              <div className={styles.costRow}>
-                <span>Per day (USD)</span>
-                <span className={styles.costUsdVal}>${totalCostUSD.toFixed(2)}</span>
-              </div>
-              <div className={styles.costRow}>
-                <span>Per day (NGN)</span>
-                <span>₦{totalCostNGN.toLocaleString()}</span>
-              </div>
-              <div className={styles.costDivider} />
-              <div className={`${styles.costRow} ${styles.costTotal}`}>
-                <span>Total ({daysFor}d)</span>
-                <div className={styles.costTotalVals}>
-                  <span className={styles.costTotalUsd}>${(totalCostUSD * daysFor).toFixed(2)}</span>
-                  <span className={styles.costTotalNgn}>₦{(totalCostNGN * daysFor).toLocaleString()}</span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className={`${styles.costRow} ${styles.costTotal}`}>
-              <span>Total ({daysFor}d)</span>
-              <span className={styles.priceFree}>FREE</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {submitError && <div className={styles.submitError}><span>⚠</span> {submitError}</div>}
-
-      <button
-        className={`${styles.purchaseBtn} ${selectedCount === 0 || submitting ? styles.purchaseBtnDisabled : ''}`}
-        onClick={handleSubmit}
-        disabled={selectedCount === 0 || submitting}
-      >
-        {submitting ? <><span className={styles.btnSpinner} />Processing…</> : (
-          <>⊛ Purchase {selectedCount > 0 ? `${selectedCount} Field${selectedCount > 1 ? 's' : ''}` : 'Data Package'}{autoRenew && ' · Auto-Renew'}</>
-        )}
-      </button>
-    </div>
-  )
-}
-
-// ─── Verify Payment Modal ─────────────────────────────────────────────────────
-function VerifyPaymentModal({ entry, token, onClose, onVerified, onRefreshUser  }) {
-  const isFree = entry.dollar_price_per_day === 0
-  const [verifying, setVerifying] = useState(false)
-  const [error, setError]         = useState(null)
-  const [done, setDone]           = useState(false)
-  const [result, setResult]       = useState(null)
-
-  const handleVerify = async () => {
-    setVerifying(true); setError(null)
-    try {
-      const res = await fetch('https://secure.ghostroute.icu/api/v1.0/scanoracle/verify/payment/ip', {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ transaction_id: entry.category_id }),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.detail?.error || json.message || 'Verification failed.')
-      setResult(json.data)
-      setDone(true)
-      onVerified?.()
-      onRefreshUser?.()   // ← refresh balance after payment
-    } catch (e) { setError(e.message) }
-    finally { setVerifying(false) }
-  }
-
-  return (
-    <div className={styles.deleteOverlay} onClick={onClose}>
-      <div className={styles.verifyModal} onClick={e => e.stopPropagation()}>
-
-        {/* ── Success state ── */}
-        {done ? (
-          <>
-            <div className={styles.verifySuccessIcon}>✓</div>
-            <h4 className={styles.verifyModalTitle}>Subscription Activated!</h4>
-            <p className={styles.verifyModalSub}>
-              Your subscription <code className={styles.verifyModalId}>{entry.category_id}</code> is now active.
-            </p>
-            {result?.api_key && (
-              <div className={styles.verifyApiKeyWrap}>
-                <span className={styles.verifyApiKeyLabel}>API KEY</span>
-                <code className={styles.verifyApiKeyVal}>{result.api_key}</code>
-              </div>
-            )}
-            <button className={styles.verifyCloseBtn} onClick={onClose}>Done</button>
-          </>
-        ) : (
-          <>
-            {/* ── Icon & header ── */}
-            <div className={isFree ? styles.verifyIconFree : styles.verifyIconPaid}>
-              {isFree ? '⊛' : '₦'}
-            </div>
-            <h4 className={styles.verifyModalTitle}>
-              {isFree ? 'Activate Free Subscription' : 'Confirm Payment & Activate'}
-            </h4>
-
-            {/* ── Transaction ID ── */}
-            <p className={styles.verifyModalSub}>
-              Transaction <code className={styles.verifyModalId}>{entry.category_id}</code>
-            </p>
-
-            {/* ── Info banner ── */}
-            {isFree ? (
-              <div className={styles.verifyInfoBannerFree}>
-                <span className={styles.verifyInfoIcon}>🛡️</span>
-                <span>
-                  This subscription is <strong>completely free</strong>. Your balance will{' '}
-                  <strong>not be affected</strong> — this step only confirms what you selected
-                  and activates access.
-                </span>
-              </div>
-            ) : (
-              <div className={styles.verifyInfoBannerPaid}>
-                <span className={styles.verifyInfoIcon}>⚠️</span>
-                <div className={styles.verifyInfoBannerPaidBody}>
-                  <span>
-                    Clicking <strong>Confirm &amp; Pay</strong> will deduct the total cost from
-                    your balance to activate this subscription.
-                  </span>
-                  <div className={styles.verifyPriceBreakdown}>
-                    <div className={styles.verifyPriceRow}>
-                      <span>Per day</span>
-                      <span>
-                        <strong className={styles.verifyPriceUsd}>${entry.dollar_price_per_day.toFixed(2)}</strong>
-                        <span className={styles.verifyPriceNgn}> / ₦{Number(entry.naira_price_per_day).toLocaleString()}</span>
-                      </span>
-                    </div>
-                    <div className={styles.verifyPriceRow}>
-                      <span>Duration</span>
-                      <span>{entry.days_for} days</span>
-                    </div>
-                    <div className={`${styles.verifyPriceRow} ${styles.verifyPriceTotal}`}>
-                      <span>Total deduction</span>
-                      <span>
-                        <strong className={styles.verifyPriceUsd}>
-                          ${(entry.dollar_price_per_day * entry.days_for).toFixed(2)}
-                        </strong>
-                        <span className={styles.verifyPriceNgn}>
-                          {' '}/ ₦{(Number(entry.naira_price_per_day) * entry.days_for).toLocaleString()}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ── Error ── */}
-            {error && (
-              <div className={styles.verifyError}><span>⚠</span> {error}</div>
-            )}
-
-            {/* ── Actions ── */}
-            <div className={styles.verifyActions}>
-              <button className={styles.deleteModalCancel} onClick={onClose} disabled={verifying}>
-                Cancel
-              </button>
-              <button
-                className={`${styles.verifyConfirmBtn} ${isFree ? styles.verifyConfirmFree : styles.verifyConfirmPaid} ${verifying ? styles.ledgerDeleteBtnBusy : ''}`}
-                onClick={handleVerify}
-                disabled={verifying}
-              >
-                {verifying
-                  ? <><span className={styles.btnSpinner} /> Verifying…</>
-                  : isFree
-                    ? '⊛ Activate Now'
-                    : '₦ Confirm & Pay'
-                }
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-
-
-function CopyButton({ text }) {
-  const [copied, setCopied] = useState(false)
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1800)
-    })
-  }
-  return (
-    <button className={styles.apiCopyBtn} onClick={handleCopy} title="Copy API Key">
-      {copied ? '✔️ copied' : '📋 copy'}
-    </button>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// STEP 1 ── Paste this entire component into IPLookup.jsx
-//            Place it just ABOVE the "SubscriptionLedger" function definition
-// ═══════════════════════════════════════════════════════════════════════════
-
-function ApiEndpointDocs({ apiKey }) {
-  const [copiedIdx, setCopiedIdx]   = useState(null)
-  const [liveResult, setLiveResult] = useState({})
-  const [liveLoading, setLiveLoading] = useState({})
-  const [liveError, setLiveError]   = useState({})
-  const [targetIp, setTargetIp]     = useState('')
-
-  const BASE = window.location.origin
-
-  const endpoints = [
-    {
-      label:  'Auto-detect IP',
-      badge:  'auto',
-      desc:   'Returns intelligence on the IP address of whoever calls this endpoint — no parameter required.',
-      url:    `${BASE}/api/scanoracle/lookup/${apiKey}`,
-      curl:   `curl -X GET \\\n  '${BASE}/api/scanoracle/lookup/${apiKey}' \\\n  -H 'accept: application/json'`,
-    },
-    {
-      label:  'Lookup Specific IP',
-      badge:  'manual',
-      desc:   'Pass any IPv4 or IPv6 address to retrieve full intelligence for that exact IP.',
-      url:    `${BASE}/api/scanoracle/lookup/${apiKey}/${targetIp || '{ip_address}'}`,
-      curl:   `curl -X GET \\\n  '${BASE}/api/scanoracle/lookup/${apiKey}/${targetIp || '{ip_address}'}' \\\n  -H 'accept: application/json'`,
-    },
-  ]
-
-  const copy = (text, key) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedIdx(key)
-      setTimeout(() => setCopiedIdx(null), 1800)
-    })
-  }
-
-  const tryLive = async (idx) => {
-    if (idx === 1 && !targetIp.trim()) return
-    setLiveLoading(p => ({ ...p, [idx]: true }))
-    setLiveError(p => ({ ...p, [idx]: null }))
-    setLiveResult(p => ({ ...p, [idx]: null }))
-    try {
-      const res  = await fetch(endpoints[idx].url, { headers: { accept: 'application/json' } })
-      const json = await res.json()
-      if (!res.ok) {
-  	const detail = json.detail
-  	const msg =
-    	  typeof detail === 'string'
-      	    ? detail
-	    : typeof detail === 'object' && detail !== null
-              ? (detail.error || detail.message || JSON.stringify(detail))
-              : (json.message || `HTTP ${res.status}`)
-  	throw new Error(msg)
-      }
-      setLiveResult(p => ({ ...p, [idx]: json }))
-    } catch (e) {
-      setLiveError(p => ({ ...p, [idx]: e.message }))
-    } finally {
-      setLiveLoading(p => ({ ...p, [idx]: false }))
-    }
-  }
-
-  return (
-    <div className={styles.apiDocsWrap}>
-      <div className={styles.apiDocsHeader}>
-        <span className={styles.apiDocsHeaderIcon}>🔗</span>
-        <span className={styles.apiDocsHeaderTitle}>API Endpoints</span>
-        <span className={styles.apiDocsHeaderSub}>JSON · No auth header</span>
-      </div>
-
-      {endpoints.map((ep, idx) => (
-        <div key={idx} className={styles.apiCard}>
-          {/* head */}
-          <div className={styles.apiCardHead}>
-            <span className={styles.apiMethod}>GET</span>
-            <span className={`${styles.apiCardBadge} ${idx === 0 ? styles.apiCardBadgeAuto : styles.apiCardBadgeManual}`}>
-              {ep.badge}
-            </span>
-            <span className={styles.apiCardLabel}>{ep.label}</span>
-          </div>
-
-          <p className={styles.apiCardDesc}>{ep.desc}</p>
-
-          {/* IP input — endpoint 2 only */}
-          {idx === 1 && (
-            <div className={styles.apiIpRow}>
-              <span className={styles.apiIpLabel}>Target IP</span>
-              <input
-                className={styles.apiIpInput}
-                type="text"
-                placeholder="e.g. 1.1.1.1 or 2606:4700:4700::1111"
-                value={targetIp}
-                onChange={e => setTargetIp(e.target.value)}
-                spellCheck={false}
-              />
-            </div>
-          )}
-
-          {/* URL bar */}
-          <div className={styles.apiUrlBar}>
-            <code className={styles.apiUrlText}>{ep.url}</code>
-            <button className={styles.apiCopyBtn} onClick={() => copy(ep.url, `url-${idx}`)} title="Copy URL">
-              {copiedIdx === `url-${idx}` ? '✔️' : '📋'}
-            </button>
-          </div>
-
-          {/* cURL */}
-          <div className={styles.apiCurlWrap}>
-            <div className={styles.apiCurlTop}>
-              <span className={styles.apiCurlLabel}>cURL</span>
-              <button className={styles.apiCopyBtn} onClick={() => copy(ep.curl, `curl-${idx}`)}>
-                {copiedIdx === `curl-${idx}` ? '✔️ copied' : '📋 copy'}
-              </button>
-            </div>
-            <pre className={styles.apiCurlBlock}>{ep.curl}</pre>
-          </div>
-
-          {/* Try it */}
-          <div className={styles.apiTryRow}>
-            <button
-              className={`${styles.apiTryBtn} ${idx === 1 && !targetIp.trim() ? styles.apiTryBtnDisabled : ''}`}
-              onClick={() => tryLive(idx)}
-              disabled={liveLoading[idx] || (idx === 1 && !targetIp.trim())}
-            >
-              {liveLoading[idx]
-                ? <><span className={styles.btnSpinner} /> Running…</>
-                : '▶ Try it live'
-              }
-            </button>
-          </div>
-
-          {liveError[idx] && (
-            <div className={styles.apiLiveError}>⚠ {liveError[idx]}</div>
-          )}
-
-          {liveResult[idx] && (
-            <div className={styles.apiResponseWrap}>
-              <div className={styles.apiResponseTop}>
-                <span className={styles.apiResponseLabel}>Response</span>
-                <span className={styles.apiResponseStatus}>200 OK</span>
-                <button className={styles.apiCopyBtn} onClick={() => copy(JSON.stringify(liveResult[idx], null, 2), `res-${idx}`)}>
-                  {copiedIdx === `res-${idx}` ? '✔️ copied' : '📋 copy'}
-                </button>
-              </div>
-              <pre className={styles.apiResponseBlock}>{JSON.stringify(liveResult[idx], null, 2)}</pre>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// ─── Subscription Ledger ──────────────────────────────────────────────────────
-function SubscriptionLedger({ token, refreshTrigger, onRefreshUser }) {
-  const [entries, setEntries]     = useState([])
-  const [loading, setLoading]     = useState(true)
-  const [error, setError]         = useState(null)
-  const [expanded, setExpanded]   = useState(null)
-  const [deletingId, setDeletingId]   = useState(null)
-  const [deleteError, setDeleteError] = useState(null)
-  // verify modal state
-  const [verifyEntry, setVerifyEntry] = useState(null)
-
-  const loadEntries = () => {
-    if (!token) { setLoading(false); return }
-    setLoading(true); setError(null)
-    fetch('https://secure.ghostroute.icu/api/v1.0/scanoracle/get/categories/ip', {
-      headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
-    })
-      .then(r => {
-        if (!r.ok) throw new Error(`Server error (${r.status})`)
-        return r.json()
-      })
-      .then(json => { setEntries(json?.data ?? []); setLoading(false) })
-      .catch(e => { setError(e.message); setLoading(false) })
-  }
-
-  useEffect(loadEntries, [token, refreshTrigger])
-
-  const handleDelete = async (categoryId) => {
-    setDeletingId(categoryId); setDeleteError(null)
-    try {
-      const res = await fetch('https://secure.ghostroute.icu/api/v1.0/scanoracle/delete/category/id', {
-        method: 'DELETE',
-        headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transaction_id: categoryId }),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.message || json.detail || 'Delete failed.')
-      setEntries(prev => prev.filter(e => e.category_id !== categoryId))
-      if (expanded === categoryId) setExpanded(null)
-    } catch (e) { setDeleteError(e.message) }
-    finally { setDeletingId(null) }
-  }
-
-  const paid   = entries.filter(e => e.transaction_status)
-  const unpaid = entries.filter(e => !e.transaction_status)
-
-  function StatusBadge({ ok }) {
-    return ok
-      ? <span className={styles.ledgerStatusPaid}>● Paid</span>
-      : <span className={styles.ledgerStatusUnpaid}>○ Pending</span>
-  }
-
-  function EntryRow({ entry }) {
-    const isOpen     = expanded === entry.category_id
-    const hasKeys    = entry.keys && entry.keys.length > 0
-    const hasPrice   = entry.dollar_price_per_day > 0
-    const isDeleting = deletingId === entry.category_id
-    const isPaid     = entry.transaction_status
-    const isFree     = entry.dollar_price_per_day === 0
-    const expandable = hasKeys || hasPrice
-    const [confirmOpen, setConfirmOpen] = useState(false)
-
-    return (
-      <>
-        {/* ── Delete confirmation modal ── */}
-        {confirmOpen && (
-          <div className={styles.deleteOverlay} onClick={() => setConfirmOpen(false)}>
-            <div className={styles.deleteModal} onClick={e => e.stopPropagation()}>
-              <div className={styles.deleteModalIcon}>⚠</div>
-              <h4 className={styles.deleteModalTitle}>Delete Subscription?</h4>
-              <p className={styles.deleteModalSub}>
-                Permanently remove <code className={styles.deleteModalId}>{entry.category_id}</code>.
-                This cannot be undone.
-              </p>
-              <div className={styles.deleteModalActions}>
-                <button className={styles.deleteModalCancel} onClick={() => setConfirmOpen(false)}>
-                  Cancel
-                </button>
-                <button
-                  className={`${styles.deleteModalConfirm} ${isDeleting ? styles.ledgerDeleteBtnBusy : ''}`}
-                  disabled={isDeleting}
-                  onClick={() => { handleDelete(entry.category_id); setConfirmOpen(false) }}
-                >
-                  {isDeleting ? <span className={styles.ledgerDeleteSpinner} /> : 'Yes, Delete'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div
-          className={`${styles.ledgerRow} ${isOpen ? styles.ledgerRowOpen : ''} ${!hasKeys && !hasPrice ? styles.ledgerRowEmpty : ''}`}
-          onClick={() => expandable ? setExpanded(isOpen ? null : entry.category_id) : null}
-          style={{ cursor: expandable ? 'pointer' : 'default' }}
-        >
-          <div className={styles.ledgerRowMain}>
-            {/* Left: status + id */}
-            <div className={styles.ledgerRowLeft}>
-              <StatusBadge ok={isPaid} />
-              <code className={styles.ledgerTxId}>{entry.category_id}</code>
-              {entry.auto_renew && <span className={styles.ledgerAutoRenew}>↺ Auto</span>}
-            </div>
-
-            {/* Right: meta + verify (unpaid only) + delete */}
-            <div className={styles.ledgerRowRight}>
-              {hasKeys && (
-                <span className={styles.ledgerKeyCount}>{entry.keys.length} field{entry.keys.length !== 1 ? 's' : ''}</span>
-              )}
-              {hasPrice ? (
-                <div className={styles.ledgerPriceWrap}>
-                  <span className={styles.ledgerPriceUsd}>${entry.dollar_price_per_day.toFixed(2)}/day</span>
-                  <span className={styles.ledgerPriceNgn}>₦{Number(entry.naira_price_per_day).toLocaleString()}/day</span>
-                </div>
-              ) : (
-                <span className={styles.ledgerFree}>FREE</span>
-              )}
-              <div className={styles.ledgerDays}>
-                <span className={styles.ledgerDaysLeft}>{entry.days_left}d left</span>
-                {entry.days_for > 0 && <span className={styles.ledgerDaysFor}>of {entry.days_for}d</span>}
-              </div>
-
-              {/* ── Verify button — only for unpaid entries ── */}
-              {!isPaid && (
-                <button
-                  className={`${styles.verifyBtn} ${isFree ? styles.verifyBtnFree : styles.verifyBtnPaid}`}
-                  onClick={e => { e.stopPropagation(); setVerifyEntry(entry) }}
-                  title={isFree ? 'Activate this free subscription' : 'Pay & activate this subscription'}
-                >
-                  {isFree ? '⊛ Activate' : '₦ Pay'}
-                </button>
-              )}
-
-              {expandable && (
-                <span className={`${styles.ledgerChevron} ${isOpen ? styles.ledgerChevronOpen : ''}`}>›</span>
-              )}
-              <button
-                className={`${styles.ledgerDeleteBtn} ${isDeleting ? styles.ledgerDeleteBtnBusy : ''}`}
-                onClick={e => { e.stopPropagation(); if (!isDeleting) setConfirmOpen(true) }}
-                title="Delete this subscription"
-                disabled={isDeleting}
-              >
-                {isDeleting ? <span className={styles.ledgerDeleteSpinner} /> : '🗑️'}
-              </button>
-            </div>
-          </div>
-
-          {isOpen && (
-            <div className={styles.ledgerRowDetail} onClick={e => e.stopPropagation()}>
-              {hasKeys && (
-                <div className={styles.ledgerKeyList}>
-                  <span className={styles.ledgerKeyListLabel}>Subscribed Fields</span>
-                  <div className={styles.ledgerKeyPills}>
-                    {entry.keys.map(k => (
-                      <span key={k} className={styles.ledgerKeyPill}>
-                        {FIELD_META[k]?.label ?? k}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {hasPrice && (
-                <div className={styles.ledgerTotals}>
-                  <div className={styles.ledgerTotalRow}>
-                    <span>Total Cost</span>
-                    <span className={styles.ledgerTotalUsd}>${entry.dollar_total_price.toFixed(2)}</span>
-                    <span className={styles.ledgerTotalNgn}>₦{Number(entry.naira_total_price).toLocaleString()}</span>
-                  </div>
-                  <div className={styles.ledgerTotalRow}>
-                    <span>Rate</span>
-                    <span>$1 = ₦{Number(entry.rate).toLocaleString()}</span>
-                  </div>
-                </div>
-              )}
-	      {entry.api_key && (
-		<div className={styles.apiKeyCard}>
-		  <div className={styles.apiKeyCardHead}>
-		    <span className={styles.apiKeyCardIcon}>⌗</span>
-		    <span className={styles.apiKeyCardTitle}>API KEY</span>
-		    <span className={styles.apiKeyCardSub}>Use this in your endpoint URLs</span>
-		  </div>
-		  <div className={styles.apiUrlBar}>
-		    <code className={styles.apiUrlText} style={{ color: 'var(--purple)' }}>{entry.api_key}</code>
-		    <CopyButton text={entry.api_key} />
-		  </div>
-		</div>
-	      )}
-	      {entry.api_key && <ApiEndpointDocs apiKey={entry.api_key} />}
-            \\
-		  </div>
-          )}
-        </div>
-      </>
-    )
-  }
-
-  return (
-    <>
-      {/* ── Verify Payment Modal (rendered outside the row so z-index is clean) ── */}
-      {verifyEntry && (
-    	<VerifyPaymentModal
-	  entry={verifyEntry}
-      	  token={token}
-      	  onClose={() => setVerifyEntry(null)}
-          onVerified={() => {
-            setVerifyEntry(null)
-            loadEntries()
-            // ← DELETE the broken getUserProfile line that was here
-      	  }}
-      	  onRefreshUser={onRefreshUser}   // ← forward it
-    	/>
-      )}
-
-      <section className={styles.ledgerSection}>
-        <div className={styles.ledgerHeader}>
-          <div className={styles.ledgerHeaderLeft}>
-            <span className={styles.ledgerHeaderIcon}>⊟</span>
-            <span className={styles.ledgerHeaderTitle}>Subscription Ledger</span>
-          </div>
-          <div className={styles.ledgerHeaderRight}>
-            <span className={styles.ledgerStat}><span style={{ color: '#34d399' }}>●</span> {paid.length} paid</span>
-            <span className={styles.ledgerStat}><span style={{ color: '#fb7185' }}>○</span> {unpaid.length} pending</span>
-            <span className={styles.ledgerTotal}>{entries.length} total</span>
-          </div>
-        </div>
-
-        <div className={styles.ledgerBody}>
-          {loading && (
-            <div className={styles.ledgerLoading}>
-              <div className={styles.selectorSpinner} />
-              <span>Fetching subscriptions…</span>
-            </div>
-          )}
-          {error && <div className={styles.ledgerError}><span>⚠</span> {error}</div>}
-          {!loading && !error && entries.length === 0 && (
-            <div className={styles.ledgerEmpty}>
-              <span className={styles.ledgerEmptyIcon}>⊘</span>
-              <p>No subscriptions yet. Build a data package above to get started.</p>
-            </div>
-          )}
-          {deleteError && <div className={styles.ledgerError}><span>⚠</span> {deleteError}</div>}
-          {!loading && !error && entries.length > 0 && (
-            <div className={styles.ledgerList}>
-              {entries.map(entry => <EntryRow key={entry.category_id} entry={entry} />)}
-            </div>
-          )}
-        </div>
-      </section>
-    </>
-  )
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
-export default function IPLookup() {
-  usePageTitle('SCANORACLE — IP Lookup | Ghostroute')
-  useAuthGuard()
-  useTokenRefresh()
-  const navigate = useNavigate()
-
-  const [user, setUser]                     = useState(null)
-  const [liveData, setLiveData]             = useState(null)
-  const [liveLoading, setLiveLoading]       = useState(true)
-  const [liveError, setLiveError]           = useState(null)
-  const [lookupMeta, setLookupMeta]         = useState(null)
-  const [rate, setRate]                     = useState('1200')
-  const [lookupsLoading, setLookupsLoading] = useState(() => !!getToken())
-  const [token, setToken]                   = useState(() => getToken())
-  const [ledgerRefresh, setLedgerRefresh]   = useState(0)
-
-  useEffect(() => { const t = getToken(); if (t !== token) setToken(t) }, [])
-
-  useEffect(() => {
-    if (!token) return
-    getUserProfile(token).then(r => setUser(r.user)).catch(() => {})
-  }, [token])
-
-  useEffect(() => {
-    setLiveLoading(true)
-    fetch('https://secure.ghostroute.icu/api/v1.0/scanoracle/get/ip_address', { headers: { 'accept': 'application/json' } })
-      .then(r => r.json())
-      .then(json => { setLiveData(json); setLiveLoading(false) })
-      .catch(() => { setLiveLoading(false) })
-  }, [])
-
-  useEffect(() => {
-    if (!token) { setLookupsLoading(false); return }
-    let cancelled = false
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 8000)
-    setLookupsLoading(true)
-    fetch('https://secure.ghostroute.icu/api/v1.0/scanoracle/get/all_lookups', {
-      signal: controller.signal,
-      headers: { 'accept': 'application/json', 'Authorization': `Bearer ${token}` },
-    })
-      .then(r => {
-        if (!r.ok) throw new Error(r.status === 401 ? 'Session expired.' : `Server error (${r.status})`)
-        return r.json()
-      })
-      .then(json => {
-        if (cancelled) return
-        const d = json?.data
-        setLookupMeta(d?.IP_ADDRESS ?? {})
-        setRate(d?.rate ?? '1200')
-      })
-      .catch(() => { if (cancelled) return; setLookupMeta({}) })
-      .finally(() => { if (cancelled) return; clearTimeout(timeout); setLookupsLoading(false) })
-    return () => { cancelled = true; clearTimeout(timeout); controller.abort() }
-  }, [token])
-
-  const handleLogout = () => { clearToken(); navigate('/auth') }
-  const handlePurchaseSuccess = () => setLedgerRefresh(n => n + 1)
-
-  const handleRefreshUser = () => {
-    if (!token) return
-    getUserProfile(token).then(r => setUser(r.user)).catch(() => {})
-  }
-
-  return (
-    <div className={styles.page}>
-      <div className={styles.bgGrid} aria-hidden="true" />
-      <div className={styles.bgGlow1} aria-hidden="true" />
-      <div className={styles.bgGlow2} aria-hidden="true" />
-
-      <nav className={styles.nav}>
-        <div className={styles.navLeft}>
-          <button className={styles.navBack} onClick={() => navigate('/')}>
-            <svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11">
-              <path d="M7.78 12.53a.75.75 0 01-1.06 0L2.47 8.28a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L4.81 7h7.44a.75.75 0 010 1.5H4.81l2.97 2.97a.75.75 0 010 1.06z" />
-            </svg>
-            Dashboard
-          </button>
-          <div className={styles.navSep} />
-	  <button className={styles.navBack} onClick={() => navigate('/scanoracle/iplookup/category')}>
-      		⊛ Open Categories 🏷️
-	  </button>
-	  <div className={styles.navSep} />
-          <div className={styles.navBrand}>
-            <GhostIPLogo size={28} animated={false} />
-            <span className={styles.navBrandText}><span className={styles.navAccent}>SCAN</span>ORACLE</span>
-            <span className={styles.navPill}>IP Lookup</span>
-          </div>
-        </div>
-        <div className={styles.navRight}>
-          <div className={styles.navBalances}>
-            <div className={styles.navBal}>
-              <span className={styles.navBalCurr}>₦</span>
-              <span className={styles.navBalAmt}>{(user?.naira_balance ?? 0).toLocaleString()}</span>
-              <span className={styles.navBalLbl}>NGN</span>
-            </div>
-            <div className={styles.navBalDiv} />
-            <div className={styles.navBal}>
-              <span className={styles.navBalCurr}>$</span>
-              <span className={styles.navBalAmt}>{(user?.dollar_balance ?? 0).toLocaleString()}</span>
-              <span className={styles.navBalLbl}>USD</span>
-            </div>
-          </div>
-          <button className={styles.signOutBtn} onClick={handleLogout}>Sign out</button>
-        </div>
-      </nav>
-
-      <header className={styles.hero}>
-        <div className={styles.heroLogo}>
-          <GhostIPLogo size={80} animated={true} />
-        </div>
-        <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}><span className={styles.heroAccent}>SCAN</span>ORACLE</h1>
-          <p className={styles.heroSub}>IP Lookup &amp; Intelligence 🔎</p>
-        </div>
-        <div className={styles.heroStats}>
-          <div className={styles.heroStat}>
-            <span className={styles.heroStatNum}>42+</span>
-            <span className={styles.heroStatLabel}>Data Fields 🛢</span>
-          </div>
-          <div className={styles.heroStatDiv} />
-          <div className={styles.heroStat}>
-            <span className={styles.heroStatNum}>Live</span>
-            <span className={styles.heroStatLabel}>Real-Time 🚀</span>
-          </div>
-          <div className={styles.heroStatDiv} />
-          <div className={styles.heroStat}>
-            <span className={styles.heroStatNum}>110%</span>
-            <span className={styles.heroStatLabel}>Accuracy ⚡</span>
-          </div>
-        </div>
-      </header>
-
-      <main className={styles.splitLayout}>
-        <div className={styles.leftCol}>
-          <div className={styles.panelLabel}>
-            <span className={styles.panelLabelDot} style={{ background: '#a78bfa' }} />
-            🚧 Data Package Builder
-          </div>
-          <DataSelectorPanel
-            lookupMeta={lookupMeta}
-            rate={rate}
-            lookupsLoading={lookupsLoading}
-            token={token}
-            onPurchaseSuccess={handlePurchaseSuccess}
-            userBalances={{ naira: user?.naira_balance, dollar: user?.dollar_balance }}
-          />
-        </div>
-        <div className={styles.rightCol}>
-          <div className={styles.panelLabel}>
-            <span className={styles.panelLabelDot} style={{ background: '#38bdf8' }} />
-            Your IP Address 🪐
-            <span className={styles.panelLabelBadge}>live scan</span>
-          </div>
-          <div className={styles.livePanelWrap}>
-            <LiveIPPanel
-              data={liveData}
-              loading={liveLoading}
-              error={null}
-              lookupMeta={lookupMeta}
-            />
-          </div>
-        </div>
-      </main>
-
-      {token && (
-	<div className={styles.ledgerWrap}>
-    	  <div className={styles.ledgerTopBar}>
-      	    <span className={styles.ledgerTopBarLabel}>
-              <span className={styles.ledgerTopBarIcon}>⊟</span>
-              Subscriptions
-      	    </span>
-      	    <button
-              className={styles.ledgerCatBtn}
-              onClick={() => navigate('/scanoracle/iplookup/category')}
-      	    >
-	      ⊛ Open Categories 🏷️
-	    </button>
-    	  </div>
-    	  <SubscriptionLedger token={token} refreshTrigger={ledgerRefresh} onRefreshUser={handleRefreshUser} />
-  	</div>
-      )}
-
-      <footer className={styles.footer}>
-        ScanOracle™ - <span className={styles.footerAccent}>Ghostroute</span> Security™ - {new Date().getFullYear()} 📡
-      </footer>
-    </div>
-  )
-}
+              
