@@ -1464,3 +1464,8 @@
   font-size: 0.61rem; color: var(--text4);
   letter-spacing: 0.06em; margin-left: auto;
 }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

@@ -768,7 +768,7 @@ export default function IPLookupCategory() {
       </main>
 
       <footer className={styles.footer}>
-        ScanOracle™ — <span className={styles.footerAccent}>Ghostroute</span> Security™ — {new Date().getFullYear()} 📡
+        <a href="https://scanoracle.ghostroute.icu">ScanOracle™</a> — <span className={styles.footerAccent}>Ghostroute</span> Security™ — {new Date().getFullYear()} 📡
       </footer>
     </div>
   )
