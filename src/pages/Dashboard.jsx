@@ -529,22 +529,22 @@ export default function Dashboard() {
 	    </svg>
 	  </span>
 
-    	  {/* X / Twitter — href="" intentionally empty */}
+    	  {/* X / Twitter*/}
 	  <a href="https://x.com/GhostrouteSec" className={styles.footerIcon} aria-label="X (Twitter)" title="X (Twitter)" tabIndex={-1}>
 	    <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
 	      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
 	    </svg>
 	  </a>
 
-    	  {/* Gmail — href="" intentionally empty */}
+    	  {/* Gmail*/}
     	  <a href="mailto:ghostroute.security@gmail.com" className={styles.footerIcon} aria-label="Email" title="Email">
 	    <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17">
 	      <path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 2-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/>
 	    </svg>
 	  </a>
 
-    	{/* Ghostroute logo — unclickable, links to ceo.ghostroute.icu (not yet live) */}
-    	<span className={`${styles.footerIcon} ${styles.footerGhostLogo}`} aria-label="Ghostroute" title="ghostroute.icu">
+    	{/* Ghostroute logo*/}
+	<a href="https://home.ghostroute.icu" className={`${styles.footerIcon} ${styles.footerGhostLogo}`} aria-label="Ghostroute" target="_blank" rel="noopener noreferrer" title="home.ghostroute.icu">
 	  <svg viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
 	    <path d="M32 4 C18 4 10 14 10 26 L10 58 L16 52 L22 58 L28 52 L32 58 L36 52 L42 58 L48 52 L54 58 L54 26 C54 14 46 4 32 4 Z" fill="currentColor"/>
 	    <ellipse cx="24" cy="28" rx="4.5" ry="5.5" fill="#010409"/>
@@ -553,7 +553,7 @@ export default function Dashboard() {
 	    <ellipse cx="41.5" cy="26.5" rx="1.5" ry="1.5" fill="#fff" opacity="0.8"/>
 	    <path d="M26 38 Q32 44 38 38" stroke="#010409" strokeWidth="2" strokeLinecap="round" fill="none"/>
 	  </svg>
-    	</span>
+    	</a>
       </div>
 
       <div className={styles.footerCopy}>

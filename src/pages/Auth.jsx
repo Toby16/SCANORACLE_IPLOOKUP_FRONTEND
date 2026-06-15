@@ -335,7 +335,7 @@ export default function Auth() {
             </button>
           </p>
 
-          <p className={styles.secureNote}><IconLock /> Protected by Ghostroute Security</p>
+          <p className={styles.secureNote}><IconLock />Protected by <a href="https://home.ghostroute.icu">Ghostroute Security</a></p>
         </main>
       </div>
     </div>
