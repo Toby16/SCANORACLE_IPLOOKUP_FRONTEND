@@ -966,3 +966,15 @@
   .catApiUrlText { font-size: 0.6rem; }
   .catApiCurlBlock { font-size: 0.6rem; }
 }
+
+.threatScoreRow {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.threatBadgeInfo {
+  color: #38bdf8;
+  border-color: rgba(56,189,248,0.3);
+  background: rgba(56,189,248,0.07);
+}

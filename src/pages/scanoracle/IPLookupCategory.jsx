@@ -24,47 +24,52 @@ function GhostIPLogo({ size = 120, animated = true }) {
 }
 
 const FIELD_META = {
-  asn:                        { label: 'ASN',                         cat: 'Network',  icon: '⬡' },
-  hostname:                   { label: 'Hostname',                    cat: 'Network',  icon: '⬡' },
-  city:                       { label: 'City',                        cat: 'Location', icon: '◎' },
-  region:                     { label: 'Region',                      cat: 'Location', icon: '◎' },
-  country:                    { label: 'Country',                     cat: 'Location', icon: '◎' },
-  country_name:               { label: 'Country Name',                cat: 'Location', icon: '◎' },
-  latitude:                   { label: 'Latitude',                    cat: 'Location', icon: '◎' },
-  longitude:                  { label: 'Longitude',                   cat: 'Location', icon: '◎' },
-  organization:               { label: 'Organization',                cat: 'Network',  icon: '⬡' },
-  timezone:                   { label: 'Timezone',                    cat: 'Location', icon: '◎' },
-  continent:                  { label: 'Continent',                   cat: 'Location', icon: '◎' },
-  continent_name:             { label: 'Continent Name',              cat: 'Location', icon: '◎' },
-  ip_version:                 { label: 'IP Version',                  cat: 'Network',  icon: '⬡' },
-  country_alpha_3:            { label: 'Country Alpha-3',             cat: 'Country',  icon: '⊞' },
-  postal_code:                { label: 'Postal Code',                 cat: 'Location', icon: '◎' },
-  country_currency_code:      { label: 'Country Currency Code',       cat: 'Country',  icon: '⊞' },
-  country_currency_symbol:    { label: 'Country Currency Symbol',     cat: 'Country',  icon: '⊞' },
-  european_union_member:      { label: 'EU Member?',                  cat: 'Country',  icon: '⊞' },
-  country_current_time:       { label: 'Country Local Time',          cat: 'Time',     icon: '◷' },
-  country_current_time_24hr:  { label: 'Country Local Time (24hr)',   cat: 'Time',     icon: '◷' },
-  country_current_time_12hr:  { label: 'Country Local Time (12hr)',   cat: 'Time',     icon: '◷' },
-  country_current_time_iso:   { label: 'Country Local Time (ISO)',    cat: 'Time',     icon: '◷' },
-  country_flag_icon:          { label: 'Country Flag Icon',           cat: 'Country',  icon: '⊞' },
-  network_status:             { label: 'Network Status',              cat: 'Network',  icon: '⬡' },
-  network_range:              { label: 'Network Range',               cat: 'Network',  icon: '⬡' },
-  network_start_address:      { label: 'Network Start Address',       cat: 'Network',  icon: '⬡' },
-  network_end_address:        { label: 'Network End Address',         cat: 'Network',  icon: '⬡' },
-  network_registration:       { label: 'Network Registered',          cat: 'Network',  icon: '⬡' },
-  network_last_changed:       { label: 'Network Last Changed',        cat: 'Network',  icon: '⬡' },
-  contact_email:              { label: 'Contact Email',               cat: 'Contact',  icon: '✉' },
-  contact_phone:              { label: 'Contact Phone',               cat: 'Contact',  icon: '✉' },
-  contact_address:            { label: 'Contact Address',             cat: 'Contact',  icon: '✉' },
-  is_tor:                     { label: 'TOR Exit Node?',              cat: 'Threat',   icon: '⚑' },
-  is_blacklisted:             { label: 'Is Blacklisted?',             cat: 'Threat',   icon: '⚑' },
-  threat_score:               { label: 'Threat Score',                cat: 'Threat',   icon: '⚑' },
-  language:                   { label: 'Language',                    cat: 'Country',  icon: '⊞' },
-  mobile_calling_code:        { label: 'Country Mobile Calling Code', cat: 'Country',  icon: '⊞' },
-  tld:                        { label: 'TLD',                         cat: 'Country',  icon: '⊞' },
-  fifa:                       { label: 'FIFA Country Code',           cat: 'Country',  icon: '⊞' },
-  maps:                       { label: 'Map Link',                    cat: 'Location', icon: '◎' },
-  population:                 { label: 'Population',                  cat: 'Country',  icon: '⊞' },
+  asn:                        { label: 'ASN',                          cat: 'Network',  icon: '⬡' },
+  hostname:                   { label: 'Hostname',                     cat: 'Network',  icon: '⬡' },
+  city:                       { label: 'City',                         cat: 'Location', icon: '◎' },
+  region:                     { label: 'Region',                       cat: 'Location', icon: '◎' },
+  country:                    { label: 'Country',                      cat: 'Location', icon: '◎' },
+  country_name:               { label: 'Country Name',                 cat: 'Location', icon: '◎' },
+  latitude:                   { label: 'Latitude',                     cat: 'Location', icon: '◎' },
+  longitude:                  { label: 'Longitude',                    cat: 'Location', icon: '◎' },
+  organization:               { label: 'Organization',                 cat: 'Network',  icon: '⬡' },
+  timezone:                   { label: 'Timezone',                     cat: 'Location', icon: '◎' },
+  continent:                  { label: 'Continent',                    cat: 'Location', icon: '◎' },
+  continent_name:             { label: 'Continent Name',               cat: 'Location', icon: '◎' },
+  ip_version:                 { label: 'IP Version',                   cat: 'Network',  icon: '⬡' },
+  country_alpha_3:            { label: 'Country Alpha-3',              cat: 'Country',  icon: '⊞' },
+  postal_code:                { label: 'Postal Code',                  cat: 'Location', icon: '◎' },
+  country_currency_code:      { label: 'Country Currency Code',        cat: 'Country',  icon: '⊞' },
+  country_currency_symbol:    { label: 'Country Currency Symbol',      cat: 'Country',  icon: '⊞' },
+  european_union_member:      { label: 'EU Member?',                   cat: 'Country',  icon: '⊞' },
+  country_current_time:       { label: 'Country Local Time',           cat: 'Time',     icon: '◷' },
+  country_current_time_24hr:  { label: 'Country Local Time (24hr)',    cat: 'Time',     icon: '◷' },
+  country_current_time_12hr:  { label: 'Country Local Time (12hr)',    cat: 'Time',     icon: '◷' },
+  country_current_time_iso:   { label: 'Country Local Time (ISO)',     cat: 'Time',     icon: '◷' },
+  country_flag_icon:          { label: 'Country Flag Icon',            cat: 'Country',  icon: '⊞' },
+  network_status:             { label: 'Network Status',               cat: 'Network',  icon: '⬡' },
+  network_range:              { label: 'Network Range',                cat: 'Network',  icon: '⬡' },
+  network_start_address:      { label: 'Network Start Address',        cat: 'Network',  icon: '⬡' },
+  network_end_address:        { label: 'Network End Address',          cat: 'Network',  icon: '⬡' },
+  network_registration:       { label: 'Network Registered',           cat: 'Network',  icon: '⬡' },
+  network_last_changed:       { label: 'Network Last Changed',         cat: 'Network',  icon: '⬡' },
+  network_type:               { label: 'Network Type',                 cat: 'Network',  icon: '⬡' },
+  contact_email:              { label: 'Contact Email',                cat: 'Contact',  icon: '✉' },
+  contact_phone:              { label: 'Contact Phone',                cat: 'Contact',  icon: '✉' },
+  contact_address:            { label: 'Contact Address',              cat: 'Contact',  icon: '✉' },
+  is_tor:                     { label: 'TOR Exit Node?',               cat: 'Threat',   icon: '⚑' },
+  is_blacklisted:             { label: 'Is Blacklisted?',              cat: 'Threat',   icon: '⚑' },
+  is_vpn:                     { label: 'Is VPN?',                      cat: 'Threat',   icon: '⚑' },
+  is_proxy:                   { label: 'Is Proxy?',                    cat: 'Threat',   icon: '⚑' },
+  threat_score:               { label: 'Threat Score',                 cat: 'Threat',   icon: '⚑' },
+  vpn_score:                  { label: 'VPN Score',                    cat: 'Threat',   icon: '⚑' },
+  proxy_score:                { label: 'Proxy Score',                  cat: 'Threat',   icon: '⚑' },
+  language:                   { label: 'Language',                     cat: 'Country',  icon: '⊞' },
+  mobile_calling_code:        { label: 'Country Mobile Calling Code',  cat: 'Country',  icon: '⊞' },
+  tld:                        { label: 'TLD',                          cat: 'Country',  icon: '⊞' },
+  fifa:                       { label: 'FIFA Country Code',            cat: 'Country',  icon: '⊞' },
+  maps:                       { label: 'Map Link',                     cat: 'Location', icon: '◎' },
+  population:                 { label: 'Population',                   cat: 'Country',  icon: '⊞' },
 }
 
 const CAT_COLORS = {
@@ -162,7 +167,6 @@ function CategoryApiEndpoints({ apiKey }) {
 
   return (
     <div className={styles.catApiWrap}>
-      {/* ── Collapsible header ── */}
       <button
         className={styles.catApiToggle}
         onClick={() => setExpanded(o => !o)}
@@ -178,19 +182,14 @@ function CategoryApiEndpoints({ apiKey }) {
 
       {expanded && (
         <div className={styles.catApiBody}>
-          {/* ── API Key strip ── */}
           <div className={styles.catApiKeyStrip}>
             <span className={styles.catApiKeyLabel}>⌗ API KEY</span>
             <code className={styles.catApiKeyVal}>{apiKey}</code>
-            <button
-              className={styles.catApiCopyBtn}
-              onClick={() => copy(apiKey, 'key')}
-            >
+            <button className={styles.catApiCopyBtn} onClick={() => copy(apiKey, 'key')}>
               {copiedIdx === 'key' ? '✔️' : '📋'}
             </button>
           </div>
 
-          {/* ── Endpoint cards ── */}
           {endpoints.map((ep, idx) => (
             <div key={idx} className={styles.catApiCard}>
               <div className={styles.catApiCardHead}>
@@ -201,7 +200,6 @@ function CategoryApiEndpoints({ apiKey }) {
 
               <p className={styles.catApiCardDesc}>{ep.desc}</p>
 
-              {/* IP input for endpoint 2 */}
               {idx === 1 && (
                 <div className={styles.catApiIpRow}>
                   <span className={styles.catApiIpLabel}>Target IP</span>
@@ -216,33 +214,23 @@ function CategoryApiEndpoints({ apiKey }) {
                 </div>
               )}
 
-              {/* URL bar */}
               <div className={styles.catApiUrlBar}>
                 <code className={styles.catApiUrlText}>{ep.url}</code>
-                <button
-                  className={styles.catApiCopyBtn}
-                  onClick={() => copy(ep.url, `url-${idx}`)}
-                  title="Copy URL"
-                >
+                <button className={styles.catApiCopyBtn} onClick={() => copy(ep.url, `url-${idx}`)} title="Copy URL">
                   {copiedIdx === `url-${idx}` ? '✔️' : '📋'}
                 </button>
               </div>
 
-              {/* cURL */}
               <div className={styles.catApiCurlWrap}>
                 <div className={styles.catApiCurlTop}>
                   <span className={styles.catApiCurlLabel}>cURL</span>
-                  <button
-                    className={styles.catApiCopyBtn}
-                    onClick={() => copy(ep.curl, `curl-${idx}`)}
-                  >
+                  <button className={styles.catApiCopyBtn} onClick={() => copy(ep.curl, `curl-${idx}`)}>
                     {copiedIdx === `curl-${idx}` ? '✔️ copied' : '📋 copy'}
                   </button>
                 </div>
                 <pre className={styles.catApiCurlBlock}>{ep.curl}</pre>
               </div>
 
-              {/* Try it live */}
               <div className={styles.catApiTryRow}>
                 <button
                   className={`${styles.catApiTryBtn} ${idx === 1 && !targetIp.trim() ? styles.catApiTryBtnDisabled : ''}`}
@@ -265,16 +253,11 @@ function CategoryApiEndpoints({ apiKey }) {
                   <div className={styles.catApiResponseTop}>
                     <span className={styles.catApiResponseLabel}>Response</span>
                     <span className={styles.catApiResponseStatus}>200 OK</span>
-                    <button
-                      className={styles.catApiCopyBtn}
-                      onClick={() => copy(JSON.stringify(liveResult[idx], null, 2), `res-${idx}`)}
-                    >
+                    <button className={styles.catApiCopyBtn} onClick={() => copy(JSON.stringify(liveResult[idx], null, 2), `res-${idx}`)}>
                       {copiedIdx === `res-${idx}` ? '✔️ copied' : '📋 copy'}
                     </button>
                   </div>
-                  <pre className={styles.catApiResponseBlock}>
-                    {JSON.stringify(liveResult[idx], null, 2)}
-                  </pre>
+                  <pre className={styles.catApiResponseBlock}>{JSON.stringify(liveResult[idx], null, 2)}</pre>
                 </div>
               )}
             </div>
@@ -356,9 +339,7 @@ function ResultPanel({ result, loading, error, ipQueried }) {
   )
 
   if (error) return (
-    <div className={styles.resultError}>
-      <span>⚠</span> {error}
-    </div>
+    <div className={styles.resultError}><span>⚠</span> {error}</div>
   )
 
   if (!result) return (
@@ -370,8 +351,14 @@ function ResultPanel({ result, loading, error, ipQueried }) {
   )
 
   const d = result
+
   const threatNum = parseInt(String(d.threat_score ?? '').replace('%', '')) || 0
+  const vpnNum    = parseInt(String(d.vpn_score    ?? '').replace('%', '')) || 0
+  const proxyNum  = parseInt(String(d.proxy_score  ?? '').replace('%', '')) || 0
+
   const threatColor = threatNum < 30 ? '#34d399' : threatNum < 60 ? '#fbbf24' : '#ef4444'
+  const vpnColor    = vpnNum    < 30 ? '#34d399' : vpnNum    < 60 ? '#fbbf24' : '#ef4444'
+  const proxyColor  = proxyNum  < 30 ? '#34d399' : proxyNum  < 60 ? '#fbbf24' : '#ef4444'
 
   const fieldsByCategory = {}
   Object.entries(d).forEach(([key, val]) => {
@@ -382,11 +369,17 @@ function ResultPanel({ result, loading, error, ipQueried }) {
     fieldsByCategory[cat].push([key, val])
   })
 
-  const hasThreatScore    = !isAbsent(d.threat_score)
-  const hasTorField       = !isAbsent(d.is_tor)
+  const hasThreatScore  = !isAbsent(d.threat_score)
+  const hasVpnScore     = !isAbsent(d.vpn_score)
+  const hasProxyScore   = !isAbsent(d.proxy_score)
+  const hasTorField     = !isAbsent(d.is_tor)
+  const hasVpnField     = !isAbsent(d.is_vpn)
+  const hasProxyField   = !isAbsent(d.is_proxy)
   const hasBlacklistField = !isAbsent(d.is_blacklisted)
   const hasNetworkStatus  = !isAbsent(d.network_status)
-  const hasThreat = hasThreatScore || hasTorField || hasBlacklistField
+  const hasNetworkType    = !isAbsent(d.network_type)
+  const hasThreatBlock = hasThreatScore || hasVpnScore || hasProxyScore ||
+                         hasTorField || hasVpnField || hasProxyField || hasBlacklistField
   const hasFlag = d.country_flag_icon && !isAbsent(d.country_flag_icon)
 
   return (
@@ -404,10 +397,11 @@ function ResultPanel({ result, loading, error, ipQueried }) {
         )}
       </div>
 
-      {hasThreat && (
+      {hasThreatBlock && (
         <div className={styles.threatWrap}>
+          {/* ── Score bars ── */}
           {hasThreatScore && (
-            <>
+            <div className={styles.threatScoreRow}>
               <div className={styles.threatHeader}>
                 <span className={styles.threatLabel}>Threat Score</span>
                 <span className={styles.threatVal} style={{ color: threatColor }}>{d.threat_score}</span>
@@ -415,8 +409,32 @@ function ResultPanel({ result, loading, error, ipQueried }) {
               <div className={styles.threatBar}>
                 <div className={styles.threatFill} style={{ width: d.threat_score, background: threatColor }} />
               </div>
-            </>
+            </div>
           )}
+          {hasVpnScore && (
+            <div className={styles.threatScoreRow}>
+              <div className={styles.threatHeader}>
+                <span className={styles.threatLabel}>VPN Score</span>
+                <span className={styles.threatVal} style={{ color: vpnColor, fontSize: '0.82rem' }}>{d.vpn_score}</span>
+              </div>
+              <div className={styles.threatBar}>
+                <div className={styles.threatFill} style={{ width: d.vpn_score, background: vpnColor }} />
+              </div>
+            </div>
+          )}
+          {hasProxyScore && (
+            <div className={styles.threatScoreRow}>
+              <div className={styles.threatHeader}>
+                <span className={styles.threatLabel}>Proxy Score</span>
+                <span className={styles.threatVal} style={{ color: proxyColor, fontSize: '0.82rem' }}>{d.proxy_score}</span>
+              </div>
+              <div className={styles.threatBar}>
+                <div className={styles.threatFill} style={{ width: d.proxy_score, background: proxyColor }} />
+              </div>
+            </div>
+          )}
+
+          {/* ── Badges ── */}
           <div className={styles.threatBadges}>
             {hasTorField && (
               <span className={`${styles.threatBadge} ${d.is_tor ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
@@ -428,8 +446,21 @@ function ResultPanel({ result, loading, error, ipQueried }) {
                 {d.is_blacklisted ? '● Blacklisted' : '○ Clean'}
               </span>
             )}
+            {hasVpnField && (
+              <span className={`${styles.threatBadge} ${d.is_vpn ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
+                {d.is_vpn ? '● VPN' : '○ No VPN'}
+              </span>
+            )}
+            {hasProxyField && (
+              <span className={`${styles.threatBadge} ${d.is_proxy ? styles.threatBadgeDanger : styles.threatBadgeSafe}`}>
+                {d.is_proxy ? '● Proxy' : '○ No Proxy'}
+              </span>
+            )}
             {hasNetworkStatus && (
               <span className={`${styles.threatBadge} ${styles.threatBadgeSafe}`}>● {d.network_status}</span>
+            )}
+            {hasNetworkType && (
+              <span className={`${styles.threatBadge} ${styles.threatBadgeInfo}`}>◈ {d.network_type}</span>
             )}
           </div>
         </div>
@@ -664,7 +695,6 @@ export default function IPLookupCategory() {
             ))}
           </div>
 
-          {/* ── API Endpoints for selected category ── */}
           {selectedCat?.api_key && (
             <CategoryApiEndpoints apiKey={selectedCat.api_key} key={selectedCat.category_id} />
           )}
