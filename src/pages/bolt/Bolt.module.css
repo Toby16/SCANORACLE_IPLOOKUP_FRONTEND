@@ -33,6 +33,47 @@
     radial-gradient(ellipse 50% 40% at 50% 42%, rgba(125, 249, 255, 0.07) 0%, transparent 60%);
 }
 
+/* ─── Floating IP data chips ──────────────────── */
+
+.ipChip {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: chipFloat linear infinite;
+  opacity: 0;
+}
+
+@keyframes chipFloat {
+  0%   { opacity: 0;    transform: translateY(0px);  }
+  12%  { opacity: 1;                                  }
+  88%  { opacity: 1;                                  }
+  100% { opacity: 0;    transform: translateY(-8px);  }
+}
+
+.ipChipLabel {
+  font-family: 'SF Mono', 'JetBrains Mono', 'Roboto Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(125, 249, 255, 0.28);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.ipChipValue {
+  font-family: 'SF Mono', 'JetBrains Mono', 'Roboto Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(240, 242, 245, 0.14);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ─── Header ─────────────────────────────────── */
 
 .header {
@@ -312,12 +353,18 @@
   opacity: 0.7;
 }
 
+/* ─── Reduced motion ──────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
   .orbRing,
-  .pillLive .pillDot {
+  .pillLive .pillDot,
+  .ipChip {
     animation: none;
+    opacity: 0.6;
   }
 }
+
+/* ─── Responsive ──────────────────────────────── */
 
 @media (max-width: 380px) {
   .orb {
@@ -353,5 +400,10 @@
     padding: 4px 9px;
     font-size: 9px;
     gap: 5px;
+  }
+
+  /* On mobile, pull chips closer to edges so they don't overlap orb */
+  .ipChipValue {
+    max-width: 80px;
   }
 }
