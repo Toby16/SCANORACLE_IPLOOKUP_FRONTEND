@@ -18,13 +18,14 @@ const STREAM_COUNT = 2;
 const AVG_WINDOW_MS = 5000;
 const AVG_UPDATE_MS = 5000;
 
-const STALL_TIMEOUT_MS = 5_000;   // restart connection if flat-zero this long
-const PEAK_WARMUP_SAMPLES = 3;    // ignore first N samples per round for peak
+const STALL_TIMEOUT_MS = 5_000;
+const PEAK_WARMUP_SAMPLES = 3;
 
-// Sanity ceiling: no single-sample spike above this can affect EMA/peak/avg.
-// Real-world links top out well below 2000 Mbps; this just guards against
-// the first-sample burst when a new round starts and elapsed≈0.
 const SANITY_CAP_MBPS = 2000;
+
+// Max time to allow a single round before force-cycling to next tier.
+// The 100 MB tier on slow connections can hang indefinitely; this caps it.
+const MAX_ROUND_MS = 20_000;
 
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
@@ -50,16 +51,14 @@ export function useBoltSpeed() {
 
   const sampleWindowRef = useRef([]);
 
-  // NEW refs
-  const stallTimerRef  = useRef(null);
-  const lastNonZeroRef = useRef(performance.now());   // timestamp of last >0 reading
+  const stallTimerRef = useRef(null);
+  const lastNonZeroRef = useRef(performance.now());
 
-  // add stallTimerRef to clearTimers():
   const clearTimers = useCallback(() => {
     if (dabbleTimerRef.current)  { clearInterval(dabbleTimerRef.current);  dabbleTimerRef.current  = null; }
     if (sampleTimerRef.current)  { clearInterval(sampleTimerRef.current);  sampleTimerRef.current  = null; }
     if (avgTimerRef.current)     { clearInterval(avgTimerRef.current);     avgTimerRef.current     = null; }
-    if (stallTimerRef.current)   { clearInterval(stallTimerRef.current);   stallTimerRef.current   = null; } // NEW
+    if (stallTimerRef.current)   { clearInterval(stallTimerRef.current);   stallTimerRef.current   = null; }
   }, []);
 
   const pushSample = useCallback((mbps) => {
@@ -94,15 +93,32 @@ export function useBoltSpeed() {
   }, []);
 
   const runRound = useCallback(async (signal) => {
+    // Clamp tier index to valid range — guards against any state drift
+    tierIndexRef.current = Math.min(tierIndexRef.current, TIERS.length - 1);
     const tier = TIERS[tierIndexRef.current];
     setTierLabel(`${tier}`);
     emaRef.current = 0;
 
-    let totalBytes    = 0;
-    const roundStart  = performance.now();
+    let totalBytes      = 0;
+    const roundStart    = performance.now();
     let lastSampleBytes = 0;
     let lastSampleTime  = roundStart;
-    let roundSamples    = 0;              // NEW — warm-up counter
+    let roundSamples    = 0;
+
+    // Per-round timeout abort so a huge tier (100 MB) doesn't hang forever
+    const roundController = new AbortController();
+    const roundTimeoutId  = setTimeout(() => roundController.abort(), MAX_ROUND_MS);
+    // Compose with the outer signal
+    const composedSignal = signal.aborted ? signal : (() => {
+      const ac = new AbortController();
+      const onAbort = () => ac.abort();
+      signal.addEventListener('abort', onAbort, { once: true });
+      roundController.signal.addEventListener('abort', () => {
+        signal.removeEventListener('abort', onAbort);
+        ac.abort();
+      }, { once: true });
+      return ac.signal;
+    })();
 
     sampleTimerRef.current = setInterval(() => {
       const now     = performance.now();
@@ -119,17 +135,16 @@ export function useBoltSpeed() {
         return;
       }
 
-      roundSamples += 1;                  // NEW
+      roundSamples += 1;
 
       emaRef.current = emaRef.current === 0
         ? instantMbps
         : emaRef.current * (1 - EMA_ALPHA) + instantMbps * EMA_ALPHA;
 
-      lastRealRef.current = emaRef.current;
-      lastNonZeroRef.current = now;        // NEW — feed stall watchdog
+      lastRealRef.current    = emaRef.current;
+      lastNonZeroRef.current = now;
       setDisplayMbps(emaRef.current);
 
-      // NEW — only promote peak after warm-up samples
       if (roundSamples >= PEAK_WARMUP_SAMPLES) {
         setPeakMbps((p) => Math.max(p, emaRef.current));
       }
@@ -141,27 +156,44 @@ export function useBoltSpeed() {
     }, SAMPLE_INTERVAL_MS);
 
     const streamOne = async () => {
-      const res = await fetch(`${API_BASE}/${tier}/`, {
-        headers: { accept: 'application/json' },
-        signal,
-      });
+      let res;
+      try {
+        res = await fetch(`${API_BASE}/${tier}/`, {
+          headers: { accept: 'application/json' },
+          signal: composedSignal,
+        });
+      } catch (err) {
+        // Timeout abort or outer abort — not an error we surface
+        return;
+      }
+
+      // Non-2xx (e.g. 404 for /100/) — silently skip this stream
       if (!res.ok || !res.body) return;
+
       const reader = res.body.getReader();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value) totalBytes += value.byteLength;
-        if (signal.aborted) break;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) totalBytes += value.byteLength;
+          if (composedSignal.aborted) break;
+        }
+      } catch {
+        // Stream interrupted — normal on abort/timeout
+      } finally {
+        reader.releaseLock();
       }
     };
 
     try {
       await Promise.all(Array.from({ length: STREAM_COUNT }, () => streamOne()));
     } finally {
+      clearTimeout(roundTimeoutId);
       if (sampleTimerRef.current) { clearInterval(sampleTimerRef.current); sampleTimerRef.current = null; }
     }
 
-    if (tierIndexRef.current < TIERS.length - 1) tierIndexRef.current += 1;
+    // Advance tier — cycle back to 0 after the last tier so testing keeps going
+    tierIndexRef.current = (tierIndexRef.current + 1) % TIERS.length;
     setRoundCount((c) => c + 1);
 
     const elapsedRound = performance.now() - roundStart;
@@ -184,10 +216,10 @@ export function useBoltSpeed() {
 
   const start = useCallback(() => {
     if (status === 'testing') return;
-    tierIndexRef.current  = 0;
-    emaRef.current        = 0;
-    lastRealRef.current   = 0;
-    lastNonZeroRef.current = performance.now();   // NEW
+    tierIndexRef.current    = 0;
+    emaRef.current          = 0;
+    lastRealRef.current     = 0;
+    lastNonZeroRef.current  = performance.now();
     sampleWindowRef.current = [];
     setPeakMbps(0);
     setAvgMbps(0);
@@ -201,18 +233,15 @@ export function useBoltSpeed() {
     startAvgTimer();
     loop(controller.signal);
 
-    // ── NEW: stall watchdog ─────────────────────────────────────────────────
     if (stallTimerRef.current) clearInterval(stallTimerRef.current);
     stallTimerRef.current = setInterval(() => {
       if (!loopActiveRef.current) return;
       const stalledMs = performance.now() - lastNonZeroRef.current;
       if (stalledMs >= STALL_TIMEOUT_MS) {
-        // Silent reconnect: abort current streams, restart loop
         if (abortRef.current) { abortRef.current.abort(); }
         const fresh = new AbortController();
-        abortRef.current = controller;          // keep same ref slot
         abortRef.current = fresh;
-        lastNonZeroRef.current = performance.now(); // reset so we don't re-trigger immediately
+        lastNonZeroRef.current = performance.now();
         loop(fresh.signal);
       }
     }, 1_000);
