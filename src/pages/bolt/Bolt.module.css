@@ -328,3 +328,30 @@
     font-size: 44px;
   }
 }
+
+@media (max-width: 768px) {
+  .header {
+    padding: 14px 16px 0;
+    gap: 8px;
+  }
+
+  .backBtn {
+    padding: 5px 10px 5px 7px;
+    font-size: 11px;
+  }
+
+  .brand {
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .brandBolt {
+    font-size: 13px;
+  }
+
+  .pill {
+    padding: 4px 9px;
+    font-size: 9px;
+    gap: 5px;
+  }
+}
