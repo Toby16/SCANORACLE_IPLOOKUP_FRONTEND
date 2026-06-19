@@ -1,22 +1,23 @@
 .page {
-  --bg: #060608;
-  --surface: rgba(255, 255, 255, 0.045);
-  --surface-border: rgba(255, 255, 255, 0.09);
+  --bg: #0a0b0f;
+  --orb-bg: rgba(255, 255, 255, 0.06);
+  --orb-ring: rgba(125, 249, 255, 0.18);
+  --orb-ring-live: rgba(125, 249, 255, 0.38);
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-border: rgba(255, 255, 255, 0.08);
   --bolt-cyan: #7df9ff;
   --bolt-amber: #ffd166;
   --bolt-blue: #5b8cff;
-  --text-primary: #f5f6f7;
-  --text-dim: #8a8d93;
+  --text-primary: #f0f2f5;
+  --text-dim: #6b7080;
   --danger: #ff5c5c;
-  --track: rgba(255, 255, 255, 0.07);
 
   position: relative;
   min-height: 100vh;
   width: 100%;
   background: var(--bg);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI',
-    Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -28,18 +29,11 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(
-      circle at 50% 18%,
-      rgba(125, 249, 255, 0.10) 0%,
-      rgba(125, 249, 255, 0) 45%
-    ),
-    radial-gradient(
-      circle at 80% 85%,
-      rgba(91, 140, 255, 0.08) 0%,
-      rgba(91, 140, 255, 0) 50%
-    ),
-    var(--bg);
+    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(91, 140, 255, 0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 50% 42%, rgba(125, 249, 255, 0.07) 0%, transparent 60%);
 }
+
+/* ─── Header ─────────────────────────────────── */
 
 .header {
   position: relative;
@@ -47,65 +41,63 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 22px 8px;
+  padding: 20px 24px 0;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 15px;
+  gap: 7px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--text-primary);
+  opacity: 0.9;
 }
 
 .brandBolt {
-  font-size: 16px;
-  filter: drop-shadow(0 0 6px rgba(125, 249, 255, 0.55));
+  font-size: 15px;
+  filter: drop-shadow(0 0 5px rgba(125, 249, 255, 0.5));
 }
 
-.brandText {
-  opacity: 0.92;
-}
-
-.statusPill {
+.pill {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 5px 12px;
   border-radius: 999px;
   background: var(--surface);
   border: 1px solid var(--surface-border);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   color: var(--text-dim);
-  backdrop-filter: blur(12px);
 }
 
-.statusDot {
-  width: 6px;
-  height: 6px;
+.pillDot {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--text-dim);
 }
 
-.statusPillLive .statusDot {
-  background: var(--bolt-cyan);
-  box-shadow: 0 0 8px rgba(125, 249, 255, 0.9);
-  animation: pulseDot 1.4s ease-in-out infinite;
-}
-
-.statusPillLive {
+.pillLive {
   color: var(--bolt-cyan);
-  border-color: rgba(125, 249, 255, 0.25);
+  border-color: rgba(125, 249, 255, 0.22);
 }
 
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.75); }
+.pillLive .pillDot {
+  background: var(--bolt-cyan);
+  box-shadow: 0 0 7px rgba(125, 249, 255, 0.9);
+  animation: blink 1.3s ease-in-out infinite;
 }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ─── Main ────────────────────────────────────── */
 
 .main {
   position: relative;
@@ -115,193 +107,191 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 20px 40px;
-  gap: 28px;
+  gap: 36px;
+  padding: 0 24px 56px;
 }
 
-.gaugeWrap {
+/* ─── Orb ─────────────────────────────────────── */
+
+.orb {
   position: relative;
-  width: min(320px, 86vw);
+  width: 200px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: default;
 }
 
-.gaugeSvg {
-  width: 100%;
-  height: auto;
-  overflow: visible;
+.orb[role="button"] {
+  cursor: pointer;
 }
 
-.gaugeTrack {
-  stroke: var(--track);
-  stroke-width: 10;
-}
-
-.gaugeFill {
-  stroke-width: 10;
-  transition: d 0.25s ease-out;
-}
-
-.needleGroup {
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.boltNeedle {
-  fill: var(--bolt-amber);
-  filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.65));
-}
-
-.gaugeHub {
-  fill: #0c0c10;
-  stroke: var(--surface-border);
-  stroke-width: 1.5;
-}
-
-.readout {
+.orbRing {
   position: absolute;
-  bottom: 8%;
-  left: 0;
-  right: 0;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--orb-ring);
+  background: radial-gradient(circle at 50% 38%, rgba(91, 140, 255, 0.18) 0%, rgba(10, 11, 15, 0.0) 70%);
+  transition: border-color 0.4s ease;
+  animation: pulseRing 3s ease-in-out infinite;
+}
+
+.orb[role="button"]:hover .orbRing {
+  border-color: rgba(125, 249, 255, 0.55);
+}
+
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(91, 140, 255, 0); }
+  50% { box-shadow: 0 0 40px 8px rgba(91, 140, 255, 0.12); }
+}
+
+.orbInner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
 }
 
-.readoutNumber {
+.bigNumber {
   font-family: 'SF Mono', 'JetBrains Mono', 'Roboto Mono', monospace;
-  font-size: 44px;
+  font-size: 54px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1;
-  background: linear-gradient(
-    90deg,
-    var(--bolt-amber) 0%,
-    var(--bolt-cyan) 55%,
-    var(--bolt-blue) 100%
-  );
+  background: linear-gradient(135deg, var(--bolt-amber) 0%, var(--bolt-cyan) 60%, var(--bolt-blue) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.readoutUnit {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--text-dim);
+.unit {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  color: var(--text-dim);
 }
 
-.statsRow {
+.tapLabel {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.01em;
+}
+
+/* ─── Meta row ────────────────────────────────── */
+
+.meta {
   display: flex;
-  gap: 10px;
-  width: min(360px, 90vw);
+  align-items: center;
+  gap: 0;
+  padding: 14px 28px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(16px);
+  animation: fadeUp 0.3s ease;
 }
 
-.statCard {
-  flex: 1;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.metaItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 12px 8px;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  backdrop-filter: blur(14px);
+  gap: 3px;
+  padding: 0 20px;
 }
 
-.statLabel {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+.metaDivider {
+  width: 1px;
+  height: 28px;
+  background: var(--surface-border);
+}
+
+.metaLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-dim);
 }
 
-.statValue {
+.metaValue {
   font-family: 'SF Mono', 'JetBrains Mono', 'Roboto Mono', monospace;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
+/* ─── Controls ────────────────────────────────── */
+
 .controls {
   display: flex;
   gap: 12px;
-  width: min(360px, 90vw);
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
 }
 
-.controlBtn {
-  flex: 1;
-  padding: 14px 0;
+.btnStop,
+.btnStart {
+  padding: 13px 40px;
   border-radius: 999px;
   border: none;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.13s ease, opacity 0.13s ease;
 }
 
-.controlBtn:active {
-  transform: scale(0.97);
+.btnStop:active,
+.btnStart:active {
+  transform: scale(0.96);
 }
 
-.controlBtnStart {
-  background: linear-gradient(90deg, var(--bolt-amber), var(--bolt-cyan));
-  color: #0a0a0c;
-}
-
-.controlBtnStop {
-  background: rgba(255, 92, 92, 0.14);
-  border: 1px solid rgba(255, 92, 92, 0.4);
+.btnStop {
+  background: rgba(255, 92, 92, 0.12);
+  border: 1px solid rgba(255, 92, 92, 0.35);
   color: var(--danger);
 }
 
-.controlBtnGhost {
-  flex: 0 0 auto;
-  padding: 14px 20px;
-  border-radius: 999px;
-  background: transparent;
-  border: 1px solid var(--surface-border);
-  color: var(--text-dim);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+.btnStart {
+  background: linear-gradient(90deg, var(--bolt-amber), var(--bolt-cyan));
+  color: #080a0e;
 }
 
-.controlBtnGhost:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: var(--text-primary);
-}
+/* ─── Footnote ────────────────────────────────── */
 
 .footnote {
-  max-width: 320px;
-  text-align: center;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
   color: var(--text-dim);
+  text-align: center;
   margin: 0;
+  letter-spacing: 0.01em;
+  opacity: 0.7;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .needleGroup,
-  .gaugeFill,
-  .statusPillLive .statusDot {
-    transition: none;
+  .orbRing,
+  .pillLive .pillDot {
     animation: none;
   }
 }
 
 @media (max-width: 380px) {
-  .readoutNumber {
-    font-size: 36px;
+  .orb {
+    width: 170px;
+    height: 170px;
   }
-  .statValue {
-    font-size: 14px;
+  .bigNumber {
+    font-size: 44px;
   }
 }

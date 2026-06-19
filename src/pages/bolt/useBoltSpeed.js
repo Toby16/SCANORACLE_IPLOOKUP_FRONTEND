@@ -2,40 +2,26 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 const API_BASE = 'https://secure.ghostroute.icu/api/v1.0/bolt/speed/download';
 
-// Escalating tiers (in the size units the backend expects). Once we reach
-// the top tier we stay there, looping continuously, which also naturally
-// throttles request frequency against the backend since bigger payloads
-// take longer to stream per round.
 const TIERS = [5, 50, 100];
 
-// How often (ms) we let a "dabble" tick nudge the displayed number while
-// we're waiting on real bytes. Purely cosmetic, always overwritten by the
-// next authoritative sample.
 const DABBLE_INTERVAL_MS = 220;
-const DABBLE_JITTER_RATIO = 0.018; // +/-1.8% of the last real reading
+const DABBLE_JITTER_RATIO = 0.018;
 
-// Smoothing factor for the exponential moving average applied to real
-// samples, so jumps between tiers don't look jagged.
 const EMA_ALPHA = 0.35;
 
-// How often (ms) we sample accumulated bytes into a "real" speed reading
-// while a round is in flight.
 const SAMPLE_INTERVAL_MS = 400;
 
-// Minimum pause between rounds once we're streaming, so very fast links
-// (which finish a round in well under a second) don't hammer the backend
-// with back-to-back request bursts. This has no visible effect on slower
-// links, where a round naturally takes longer than this anyway.
 const MIN_INTER_ROUND_GAP_MS = 900;
 
-const STREAM_COUNT = 5;
+// Reduced from 5 to 2 streams
+const STREAM_COUNT = 2;
 
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
 }
 
 export function useBoltSpeed() {
-  const [status, setStatus] = useState('idle'); // idle | testing | stopped
+  const [status, setStatus] = useState('idle');
   const [displayMbps, setDisplayMbps] = useState(0);
   const [peakMbps, setPeakMbps] = useState(0);
   const [tierLabel, setTierLabel] = useState(null);
@@ -46,8 +32,8 @@ export function useBoltSpeed() {
   const sampleTimerRef = useRef(null);
   const loopActiveRef = useRef(false);
 
-  const emaRef = useRef(0); // last smoothed "real" speed
-  const lastRealRef = useRef(0); // last real sample, what dabble perturbs around
+  const emaRef = useRef(0);
+  const lastRealRef = useRef(0);
   const tierIndexRef = useRef(0);
 
   const clearTimers = useCallback(() => {
@@ -126,7 +112,6 @@ export function useBoltSpeed() {
       }
     }
 
-    // Escalate tier until we hit the top, then stay there.
     if (tierIndexRef.current < TIERS.length - 1) {
       tierIndexRef.current += 1;
     }
@@ -147,8 +132,6 @@ export function useBoltSpeed() {
         await runRound(signal);
       } catch (err) {
         if (signal.aborted) break;
-        // Brief backoff on transient errors so we don't hammer the backend
-        // if something's wrong, then retry the same tier.
         await new Promise((r) => setTimeout(r, 1200));
       }
     }
