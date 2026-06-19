@@ -120,7 +120,7 @@ export default function Bolt() {
         </div>
 
         <p className={styles.footnote}>
-          Live throughput · 2 parallel streams · nearest Ghostroute node
+	  Bolt™ . Ghostroute Security™ . 2026 📡
         </p>
       </main>
     </div>
