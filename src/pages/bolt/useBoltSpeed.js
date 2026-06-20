@@ -13,7 +13,7 @@ const SAMPLE_INTERVAL_MS = 400;
 
 const MIN_INTER_ROUND_GAP_MS = 900;
 
-const STREAM_COUNT = 2;
+const STREAM_COUNT = 1;
 
 const AVG_WINDOW_MS = 5000;
 const AVG_UPDATE_MS = 5000;
