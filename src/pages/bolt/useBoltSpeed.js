@@ -159,11 +159,11 @@ export function useBoltSpeed() {
       let res;
       try {
         // After
-res = await fetch(`${API_BASE}/${tier}/?_cb=${Date.now()}-${Math.random()}`, {
-  headers: { accept: 'application/json' },
-  cache: 'no-store',
-  signal: composedSignal,
-});
+        res = await fetch(`${API_BASE}/${tier}/`, {
+          headers: { accept: 'application/json' },
+          cache: 'no-store',
+          signal: composedSignal,
+        });
       } catch (err) {
         // Timeout abort or outer abort — not an error we surface
         return;
