@@ -227,9 +227,9 @@
 
 .meta {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0;
-  padding: 14px 28px;
+  padding: 14px 28px 16px;
   border-radius: 20px;
   background: var(--surface);
   border: 1px solid var(--surface-border);
@@ -240,6 +240,12 @@
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
 .metaItem {
@@ -271,6 +277,19 @@
   color: var(--text-primary);
 }
 
+/* ─── Signal row (always stacked below the main row) ─── */
+
+.metaSignalRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--surface-border);
+}
+
 /* ─── Stability indicator ─────────────────────── */
 
 .stabilityValue {
@@ -290,34 +309,58 @@
   flex-shrink: 0;
 }
 
-/* Stable — cyan, same family as LIVE pill */
-.stability_stable {
-  color: var(--stability-stable);
-}
+.stability_stable { color: var(--stability-stable); }
 .stabilityDot_stable {
   background: var(--stability-stable);
   box-shadow: 0 0 6px var(--stability-stable-glow);
   animation: blink 1.8s ease-in-out infinite;
 }
 
-/* Unstable — amber */
-.stability_unstable {
-  color: var(--stability-unstable);
-}
+.stability_unstable { color: var(--stability-unstable); }
 .stabilityDot_unstable {
   background: var(--stability-unstable);
   box-shadow: 0 0 6px var(--stability-unstable-glow);
   animation: blink 1s ease-in-out infinite;
 }
 
-/* Poor — red */
-.stability_poor {
-  color: var(--stability-poor);
-}
+.stability_poor { color: var(--stability-poor); }
 .stabilityDot_poor {
   background: var(--stability-poor);
   box-shadow: 0 0 6px var(--stability-poor-glow);
   animation: blink 0.7s ease-in-out infinite;
+}
+
+/* Pending — before enough data exists to classify */
+.stability_pending { color: var(--text-dim); }
+.stabilityDot_pending {
+  background: var(--text-dim);
+  box-shadow: none;
+  animation: none;
+}
+
+/* ─── More info button ────────────────────────── */
+
+.infoBtn {
+  min-width: 240px;
+  padding: 12px 32px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.13s ease;
+}
+
+.infoBtn:hover {
+  border-color: rgba(125, 249, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.infoBtn:active {
+  transform: scale(0.97);
 }
 
 /* ─── Controls ────────────────────────────────── */
@@ -417,10 +460,13 @@
 
   .meta {
     padding: 12px 16px;
+    border-radius: 16px;
+  }
+
+  .metaRow {
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
-    border-radius: 16px;
   }
 
   .metaItem {
@@ -429,5 +475,16 @@
 
   .metaDivider {
     display: none;
+  }
+
+  .metaSignalRow {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+  .infoBtn {
+    min-width: 200px;
+    padding: 11px 24px;
+    font-size: 12px;
   }
 }

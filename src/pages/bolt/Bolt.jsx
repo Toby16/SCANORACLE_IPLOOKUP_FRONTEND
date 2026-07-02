@@ -10,7 +10,7 @@ function formatMbps(value) {
 }
 
 function getStability(peakMbps, avgMbps) {
-  if (peakMbps <= 0 || avgMbps <= 0) return null;
+  if (peakMbps <= 0 || avgMbps <= 0) return { label: '--', tier: 'pending' };
   const ratio = avgMbps / peakMbps;
   if (ratio >= 0.75) return { label: 'Stable', tier: 'stable' };
   if (ratio >= 0.45) return { label: 'Good', tier: 'unstable' };
@@ -97,36 +97,38 @@ export default function Bolt() {
           </div>
         </div>
 
-        {(isLive || isStopped) && (
-          <div className={styles.meta}>
+        <div className={styles.meta}>
+          <div className={styles.metaRow}>
             <div className={styles.metaItem}>
               <span className={styles.metaLabel}>Peak</span>
-              <span className={styles.metaValue}>{formatMbps(peakMbps)}</span>
+              <span className={styles.metaValue}>
+                {peakMbps > 0 ? formatMbps(peakMbps) : '--'}
+              </span>
             </div>
             <div className={styles.metaDivider} />
             <div className={styles.metaItem}>
               <span className={styles.metaLabel}>Chunk</span>
-              <span className={styles.metaValue}>{tierLabel ? `${tierLabel} MB` : '—'}</span>
+              <span className={styles.metaValue}>
+                {tierLabel ? `${tierLabel} MB` : '--'}
+              </span>
             </div>
             <div className={styles.metaDivider} />
             <div className={styles.metaItem}>
               <span className={styles.metaLabel}>Avg</span>
-              <span className={styles.metaValue}>{avgMbps > 0 ? formatMbps(avgMbps) : '—'}</span>
+              <span className={styles.metaValue}>
+                {avgMbps > 0 ? formatMbps(avgMbps) : '--'}
+              </span>
             </div>
-            {stability && (
-              <>
-                <div className={styles.metaDivider} />
-                <div className={styles.metaItem}>
-                  <span className={styles.metaLabel}>Signal</span>
-                  <span className={`${styles.stabilityValue} ${styles[`stability_${stability.tier}`]}`}>
-                    <span className={`${styles.stabilityDot} ${styles[`stabilityDot_${stability.tier}`]}`} />
-                    {stability.label}
-                  </span>
-                </div>
-              </>
-            )}
           </div>
-        )}
+
+          <div className={styles.metaSignalRow}>
+            <span className={styles.metaLabel}>Signal</span>
+            <span className={`${styles.stabilityValue} ${styles[`stability_${stability.tier}`]}`}>
+              <span className={`${styles.stabilityDot} ${styles[`stabilityDot_${stability.tier}`]}`} />
+              {stability.label}
+            </span>
+          </div>
+        </div>
 
         <div className={styles.controls}>
           {isLive && (
@@ -140,6 +142,14 @@ export default function Bolt() {
             </button>
           )}
         </div>
+
+        <button
+          type="button"
+          className={styles.infoBtn}
+          onClick={() => navigate('/bolt/info')}
+        >
+          What do these numbers mean?
+        </button>
 
         <p className={styles.footnote}>
 	  Bolt™ . Ghostroute Security™ . 2026 📡
