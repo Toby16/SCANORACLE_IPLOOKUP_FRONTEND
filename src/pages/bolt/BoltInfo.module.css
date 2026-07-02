@@ -210,7 +210,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 10px 12px;
+  padding: 10px 20px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -218,7 +218,7 @@
 
 .resultStatValue {
   font-family: 'SF Mono', 'JetBrains Mono', 'Roboto Mono', monospace;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 600;
   color: #f0f2f5;
 }
