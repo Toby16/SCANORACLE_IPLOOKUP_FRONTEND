@@ -111,7 +111,7 @@ export default function BoltInfo() {
                 <div className={infoStyles.progressFill} style={{ width: `${progressPct}%` }} />
               </div>
               <p className={infoStyles.bannerNote}>
-                A diagnostic scan is in progress and can't be stopped once started. Keep this tab
+                🛈  A diagnostic scan is in progress and can't be stopped once started. Keep this tab
                 open and active — switching apps, locking your screen, or losing connection mid-scan
                 may cause irregular or inaccurate results.
               </p>
