@@ -9,7 +9,7 @@ const MIN_TOTAL_MS = 35_000;
 const MAX_TOTAL_MS = 60_000;
 
 const PING_INTERVAL_MS = 550;
-const PING_TIMEOUT_MS  = 2500;
+const PING_TIMEOUT_MS  = 9999;
 
 const DOWNLOAD_TIERS        = [5, 20, 50];
 const DOWNLOAD_ROUND_GAP_MS = 400;
