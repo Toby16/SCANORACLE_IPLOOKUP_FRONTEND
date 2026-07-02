@@ -148,7 +148,7 @@ export default function Bolt() {
           className={styles.infoBtn}
           onClick={() => navigate('/bolt/info')}
         >
-          What do these numbers mean? 🕵️
+          ⚡ High Voltage? ⚡
         </button>
 
         <p className={styles.footnote}>
