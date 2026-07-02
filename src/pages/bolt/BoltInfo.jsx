@@ -31,9 +31,9 @@ function fmtKB(bytes) {
 }
 
 const ACTIVITY_LABEL = {
-  priming: 'Priming connection…',
+  priming: 'Priming network connection…',
   download: 'Measuring download throughput…',
-  upload: 'Uploading captured sample payload…',
+  upload: 'Uploading captured payload…',
 };
 
 export default function BoltInfo() {
